@@ -1,0 +1,50 @@
+/* Base CSS común para todas las herramientas — minimalista, sin Bootstrap */
+
+:root {
+  --color-bg: #ffffff;
+  --color-text: #1a1a1a;
+  --color-primary: #0E2841;
+  --color-accent: #D0931F;
+  --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.5;
+}
+
+header {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+header a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+footer {
+  padding: 2rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #666;
+  border-top: 1px solid #eee;
+}
+
+footer a {
+  color: var(--color-primary);
+}
