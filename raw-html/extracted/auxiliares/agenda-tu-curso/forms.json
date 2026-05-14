@@ -1,0 +1,29 @@
+[
+  {
+    "action": "https://equipargeo.com/wp-login.php?action=postpass",
+    "method": "POST",
+    "fields": [
+      {
+        "tag": "input",
+        "name": "redirect_to",
+        "type": "hidden",
+        "placeholder": "",
+        "required": false
+      },
+      {
+        "tag": "input",
+        "name": "post_password",
+        "type": "password",
+        "placeholder": "",
+        "required": true
+      },
+      {
+        "tag": "input",
+        "name": "Submit",
+        "type": "submit",
+        "placeholder": "",
+        "required": false
+      }
+    ]
+  }
+]

@@ -1,0 +1,94 @@
+<section id="herramienta-puntos" style="width:100%;max-width:1100px;margin:40px auto;padding:0 15px;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;">
+<!-- Card principal -->
+<div class="eg-card">
+<h3 class="eg-card-title">Generador de puntos intermedios</h3>
+<p class="eg-muted" style="margin-top:-6px">
+      Calcula puntos equidistantes entre dos coordenadas proyectadas (<strong>POSGAR07 / Gauss-Krüger</strong> u otra proyección métrica).
+      Azimut reportado desde el <strong>Norte</strong> en sentido horario (0–360°).
+    </p>
+<!-- Formulario -->
+<div class="eg-grid">
+<div class="eg-fieldset">
+<div class="eg-field">
+<label for="e1">Este (X) P1</label>
+<input id="e1" placeholder="Ej: 500000" step="any" type="number"/>
+</div>
+<div class="eg-field">
+<label for="n1">Norte (Y) P1</label>
+<input id="n1" placeholder="Ej: 6000000" step="any" type="number"/>
+</div>
+<div class="eg-field">
+<label for="e2">Este (X) P2</label>
+<input id="e2" placeholder="Ej: 500050" step="any" type="number"/>
+</div>
+<div class="eg-field">
+<label for="n2">Norte (Y) P2</label>
+<input id="n2" placeholder="Ej: 6000050" step="any" type="number"/>
+</div>
+</div>
+<div class="eg-options">
+<div class="eg-field">
+<label for="intervalo">Intervalo (m)</label>
+<select id="intervalo"></select>
+</div>
+<div class="eg-field">
+<label for="intervaloManual">Valor manual (m)</label>
+<input id="intervaloManual" placeholder="p.ej. 0.75" step="any" type="number"/>
+</div>
+<div class="eg-field">
+<label for="decimales">Decimales (coords)</label>
+<input id="decimales" max="4" min="0" type="number" value="3"/>
+</div>
+<div class="eg-field">
+<label for="incluirExtremos">Incluir extremos</label>
+<select id="incluirExtremos">
+<option selected="" value="si">Sí (P1 y P2)</option>
+<option value="no">No</option>
+</select>
+</div>
+<div class="eg-actions">
+<button class="eg-btn eg-btn-primary" id="btnGenerar">Generar puntos</button>
+<button class="eg-btn" id="btnLimpiar" type="button">Limpiar</button>
+</div>
+</div>
+</div>
+<!-- Resumen -->
+<div class="eg-summary" hidden="" id="panelResumen">
+<div><strong>Distancia:</strong> <span id="resDist">–</span> m</div>
+<div><strong>Azimut (0–360°):</strong> <span id="resAzi">–</span></div>
+<div><strong>Puntos:</strong> <span id="resPts">–</span></div>
+</div>
+<!-- Gráfico -->
+<div class="eg-plot">
+<canvas height="380" id="canvasXY"></canvas>
+</div>
+<!-- Controles de vista -->
+<div class="eg-toolbar">
+<button class="eg-btn" id="btnFit">Ajustar a línea</button>
+<button class="eg-btn" id="btnZoomIn">Zoom +</button>
+<button class="eg-btn" id="btnZoomOut">Zoom −</button>
+<button class="eg-btn" id="btnReset">Reset</button>
+<span class="eg-sep"></span>
+<button class="eg-btn" id="panUp">Arriba</button>
+<button class="eg-btn" id="panLeft">Izquierda</button>
+<button class="eg-btn" id="panRight">Derecha</button>
+<button class="eg-btn" id="panDown">Abajo</button>
+</div>
+<!-- Acciones y tabla -->
+<div class="eg-table-wrap" hidden="" id="tablaWrap">
+<div class="eg-table-actions">
+<button class="eg-btn" id="btnDXF">Descargar DXF (R12)</button>
+<button class="eg-btn" id="btnCSV">Descargar CSV</button>
+<button class="eg-btn" id="btnCopiar">Copiar tabla</button>
+</div>
+<div class="eg-table-scroll">
+<table class="eg-table" id="tablaPuntos">
+<thead>
+<tr><th>#</th><th>Este (X)</th><th>Norte (Y)</th><th>Progresiva (m)</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
