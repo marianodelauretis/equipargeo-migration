@@ -63,7 +63,7 @@ Procesá estático/cinemático con QA/QC, compará soluciones y entregá reporte
 
 ## Modalidad
 
-Cursada **100% online** con clases en vivo, grabaciones disponibles y atención por chat con los instructores. <!-- COMPLETAR: cantidad de clases por módulo, horarios típicos, plataforma usada -->
+Cursada **100% online** con clases en vivo, grabaciones disponibles y atención por chat con los instructores.
 
 ## Material incluido
 
@@ -75,11 +75,11 @@ Cursada **100% online** con clases en vivo, grabaciones disponibles y atención 
 
 ## Inversión
 
-<!-- COMPLETAR: precio Argentina y precio internacional, formas de pago, descuento por programa completo vs módulos sueltos -->
+Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Próximas fechas
 
-<!-- COMPLETAR: fechas concretas de la próxima cohorte -->
+Las próximas fechas se publican en agenda y se anuncian por WhatsApp a quienes hayan pre-inscripto. Consultá disponibilidad si querés sumarte a la próxima cohorte.
 
 ## ¿Listo para sumarte?
 

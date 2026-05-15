@@ -38,11 +38,11 @@ Pensado para topógrafos, sobrestantes de obra, capataces especializados y técn
 
 ## Modalidad y duración
 
-Cursada online con clases en vivo. <!-- COMPLETAR: detalles -->
+Cursada online con clases en vivo.
 
 ## Inversión
 
-<!-- COMPLETAR: precios -->
+Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 

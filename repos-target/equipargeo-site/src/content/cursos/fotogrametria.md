@@ -49,7 +49,7 @@ Software fotogramétrico, ortomosaicos, nubes de puntos, DTM/DSM, exportación C
 
 ## Modalidad
 
-Cursada **100% online** con clases en vivo. <!-- COMPLETAR: detalles, requerimiento de equipo para prácticas -->
+Cursada **100% online** con clases en vivo.
 
 ## Material incluido
 
@@ -61,7 +61,7 @@ Cursada **100% online** con clases en vivo. <!-- COMPLETAR: detalles, requerimie
 
 ## Inversión
 
-<!-- COMPLETAR: precios Argentina e internacional -->
+Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## ¿Necesitás procesar imágenes ya?
 

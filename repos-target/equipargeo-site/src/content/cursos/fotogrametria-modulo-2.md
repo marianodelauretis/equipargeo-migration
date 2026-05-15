@@ -39,11 +39,11 @@ Para quienes ya operan drones con seguridad y necesitan dar el salto al **uso fo
 
 ## Modalidad y duración
 
-Cursada online con clases en vivo. <!-- COMPLETAR: detalles -->
+Cursada online con clases en vivo.
 
 ## Inversión
 
-<!-- COMPLETAR: precios -->
+Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 

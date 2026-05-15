@@ -40,11 +40,11 @@ Si trabajás en obra civil, mensuras, replanteos urbanos, control de estructuras
 
 ## Modalidad y duración
 
-Cursada online con clases en vivo. <!-- COMPLETAR: detalles de cantidad de clases y horarios -->
+Cursada online con clases en vivo.
 
 ## Inversión
 
-<!-- COMPLETAR: precios Argentina e internacional -->
+Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 

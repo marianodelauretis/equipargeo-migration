@@ -30,16 +30,16 @@ Punto de entrada al uso profesional de drones. Para quienes nunca volaron uno o 
 
 - Slides completas.
 - Checklist pre-vuelo imprimible.
-- Guía rápida de normativa ANAC. <!-- COMPLETAR: confirmar si entrega también ese material -->
+- Guía rápida de normativa ANAC.
 - Certificado de participación oficial de EQUIPAR.
 
 ## Modalidad y duración
 
-Cursada online con clases en vivo. <!-- COMPLETAR: detalles -->
+Cursada online con clases en vivo.
 
 ## Inversión
 
-<!-- COMPLETAR: precios -->
+Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 

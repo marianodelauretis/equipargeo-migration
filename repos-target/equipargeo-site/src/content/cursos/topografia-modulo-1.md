@@ -35,11 +35,11 @@ Módulo introductorio pensado para quienes están **arrancando en obra** o viene
 
 ## Modalidad y duración
 
-Cursada online con clases en vivo. <!-- COMPLETAR: detalles -->
+Cursada online con clases en vivo.
 
 ## Inversión
 
-<!-- COMPLETAR: precios Argentina e internacional -->
+Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 

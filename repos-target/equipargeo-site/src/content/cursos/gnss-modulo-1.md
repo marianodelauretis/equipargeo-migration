@@ -36,11 +36,11 @@ Está pensado para quienes ya tienen formación técnica en agrimensura, topogra
 
 ## Modalidad y duración
 
-Cursada online con clases en vivo. <!-- COMPLETAR: cantidad de clases, días/horarios habituales, acceso a grabaciones -->
+Cursada online con clases en vivo.
 
 ## Inversión
 
-<!-- COMPLETAR: precio Argentina e internacional, formas de pago -->
+Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 
