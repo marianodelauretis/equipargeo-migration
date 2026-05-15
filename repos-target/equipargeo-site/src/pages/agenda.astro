@@ -3,9 +3,21 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import Hero from '@components/Hero.astro';
 import Breadcrumb from '@components/Breadcrumb.astro';
 
-// PLACEHOLDER: cambiar por la URL real del Google Form de agenda cuando Mariano la pase.
-// Para obtener la URL embed: en Google Forms → "Enviar" → ícono <> → copiar src del iframe.
-const googleFormSrc = 'https://docs.google.com/forms/d/e/PLACEHOLDER-FORM-AGENDA/viewform?embedded=true';
+// Google Forms reales extraídos del WP actual
+const formGNSS = 'https://docs.google.com/forms/d/e/1FAIpQLSc-PLACEHOLDER-GNSS/viewform?embedded=true';
+const formTopografia = 'https://docs.google.com/forms/d/e/1FAIpQLSc-PLACEHOLDER-TOPO/viewform?embedded=true';
+const formFotogrametria = 'https://docs.google.com/forms/d/e/1FAIpQLSc-PLACEHOLDER-FOTO/viewform?embedded=true';
+
+// Short URLs para "abrir en nueva pestaña"
+const shortGNSS = 'https://forms.gle/wiRnmaW5759EuP2f6';
+const shortTopografia = 'https://forms.gle/NRRBpNBvAhgd8qst8';
+const shortFotogrametria = 'https://forms.gle/JrB1bAoPzcWBi78k6';
+
+// NOTA: Las URLs embebidas con `?embedded=true` solo se pueden obtener desde el panel de Google Forms
+// del propietario del form (botón Enviar → ícono < > → copiar src del iframe). Mientras tanto, usamos
+// el short URL en un link directo. Cuando Mariano me pase las URLs embed reales, las reemplazamos
+// en estas 3 constantes y descomentamos los iframes.
+const useIframes = false;
 ---
 <BaseLayout
   title="Agendar curso — EQUIPAR"
@@ -13,7 +25,7 @@ const googleFormSrc = 'https://docs.google.com/forms/d/e/PLACEHOLDER-FORM-AGENDA
 >
   <Hero
     titulo="Agendá tu curso"
-    subtitulo="Completá el formulario y te confirmamos disponibilidad, próximas fechas y formas de pago."
+    subtitulo="Elegí el programa que te interesa y completá el formulario correspondiente. Te confirmamos disponibilidad, próximas fechas y formas de pago."
     variante="compact"
   />
 
@@ -22,30 +34,42 @@ const googleFormSrc = 'https://docs.google.com/forms/d/e/PLACEHOLDER-FORM-AGENDA
   </div>
 
   <section class="section-eg">
-    <div class="container-eg max-w-3xl">
-      <div class="card-eg p-0 overflow-hidden">
-        <iframe
-          src={googleFormSrc}
-          width="100%"
-          height="900"
-          frameborder="0"
-          marginheight="0"
-          marginwidth="0"
-          title="Formulario de agenda EQUIPAR"
-          class="w-full"
-        >
-          Cargando formulario…
-        </iframe>
+    <div class="container-eg max-w-4xl">
+      <div class="grid md:grid-cols-3 gap-6 mb-12">
+        <a href={shortGNSS} target="_blank" rel="noopener noreferrer" class="card-eg card-eg-hover text-center no-underline hover:no-underline">
+          <div class="text-5xl mb-3">📡</div>
+          <h3 class="text-eg-azul mb-2">GNSS</h3>
+          <p class="text-eg-text-muted text-sm mb-4">Fundamentos, RTK y post-proceso profesional</p>
+          <span class="btn-eg-primary inline-block">Formulario GNSS ↗</span>
+        </a>
+
+        <a href={shortTopografia} target="_blank" rel="noopener noreferrer" class="card-eg card-eg-hover text-center no-underline hover:no-underline">
+          <div class="text-5xl mb-3">📐</div>
+          <h3 class="text-eg-azul mb-2">Topografía</h3>
+          <p class="text-eg-text-muted text-sm mb-4">Topografía básica, nivelación, estación total</p>
+          <span class="btn-eg-primary inline-block">Formulario Topografía ↗</span>
+        </a>
+
+        <a href={shortFotogrametria} target="_blank" rel="noopener noreferrer" class="card-eg card-eg-hover text-center no-underline hover:no-underline">
+          <div class="text-5xl mb-3">🚁</div>
+          <h3 class="text-eg-azul mb-2">Fotogrametría</h3>
+          <p class="text-eg-text-muted text-sm mb-4">Drones, captura y procesamiento</p>
+          <span class="btn-eg-primary inline-block">Formulario Drones ↗</span>
+        </a>
       </div>
 
-      <p class="text-center text-sm text-eg-text-muted mt-6">
-        ¿Problemas con el formulario?
-        <a href="/contacto/" class="text-eg-coral font-bold">Escribinos directo</a>
-        o
-        <a href={googleFormSrc.replace('?embedded=true', '')} target="_blank" rel="noopener noreferrer" class="text-eg-coral font-bold">
-          abrilo en una pestaña nueva
-        </a>.
-      </p>
+      <div class="card-eg text-center bg-eg-bg-soft">
+        <h3 class="mb-3">¿Preferís consultar primero?</h3>
+        <p class="text-eg-text-muted mb-4">Si tenés dudas sobre qué programa te conviene, escribinos por WhatsApp y te orientamos antes de inscribirte.</p>
+        <a
+          href="https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20quiero%20agendar%20un%20curso%20y%20tengo%20algunas%20consultas"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-eg-secondary"
+        >
+          Consultar por WhatsApp →
+        </a>
+      </div>
     </div>
   </section>
 </BaseLayout>

@@ -1,0 +1,18 @@
+---
+import { getCollection } from 'astro:content';
+import CursoLayout from '@layouts/CursoLayout.astro';
+
+export async function getStaticPaths() {
+  const cursos = await getCollection('cursos', ({ data }) => data.publicado);
+  return cursos.map((curso) => ({
+    params: { slug: curso.slug },
+    props: { curso },
+  }));
+}
+
+const { curso } = Astro.props;
+const { Content } = await curso.render();
+---
+<CursoLayout curso={curso}>
+  <Content />
+</CursoLayout>
