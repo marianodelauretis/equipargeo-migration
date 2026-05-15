@@ -1,2 +1,18 @@
 BUNDLE_PARA_CLAUDE.md
 archive/
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+.astro/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db

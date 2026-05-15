@@ -1,0 +1,182 @@
+{
+  "gnss-modulo-1": {
+    "url_wp": "https://equipargeo.com/curso-gnss-modulo-1/",
+    "fechas": "A confirmar",
+    "duracion": "2 jornadas (4h c/u)",
+    "formato": "Online en vivo",
+    "requisito": "Sin experiencia previa",
+    "precio_ars": {
+      "general": "$ 375.000",
+      "comunidad": "$ 93.750",
+      "asesoria": "$ 37.500"
+    },
+    "precio_usd": {
+      "general": "USD 250",
+      "comunidad": "USD 62",
+      "asesoria": "USD 25"
+    }
+  },
+  "gnss-modulo-2": {
+    "url_wp": "https://equipargeo.com/curso-gnss-modulo-2/",
+    "fechas": "A confirmar",
+    "duracion": "2 jornadas (4h c/u)",
+    "formato": "Online / Presencial",
+    "requisito": "Fundamentos GNSS",
+    "precio_ars": {
+      "general": "$ 375.000",
+      "comunidad": "$ 93.750",
+      "asesoria": "$ 37.500"
+    },
+    "precio_usd": {
+      "general": "USD 250",
+      "comunidad": "USD 62",
+      "asesoria": "USD 25"
+    }
+  },
+  "gnss-modulo-3": {
+    "url_wp": "https://equipargeo.com/curso-gnss-modulo-3/",
+    "fechas": "A confirmar",
+    "duracion": "2 jornadas (4h c/u)",
+    "formato": "Online en vivo",
+    "requisito": "Manejo de sistemas GNSS",
+    "precio_ars": {
+      "general": "$ 375.000",
+      "comunidad": "$ 93.750",
+      "asesoria": "$ 37.500"
+    },
+    "precio_usd": {
+      "general": "USD 250",
+      "comunidad": "USD 62",
+      "asesoria": "USD 25"
+    }
+  },
+  "topografia-modulo-1": {
+    "url_wp": "https://equipargeo.com/modulo-1-topografia-basica/",
+    "fechas": "A confirmar",
+    "duracion": "2 jornadas (4h c/u)",
+    "formato": "Online en vivo",
+    "requisito": "Sin conocimientos previos",
+    "precio_ars": {
+      "general": "$ 375.000",
+      "comunidad": "$ 93.750",
+      "asesoria": "$ 37.500"
+    },
+    "precio_usd": {
+      "general": "USD 250",
+      "comunidad": "USD 62",
+      "asesoria": "USD 25"
+    }
+  },
+  "topografia-modulo-2": {
+    "url_wp": "https://equipargeo.com/modulo-2-nivelacion/",
+    "fechas": "A confirmar",
+    "duracion": "2 jornadas (4h c/u)",
+    "formato": "Online en vivo",
+    "requisito": "Módulo 1 o experiencia",
+    "precio_ars": {
+      "general": "$ 375.000",
+      "comunidad": "$ 93.750",
+      "asesoria": "$ 37.500"
+    },
+    "precio_usd": {
+      "general": "USD 250",
+      "comunidad": "USD 62",
+      "asesoria": "USD 25"
+    }
+  },
+  "topografia-modulo-3": {
+    "url_wp": "https://equipargeo.com/modulo-3-estacion-total/",
+    "fechas": "A confirmar",
+    "duracion": "2 jornadas (4h c/u)",
+    "formato": "Online en vivo",
+    "requisito": "Manejo de nivelación",
+    "precio_ars": {
+      "general": "$ 375.000",
+      "comunidad": "$ 93.750",
+      "asesoria": "$ 37.500"
+    },
+    "precio_usd": {
+      "general": "USD 250",
+      "comunidad": "USD 62",
+      "asesoria": "USD 25"
+    }
+  },
+  "fotogrametria-modulo-1": {
+    "url_wp": "https://equipargeo.com/modulo-1-manejo-basico-de-drones/",
+    "fechas": "A confirmar",
+    "duracion": "2 jornadas (4h c/u)",
+    "formato": "Online en vivo",
+    "requisito": "Sin experiencia previa",
+    "precio_ars": {
+      "general": "$ 750.000",
+      "comunidad": "$ 187.500",
+      "asesoria": "$ 75.500"
+    },
+    "precio_usd": {
+      "general": "USD 500",
+      "comunidad": "USD 125",
+      "asesoria": "USD 50"
+    }
+  },
+  "fotogrametria-modulo-2": {
+    "url_wp": "https://equipargeo.com/modulo-2-captura-de-datos-y-fotogrametria-aplicada/",
+    "fechas": "A confirmar",
+    "duracion": "2 jornadas (4h c/u)",
+    "formato": "Online en vivo",
+    "requisito": "Manejo de drones",
+    "precio_ars": {
+      "general": "$ 750.000",
+      "comunidad": "$ 187.500",
+      "asesoria": "$ 75.500"
+    },
+    "precio_usd": {
+      "general": "USD 500",
+      "comunidad": "USD 125",
+      "asesoria": "USD 50"
+    }
+  },
+  "fotogrametria-modulo-3": {
+    "url_wp": "https://equipargeo.com/modulo-3-procesamiento-y-productos-avanzados/",
+    "fechas": "A confirmar",
+    "duracion": "2 jornadas (4h c/u)",
+    "formato": "Online en vivo",
+    "requisito": "Conceptos de fotogrametría",
+    "precio_ars": {
+      "general": "$ 750.000",
+      "comunidad": "$ 187.500",
+      "asesoria": "$ 75.500"
+    },
+    "precio_usd": {
+      "general": "USD 500",
+      "comunidad": "USD 125",
+      "asesoria": "USD 50"
+    }
+  },
+  "gnss": {
+    "url_wp": "https://equipargeo.com/programa-completo-curso-gnss/",
+    "fechas": null,
+    "duracion": null,
+    "formato": null,
+    "requisito": null,
+    "precio_ars": null,
+    "precio_usd": null
+  },
+  "topografia": {
+    "url_wp": "https://equipargeo.com/programa-completo-topografia/",
+    "fechas": null,
+    "duracion": null,
+    "formato": null,
+    "requisito": null,
+    "precio_ars": null,
+    "precio_usd": null
+  },
+  "fotogrametria": {
+    "url_wp": "https://equipargeo.com/programa-completo-fotogrametria/",
+    "fechas": null,
+    "duracion": null,
+    "formato": null,
+    "requisito": null,
+    "precio_ars": null,
+    "precio_usd": null
+  }
+}

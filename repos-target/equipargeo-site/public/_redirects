@@ -67,6 +67,31 @@
 /comments/feed/   /404  410
 /?author=*        /404  410
 
+# ---- Páginas auxiliares: URLs viejas WP -> nuevas Astro ---------------------
+/capacitaciones/              /cursos/                      301
+/capacitaciones               /cursos/                      301
+/asesoria-tecnica/            /asesoria/                    301
+/asesoria-tecnica             /asesoria/                    301
+/consultoria-y-equipamiento/  /asesoria/                    301
+/consultoria-y-equipamiento   /asesoria/                    301
+/agenda-tu-curso/             /agenda/                      301
+/agenda-tu-curso              /agenda/                      301
+/experiencias/                /sobre/                       301
+/experiencias                 /sobre/                       301
+/home/                        /                             301
+/home                         /                             301
+
+# ---- Herramientas: slugs exactos del WP -> app subdomain -------------------
+/conversor-de-coordenadas-lat-long-gk/  https://app.equipargeo.com/posgar07/             301
+/conversor-de-coordenadas-lat-long-gk   https://app.equipargeo.com/posgar07/             301
+/herramientas-gnss/                     https://app.equipargeo.com/faja/                 301
+/herramientas-gnss                      https://app.equipargeo.com/faja/                 301
+/herramientas-de-topografia/            https://app.equipargeo.com/puntos-intermedios/   301
+/herramientas-de-topografia             https://app.equipargeo.com/puntos-intermedios/   301
+/topografia/                            https://app.equipargeo.com/                      301
+/gnss/                                  https://app.equipargeo.com/                      301
+/drones/                                https://app.equipargeo.com/                      301
+
 # ---- Plurales y variantes comunes que la gente puede tipear -----------------
 /curso/         /cursos/    301
 /curso          /cursos/    301

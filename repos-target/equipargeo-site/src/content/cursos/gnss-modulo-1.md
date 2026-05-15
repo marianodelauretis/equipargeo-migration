@@ -4,7 +4,18 @@ titulo: "Módulo 1 — Fundamentos y Teoría GNSS"
 descripcion: "La base obligatoria. Comprendé constelaciones, marcos de referencia, coordenadas y planificación para realizar mediciones de calidad."
 modulo: 1
 modalidad: online
-duracion: "4 unidades"
+duracion: "2 jornadas (4h c/u)"
+formato: "Online en vivo"
+fechas: "A confirmar"
+precios:
+  ars:
+    general: "$ 375.000"
+    comunidad: "$ 93.750"
+    asesoria: "$ 37.500"
+  usd:
+    general: "USD 250"
+    comunidad: "USD 62"
+    asesoria: "USD 25"
 orden: 1
 publicado: true
 temario:
@@ -33,14 +44,6 @@ Está pensado para quienes ya tienen formación técnica en agrimensura, topogra
 - Checklist imprimible de planificación de campaña.
 - Plantilla de bitácora de campo.
 - Certificado de participación oficial de EQUIPAR.
-
-## Modalidad y duración
-
-Cursada online con clases en vivo.
-
-## Inversión
-
-Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 

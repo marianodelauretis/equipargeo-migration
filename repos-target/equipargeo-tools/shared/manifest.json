@@ -1,7 +1,7 @@
 {
   "name": "EQUIPAR Tools — Herramientas para el territorio",
   "short_name": "EQUIPAR Tools",
-  "description": "Herramientas técnicas gratuitas para agrimensores, topógrafos y profesionales del territorio: POSGAR07, faja Gauss-Krüger, puntos intermedios, conversor a DXF.",
+  "description": "Herramientas técnicas gratuitas para agrimensores y topógrafos: POSGAR07, faja Gauss-Krüger, puntos intermedios, conversor a DXF.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

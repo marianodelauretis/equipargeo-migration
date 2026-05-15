@@ -4,7 +4,18 @@ titulo: "Módulo 3 — Estación Total y Técnicas Avanzadas"
 descripcion: "Tecnología de precisión. Aprendé a operar la Estación Total para relevamientos planialtimétricos complejos y replanteos milimétricos."
 modulo: 3
 modalidad: online
-duracion: "4 unidades"
+duracion: "2 jornadas (4h c/u)"
+formato: "Online en vivo"
+fechas: "A confirmar"
+precios:
+  ars:
+    general: "$ 375.000"
+    comunidad: "$ 93.750"
+    asesoria: "$ 37.500"
+  usd:
+    general: "USD 250"
+    comunidad: "USD 62"
+    asesoria: "USD 25"
 orden: 3
 publicado: true
 requisitos:
@@ -35,14 +46,6 @@ Para profesionales que necesitan operar **estación total con soltura** en proye
 - Plantillas de informe de levantamiento.
 - Datasets reales para practicar gabinete.
 - Certificado de participación oficial de EQUIPAR.
-
-## Modalidad y duración
-
-Cursada online con clases en vivo.
-
-## Inversión
-
-Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 

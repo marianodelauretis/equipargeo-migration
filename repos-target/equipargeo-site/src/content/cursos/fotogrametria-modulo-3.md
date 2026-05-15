@@ -4,7 +4,18 @@ titulo: "Módulo 3 — Procesamiento y Productos Avanzados"
 descripcion: "Del dato al entregable. Procesamiento fotogramétrico en gabinete, generación de nubes de puntos, modelos digitales y ortomosaicos."
 modulo: 3
 modalidad: online
-duracion: "4 unidades"
+duracion: "2 jornadas (4h c/u)"
+formato: "Online en vivo"
+fechas: "A confirmar"
+precios:
+  ars:
+    general: "$ 750.000"
+    comunidad: "$ 187.500"
+    asesoria: "$ 75.500"
+  usd:
+    general: "USD 500"
+    comunidad: "USD 125"
+    asesoria: "USD 50"
 orden: 3
 publicado: true
 requisitos:
@@ -38,14 +49,6 @@ Para quienes ya capturaron imágenes con criterio profesional (Módulo 2) y ahor
 - Plantillas de informe técnico de relevamiento aéreo.
 - Plantillas de control de calidad.
 - Certificado de participación oficial de EQUIPAR.
-
-## Modalidad y duración
-
-Cursada online con clases en vivo.
-
-## Inversión
-
-Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 

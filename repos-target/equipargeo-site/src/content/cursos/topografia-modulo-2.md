@@ -4,7 +4,18 @@ titulo: "Módulo 2 — Nivelación y Control Altimétrico"
 descripcion: "Dominá las cotas. Aprendé a usar niveles ópticos, láser y digitales para garantizar la verticalidad y horizontalidad de tu obra."
 modulo: 2
 modalidad: online
-duracion: "4 unidades"
+duracion: "2 jornadas (4h c/u)"
+formato: "Online en vivo"
+fechas: "A confirmar"
+precios:
+  ars:
+    general: "$ 375.000"
+    comunidad: "$ 93.750"
+    asesoria: "$ 37.500"
+  usd:
+    general: "USD 250"
+    comunidad: "USD 62"
+    asesoria: "USD 25"
 orden: 2
 publicado: true
 temario:
@@ -35,14 +46,6 @@ Pensado para topógrafos, sobrestantes de obra, capataces especializados y técn
 - Plantillas de libreta de campo digital.
 - Ejemplos reales con cálculos resueltos.
 - Certificado de participación oficial de EQUIPAR.
-
-## Modalidad y duración
-
-Cursada online con clases en vivo.
-
-## Inversión
-
-Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 

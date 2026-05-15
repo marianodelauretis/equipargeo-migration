@@ -10,7 +10,13 @@ const cursos = defineCollection({
     esPrograma: z.boolean().default(false),
     modalidad: z.enum(['online', 'presencial', 'hibrida']).default('online'),
     duracion: z.string().optional(),
+    formato: z.string().optional(),
+    fechas: z.string().optional(),
     precio: z.string().optional(),
+    precios: z.object({
+      ars: z.object({ general: z.string(), comunidad: z.string(), asesoria: z.string() }).optional(),
+      usd: z.object({ general: z.string(), comunidad: z.string(), asesoria: z.string() }).optional(),
+    }).optional(),
     instructor: z.string().optional(),
     fechaInicio: z.string().optional(),
     requisitos: z.array(z.string()).optional(),

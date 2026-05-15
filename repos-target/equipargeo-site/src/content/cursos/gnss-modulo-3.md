@@ -4,7 +4,18 @@ titulo: "Módulo 3 — Post-proceso GNSS Profesional"
 descripcion: "Procesá estático y cinemático con control de calidad (QA/QC), compará soluciones y generá informes técnicos válidos para organismos."
 modulo: 3
 modalidad: online
-duracion: "4 unidades"
+duracion: "2 jornadas (4h c/u)"
+formato: "Online en vivo"
+fechas: "A confirmar"
+precios:
+  ars:
+    general: "$ 375.000"
+    comunidad: "$ 93.750"
+    asesoria: "$ 37.500"
+  usd:
+    general: "USD 250"
+    comunidad: "USD 62"
+    asesoria: "USD 25"
 orden: 3
 publicado: true
 requisitos:
@@ -38,14 +49,6 @@ Está pensado para profesionales que necesitan **trabajar en gabinete** los dato
 - Checklist de control de calidad.
 - Ejemplos de informes aprobados por organismos.
 - Certificado de participación oficial de EQUIPAR.
-
-## Modalidad y duración
-
-Cursada online con clases en vivo.
-
-## Inversión
-
-Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 
