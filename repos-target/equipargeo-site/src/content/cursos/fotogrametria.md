@@ -5,6 +5,17 @@ descripcion: "Formación integral para relevamientos técnicos: vuelo, captura, 
 esPrograma: true
 modalidad: online
 duracion: "3 módulos · 12 unidades en total"
+formato: "Online en vivo"
+fechas: "A confirmar"
+precios:
+  ars:
+    general: "$ 2.250.000"
+    comunidad: "$ 562.500"
+    asesoria: "$ 226.500"
+  usd:
+    general: "USD 1.500"
+    comunidad: "USD 375"
+    asesoria: "USD 150"
 orden: 0
 destacado: true
 publicado: true
@@ -58,10 +69,6 @@ Cursada **100% online** con clases en vivo.
 - Plantillas de planificación de vuelo.
 - Checklist normativo argentino.
 - Certificado de participación oficial de EQUIPAR.
-
-## Inversión
-
-Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## ¿Necesitás procesar imágenes ya?
 

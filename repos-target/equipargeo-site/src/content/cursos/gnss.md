@@ -1,10 +1,21 @@
 ---
 programa: gnss
 titulo: "Programa completo GNSS"
-descripcion: "Itinerario de formación GNSS en 3 módulos: fundamentos, RTK en campo y post-proceso profesional. Capacitación integral para profesionales del territorio que trabajan con receptores satelitales."
+descripcion: "Itinerario de formación GNSS en 3 módulos: fundamentos, RTK en campo y post-proceso profesional. Formación completa para agrimensores, topógrafos e ingenieros que trabajan con receptores satelitales."
 esPrograma: true
 modalidad: online
 duracion: "3 módulos · 12 unidades en total"
+formato: "Online en vivo"
+fechas: "A confirmar"
+precios:
+  ars:
+    general: "$ 1.125.000"
+    comunidad: "$ 281.250"
+    asesoria: "$ 112.500"
+  usd:
+    general: "USD 750"
+    comunidad: "USD 186"
+    asesoria: "USD 75"
 orden: 0
 destacado: true
 publicado: true
@@ -72,14 +83,6 @@ Cursada **100% online** con clases en vivo, grabaciones disponibles y atención 
 - Plantillas de informe de campo y gabinete.
 - Datasets reales para practicar post-proceso.
 - Certificado de participación oficial de EQUIPAR.
-
-## Inversión
-
-Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
-
-## Próximas fechas
-
-Las próximas fechas se publican en agenda y se anuncian por WhatsApp a quienes hayan pre-inscripto. Consultá disponibilidad si querés sumarte a la próxima cohorte.
 
 ## ¿Listo para sumarte?
 

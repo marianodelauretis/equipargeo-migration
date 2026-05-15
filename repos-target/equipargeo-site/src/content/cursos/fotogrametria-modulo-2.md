@@ -4,7 +4,18 @@ titulo: "Módulo 2 — Captura de Datos y Fotogrametría Aplicada"
 descripcion: "Planificá y ejecutá vuelos técnicos. GSD, solapes, puntos de control y cómo capturar imágenes de calidad para topografía."
 modulo: 2
 modalidad: online
-duracion: "4 unidades"
+duracion: "2 jornadas (4h c/u)"
+formato: "Online en vivo"
+fechas: "A confirmar"
+precios:
+  ars:
+    general: "$ 750.000"
+    comunidad: "$ 187.500"
+    asesoria: "$ 75.500"
+  usd:
+    general: "USD 500"
+    comunidad: "USD 125"
+    asesoria: "USD 50"
 orden: 2
 publicado: true
 requisitos:
@@ -36,14 +47,6 @@ Para quienes ya operan drones con seguridad y necesitan dar el salto al **uso fo
 - Calculadora GSD (Excel).
 - Especificaciones técnicas comparadas de drones más usados.
 - Certificado de participación oficial de EQUIPAR.
-
-## Modalidad y duración
-
-Cursada online con clases en vivo.
-
-## Inversión
-
-Consultá precios actualizados y opciones de pago por WhatsApp o completando el formulario de inscripción. Tenemos descuento por programa completo respecto a tomar módulos sueltos.
 
 ## Inscripción
 

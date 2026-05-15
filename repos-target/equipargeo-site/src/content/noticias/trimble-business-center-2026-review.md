@@ -6,10 +6,10 @@ categoria: software-procesamiento
 autor: "Equipo EQUIPAR"
 tags: ["trimble", "tbc", "software", "post-proceso", "infinity", "carlson"]
 cursoRelacionado: /cursos/gnss-modulo-3/
-publicada: true
+publicada: false
 ---
 
-Trimble Business Center sigue siendo el software de referencia para muchos profesionales del territorio en Argentina, especialmente quienes trabajan con instrumental Trimble. La versión 2026 trae cambios importantes en el flujo de trabajo, soporte de hardware nuevo y algunas decisiones de licencia que vale la pena analizar antes de decidir el upgrade.
+Trimble Business Center sigue siendo el software de referencia para muchos agrimensores y topógrafos en Argentina, especialmente quienes trabajan con instrumental Trimble. La versión 2026 trae cambios importantes en el flujo de trabajo, soporte de hardware nuevo y algunas decisiones de licencia que vale la pena analizar antes de decidir el upgrade.
 
 ## Las novedades de TBC 2026
 

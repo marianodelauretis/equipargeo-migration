@@ -9,23 +9,22 @@ const noticias = await getCollection('noticias', ({ data }) => data.publicada);
 const noticiasOrdenadas = noticias.sort((a, b) => b.data.fecha.valueOf() - a.data.fecha.valueOf());
 ---
 <BaseLayout
-  title="Noticias — EQUIPAR"
-  description="Novedades de instrumental GNSS, software de procesamiento, normativa catastral y casos prácticos. Actualizaciones para profesionales del territorio."
+  title="Notas técnicas — EQUIPAR"
+  description="Sección en preparación. Notas sobre instrumental GNSS, sistemas de corrección satelital, IMU, NTRIP y casos prácticos. Primera publicación: mayo 2026."
 >
   <Hero
-    titulo="Novedades para profesionales del territorio"
-    subtitulo="Instrumental, software, normativa y casos prácticos. Lo nuevo que afecta tu trabajo de campo y gabinete."
+    titulo="Notas técnicas"
+    subtitulo="Sección en preparación. Vamos a publicar notas sobre criterios de compra de instrumental GNSS, sistemas de corrección satelital (RTK, NRTK, PPP), uso de IMU, configuración NTRIP en Android, marcos de referencia POSGAR 07 y casos prácticos de campo y gabinete."
     variante="compact"
   />
 
   <div class="container-eg py-8">
-    <Breadcrumb items={[{ href: '/', label: 'Inicio' }, { label: 'Noticias', current: true }]} />
+    <Breadcrumb items={[{ href: '/', label: 'Inicio' }, { label: 'Notas técnicas', current: true }]} />
 
     {noticiasOrdenadas.length === 0 ? (
       <div class="card-eg text-center py-12">
-        <h3 class="mb-3">Próximamente</h3>
-        <p class="text-eg-text-muted">Estamos preparando las primeras notas. Suscribite a las novedades para enterarte cuando publiquemos.</p>
-        <a href="/contacto/" class="btn-eg-secondary mt-4">Avisame cuando publiquen</a>
+        <p class="text-eg-text-muted text-sm mb-2">Primera publicación: mayo de 2026.</p>
+        <a href="https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20quiero%20que%20me%20avisen%20cuando%20publiquen%20las%20notas%20t%C3%A9cnicas" target="_blank" rel="noopener noreferrer" class="btn-eg-primary mt-4">Avisame cuando salgan las primeras notas</a>
       </div>
     ) : (
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
