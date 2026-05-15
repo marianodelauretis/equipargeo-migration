@@ -1,22 +1,534 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-AR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EQUIPAR Tools — En proceso de migración</title>
+  <title>Conversor Lat/Lon a Gauss-Krüger POSGAR07 — EQUIPAR Tools</title>
+  <meta name="description" content="Convertí coordenadas geográficas (latitud/longitud en DMS) a Gauss-Krüger 3° / POSGAR07 GRS80. Detecta faja automáticamente. Aplica prefijo de faja y falso norte.">
+  <meta name="theme-color" content="#18354a">
+  <link rel="canonical" href="https://app.equipargeo.com/posgar07/">
+  <link rel="icon" type="image/svg+xml" href="/shared/favicon.svg">
+  <link rel="manifest" href="/shared/manifest.json">
   <link rel="stylesheet" href="/shared/base.css">
+  <style>
+    #gk-posgar07-tool { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    #gk-posgar07-tool .wrap {
+      background: var(--eg-bg);
+      border: 1px solid var(--eg-borde);
+      border-radius: 16px;
+      box-shadow: var(--eg-shadow);
+      padding: 24px;
+    }
+    #gk-posgar07-tool h2 {
+      margin: 0 0 8px;
+      color: var(--eg-azul);
+      font-size: 1.6rem;
+      line-height: 1.15;
+    }
+    #gk-posgar07-tool .sub {
+      margin: 0 0 16px;
+      color: var(--eg-gris);
+    }
+    #gk-posgar07-tool .card {
+      background: var(--eg-bg-soft);
+      border: 1px solid var(--eg-borde);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    #gk-posgar07-tool .row {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 10px;
+    }
+    @media (max-width: 720px) {
+      #gk-posgar07-tool .row { grid-template-columns: 1fr; }
+    }
+    #gk-posgar07-tool label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--eg-text-muted);
+      margin-bottom: 6px;
+    }
+    #gk-posgar07-tool .soft { color: var(--eg-gris); font-weight: 400; font-size: 0.85em; }
+    #gk-posgar07-tool input[type="number"],
+    #gk-posgar07-tool input[type="text"],
+    #gk-posgar07-tool select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--eg-text);
+    }
+    #gk-posgar07-tool input:focus, #gk-posgar07-tool select:focus {
+      outline: 2px solid #d8e8f7;
+      border-color: #90caf9;
+    }
+    #gk-posgar07-tool .dms {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1.4fr auto 1fr;
+      gap: 6px;
+      align-items: center;
+    }
+    #gk-posgar07-tool .dms .sym {
+      color: var(--eg-gris);
+      min-width: 10px;
+      text-align: center;
+      font-weight: 700;
+    }
+    #gk-posgar07-tool .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 14px 0;
+    }
+    #gk-posgar07-tool .btn {
+      display: inline-block;
+      border: 1px solid var(--eg-borde);
+      background: #eef3f9;
+      color: var(--eg-azul);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: filter 0.15s ease;
+    }
+    #gk-posgar07-tool .btn:hover { filter: brightness(0.97); }
+    #gk-posgar07-tool .btn.primary {
+      background: var(--eg-coral);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: var(--eg-shadow-coral);
+    }
+    #gk-posgar07-tool input[type="checkbox"] { accent-color: var(--eg-coral); width: auto; }
+    #gk-posgar07-tool .result-primary {
+      border: 1px solid var(--eg-borde);
+      background: #f8fbff;
+      border-radius: 12px;
+      padding: 14px;
+      margin: 12px 0;
+      box-shadow: 0 6px 16px rgba(0,0,0,.04);
+    }
+    #gk-posgar07-tool .result-primary .badge {
+      display: inline-block;
+      background: linear-gradient(180deg, var(--eg-azul-dark), var(--eg-azul));
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.78rem;
+      border-radius: 999px;
+      padding: 4px 10px;
+      margin-bottom: 10px;
+    }
+    #gk-posgar07-tool input[readonly] { background: #fffdfd; }
+    #gk-posgar07-tool .emph-field label {
+      color: var(--eg-azul);
+      font-weight: 900;
+      letter-spacing: 0.2px;
+    }
+    #gk-posgar07-tool .copy-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: stretch;
+    }
+    #gk-posgar07-tool #out_y_fmt, #gk-posgar07-tool #out_x_fmt {
+      background: #fff7ed;
+      border: 2px solid var(--eg-coral);
+      color: var(--eg-text);
+      font-weight: 800;
+      font-size: 1.1rem;
+      padding: 14px 12px;
+      border-radius: 12px;
+      box-shadow: 0 0 0 3px rgba(240,78,78,.12);
+    }
+    #gk-posgar07-tool #out_y_fmt:focus, #gk-posgar07-tool #out_x_fmt:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(240,78,78,.22);
+    }
+    #gk-posgar07-tool .copy-btn {
+      width: 100%;
+      text-align: center;
+      border: 1px solid var(--eg-borde);
+      background: #eef3f9;
+      color: var(--eg-azul);
+      font-weight: 800;
+      padding: 12px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: filter 0.15s ease, transform 0.05s ease;
+    }
+    #gk-posgar07-tool .copy-btn:hover { filter: brightness(0.97); }
+    #gk-posgar07-tool .copy-btn:active { transform: translateY(1px); }
+    #gk-posgar07-tool .info {
+      margin-top: 10px;
+      font-weight: 700;
+      color: var(--eg-text);
+      font-size: 0.92rem;
+    }
+    #gk-posgar07-tool .hint {
+      color: var(--eg-gris);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+    #gk-posgar07-tool details {
+      margin-top: 12px;
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      background: #fff;
+      overflow: hidden;
+    }
+    #gk-posgar07-tool summary {
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--eg-azul);
+    }
+    #gk-posgar07-tool details[open] summary {
+      border-bottom: 1px solid var(--eg-borde);
+      background: var(--eg-bg-soft);
+    }
+    #gk-posgar07-tool details > div {
+      padding: 12px 16px;
+      color: var(--eg-text-muted);
+      line-height: 1.55;
+      font-size: 0.94rem;
+    }
+    #gk-posgar07-tool details ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    #gk-posgar07-tool details li { margin-bottom: 6px; }
+    @media (max-width: 600px) {
+      #gk-posgar07-tool #out_y_fmt, #gk-posgar07-tool #out_x_fmt {
+        font-size: 1.15rem; padding: 16px 14px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <a href="/">← Herramientas EQUIPAR</a>
+  <header class="eg-topbar">
+    <div class="eg-topbar-inner">
+      <a class="eg-brand" href="/"><span class="eg-brand-dot"></span> EQUIPAR Tools</a>
+      <nav class="eg-nav" aria-label="Principal">
+        <a href="/">Inicio</a>
+        <a href="https://equipargeo.com/cursos/">Cursos</a>
+        <a href="https://equipargeo.com/contacto/">Contacto</a>
+      </nav>
+    </div>
   </header>
-  <main>
-    <h1>Herramienta en proceso de migración</h1>
-    <p>Esta herramienta está siendo migrada desde WordPress. Pronto estará disponible aquí.</p>
-    <p><a href="https://equipargeo.com">Mientras tanto, visitá equipargeo.com</a></p>
+
+  <main class="eg-main">
+    <div class="eg-page-header">
+      <nav class="eg-breadcrumb" aria-label="Migas"><a href="/">EQUIPAR Tools</a> · Conversor POSGAR07</nav>
+    </div>
+
+    <section id="gk-posgar07-tool">
+      <div class="wrap">
+        <h2>Coordenadas Geográficas → Gauss-Krüger (POSGAR 07)</h2>
+        <p class="sub">
+          Conversión de coordenadas utilizando <strong>POSGAR 07</strong> – Elipsoide <strong>GRS80</strong>, proyección
+          <strong>Gauss-Krüger 3°</strong>, <strong>k₀=1</strong>. Resultados parciales referidos en el eje Y desde el meridiano central, eje X desde el ecuador.<em> Se indican los resultados finales con su respectivo incremento en norte y este junto al prefijo de la faja correspondiente.</em>
+        </p>
+        <div class="card">
+          <div class="row">
+            <div class="col">
+              <label>Latitud (DMS)</label>
+              <div class="dms">
+                <input id="lat_d" placeholder="34" step="1" type="number"/><span class="sym">°</span>
+                <input id="lat_m" placeholder="40" step="1" type="number"/><span class="sym">′</span>
+                <input id="lat_s" placeholder="20.000000" step="0.0000001" type="number"/><span class="sym">″</span>
+                <select id="lat_h"><option selected value="S">S</option><option value="N">N</option></select>
+              </div>
+            </div>
+            <div class="col">
+              <label>Longitud (DMS)</label>
+              <div class="dms">
+                <input id="lon_d" placeholder="60" step="1" type="number"/><span class="sym">°</span>
+                <input id="lon_m" placeholder="22" step="1" type="number"/><span class="sym">′</span>
+                <input id="lon_s" placeholder="20.000000" step="0.0000001" type="number"/><span class="sym">″</span>
+                <select id="lon_h"><option selected value="O">O</option><option value="E">E</option></select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label>Faja <span class="soft">(detectada automáticamente)</span></label>
+              <select aria-label="Faja detectada automáticamente" id="gk_faja">
+                <option value="1">1 · 72°O</option><option value="2">2 · 69°O</option><option value="3">3 · 66°O</option>
+                <option value="4">4 · 63°O</option><option selected value="5">5 · 60°O</option><option value="6">6 · 57°O</option><option value="7">7 · 54°O</option>
+              </select>
+            </div>
+            <div class="col">
+              <label>Meridiano central personalizado (°) <span class="soft">(opcional)</span></label>
+              <input id="gk_cm_custom" placeholder="ej.: -58.300000" step="0.000001" type="number"/>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" id="btn_convertir_gk">Convertir a GK (X,Y)</button>
+            <button class="btn" id="btn_limpiar_gk">Limpiar</button>
+          </div>
+          <div class="result-primary" id="gk_result_primary">
+            <div class="badge">Resultados parciales</div>
+            <div class="row">
+              <div class="col">
+                <label>Coordenada Y — Este (m) <span class="soft">(sin falsos)</span></label>
+                <input id="out_y" placeholder="Y" readonly type="text"/>
+              </div>
+              <div class="col">
+                <label>Coordenada X — Norte (m) <span class="soft">(sin falsos)</span></label>
+                <input id="out_x" placeholder="X" readonly type="text"/>
+              </div>
+            </div>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--eg-borde);margin:14px 0"/>
+          <div class="row">
+            <div class="col">
+              <label><input checked id="opt_prefijo" type="checkbox"/> Prefijo de faja en Y (Y' = faja×1 000 000 + Y)</label>
+              <label style="display:block;margin-top:8px;"><input checked id="opt_fn" type="checkbox"/> Aplicar Falso Norte</label>
+              <input id="val_fn" placeholder="10000000" step="1" type="number" value="10000000"/>
+            </div>
+            <div class="col">
+              <label style="display:block;">Aplicar Falso Este</label>
+              <input id="val_fe" placeholder="p.ej. 9000000" step="1" type="number" value="0"/>
+            </div>
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <div class="col emph-field">
+              <label for="out_y_fmt">Coordenada Y — Este</label>
+              <div class="copy-stack">
+                <input id="out_y_fmt" placeholder="Coordenada Y — Este" readonly type="text"/>
+                <button class="copy-btn" data-target="out_y_fmt" type="button">Copiar</button>
+              </div>
+            </div>
+            <div class="col emph-field">
+              <label for="out_x_fmt">Coordenada X — Norte</label>
+              <div class="copy-stack">
+                <input id="out_x_fmt" placeholder="Coordenada X — Norte" readonly type="text"/>
+                <button class="copy-btn" data-target="out_x_fmt" type="button">Copiar</button>
+              </div>
+            </div>
+          </div>
+          <div class="info" id="out_info"></div>
+          <details>
+            <summary>Notas técnicas</summary>
+            <div>
+              <ul>
+                <li><strong>Marco / Datum:</strong> POSGAR 07 / SIRGAS, elipsoide <strong>GRS80</strong> (a=6378137.0 m; 1/f=298.257222101).</li>
+                <li><strong>Proyección:</strong> Transverse Mercator (Gauss-Krüger) de <strong>3°</strong>, <strong>k₀=1</strong>.</li>
+                <li><strong>Fajas:</strong> 1…7 con meridianos centrales −72°, −69°, −66°, −63°, −60°, −57°, −54°. La faja se <em>detecta por longitud</em>.</li>
+                <li><strong>Resultado base "sin falsos":</strong> <em>Y</em> desde el meridiano central (negativa al Oeste, positiva al Este) y <em>X</em> desde el ecuador (en el hemisferio Sur resulta negativa).</li>
+                <li><strong>Formatos opcionales:</strong> <em>Prefijo de faja en Y</em> (Y'=faja×1 000 000+Y), <em>Falso Norte</em> (típicamente +10 000 000 m en Sur) y <em>Falso Este</em> (según el usuario; p.ej. 9 000 000 m).</li>
+                <li><strong>Entrada DMS:</strong> 0 ≤ min,seg &lt; 60. Los hemisferios <em>S</em>/<em>O</em> invierten el signo. El cálculo redondea salidas a 0.001 m para visualización.</li>
+                <li><strong>Uso:</strong> conversión "instantánea" para campo u oficina. Para documentación oficial, verificá con tu software de referencia.</li>
+              </ul>
+            </div>
+          </details>
+          <p class="hint" style="margin-top:10px;">
+            <strong>¿Por qué vienen tildadas estas opciones?</strong> En Argentina es frecuente:<br/>
+            (1) usar <em>prefijo de faja en Y</em> para evitar ambigüedades entre fajas,<br/>
+            (2) aplicar <em>Falso Norte = +10 000 000 m</em> para mantener <em>X</em> positivo en el hemisferio Sur.
+            Muchos controladores esperan este formato.
+          </p>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer>
-    <p>EQUIPAR · <a href="https://equipargeo.com">equipargeo.com</a></p>
+
+  <footer class="eg-footer">
+    <div class="eg-footer-inner">
+      <div>© EQUIPAR · Herramienta gratuita</div>
+      <div><a href="https://equipargeo.com/">Ir al sitio principal</a></div>
+    </div>
   </footer>
+
+  <script>
+// ===== Geográficas (DMS) → Gauss-Krüger (POSGAR07 / GRS80, k0=1) =====
+(function(){
+  const a  = 6378137.0;
+  const f  = 1/298.257222101;
+  const e2 = f*(2-f);
+  const ep2 = e2/(1-e2);
+  const k0 = 1.0;
+
+  const toRad = d => d*Math.PI/180;
+
+  function normNum(v){
+    if (v===undefined || v===null) return NaN;
+    return parseFloat(String(v).replace(',', '.'));
+  }
+
+  function dmsToDec(d,m,s,hem, etiqueta){
+    d = normNum(d); m = normNum(m); s = normNum(s);
+    if([d,m,s].some(v => Number.isNaN(v))) {
+      alert(`Completá ${etiqueta} (grados, minutos y segundos).`);
+      return null;
+    }
+    if(m < 0 || m >= 60 || s < 0 || s >= 60){
+      alert(`${etiqueta}: minutos y segundos deben estar en el rango 0 ≤ min,sec < 60.`);
+      return null;
+    }
+    let dec = Math.abs(d) + Math.abs(m)/60 + Math.abs(s)/3600;
+    if(hem==='S' || hem==='O' || hem==='W') dec = -dec;
+    if (d < 0) dec = -dec;
+    return dec;
+  }
+
+  function fajaFromLon(lon){
+    const f = Math.round((lon + 75)/3);
+    return Math.min(7, Math.max(1,f));
+  }
+  function lon0FromFaja(f){ return -75 + 3*parseInt(f,10); }
+  function lam0FromParams(faja, cmCustomDeg){
+    const cmDeg = (cmCustomDeg!==null && cmCustomDeg!=='' && !Number.isNaN(Number(cmCustomDeg)))
+      ? parseFloat(cmCustomDeg) : lon0FromFaja(faja);
+    return toRad(cmDeg);
+  }
+
+  function meridionalArc(phi){
+    const e4 = e2*e2, e6 = e4*e2;
+    return a*((1 - e2/4 - 3*e4/64 - 5*e6/256)*phi
+      - (3*e2/8 + 3*e4/32 + 45*e6/1024)*Math.sin(2*phi)
+      + (15*e4/256 + 45*e6/1024)*Math.sin(4*phi)
+      - (35*e6/3072)*Math.sin(6*phi));
+  }
+
+  function LLtoGK(lat, lon, faja, cmCustomDeg){
+    const phi  = toRad(lat);
+    const lam  = toRad(lon);
+    const lam0 = lam0FromParams(faja, cmCustomDeg);
+
+    const N = a / Math.sqrt(1 - e2*Math.sin(phi)**2);
+    const T = Math.tan(phi)**2;
+    const C = ep2 * Math.cos(phi)**2;
+    const A = Math.cos(phi) * (lam - lam0);
+    const M = meridionalArc(phi);
+
+    const Y = k0 * N * (A + (1 - T + C)*A**3/6 + (5 - 18*T + T*T + 72*C - 58*ep2)*A**5/120);
+    const X = k0 * (M + N*Math.tan(phi)*(A**2/2 + (5 - T + 9*C + 4*C*C)*A**4/24 + (61 - 58*T + T*T + 600*C - 330*ep2)*A**6/720));
+    return {X, Y};
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    const $   = id => document.getElementById(id);
+    const fmt = v => (Math.round(v*1000)/1000).toLocaleString('es-AR');
+
+    const resultBox = document.getElementById('gk_result_primary') ||
+                      document.querySelector('#gk-posgar07-tool .result-primary');
+
+    if ($('opt_prefijo')) $('opt_prefijo').checked = true;
+    if ($('opt_fn'))      $('opt_fn').checked      = true;
+    if ($('val_fn'))      $('val_fn').value        = 10000000;
+    if ($('val_fe'))      $('val_fe').value        = 0;
+
+    if ($('gk_faja')) $('gk_faja').disabled = true;
+
+    let lastBase = null;
+
+    function leerDMS(){
+      const lat = dmsToDec(normNum($('lat_d').value), normNum($('lat_m').value), normNum($('lat_s').value), $('lat_h').value, 'Latitud');
+      if (lat === null) return null;
+      const lon = dmsToDec(normNum($('lon_d').value), normNum($('lon_m').value), normNum($('lon_s').value), $('lon_h').value, 'Longitud');
+      if (lon === null) return null;
+
+      if (Math.abs(lat)>90 || Math.abs(lon)>180){
+        alert('Revisá rangos: lat ∈ [-90,90], lon ∈ [-180,180].');
+        return null;
+      }
+      return {lat, lon};
+    }
+
+    function aplicarFormatos(baseX, baseY, faja){
+      const prefijo = $('opt_prefijo')?.checked;
+      const usarFN  = $('opt_fn')?.checked;
+      const FN = parseFloat($('val_fn')?.value) || 0;
+      const FE = parseFloat($('val_fe')?.value) || 0;
+
+      const yFmt = baseY + FE + (prefijo ? faja*1000000 : 0);
+      const xFmt = baseX + (usarFN ? FN : 0);
+
+      $('out_y_fmt') && ($('out_y_fmt').value = fmt(yFmt));
+      $('out_x_fmt') && ($('out_x_fmt').value = fmt(xFmt));
+    }
+
+    $('btn_convertir_gk')?.addEventListener('click', ()=>{
+      const dms = leerDMS();
+      if (!dms) return;
+
+      const {lat, lon} = dms;
+
+      const faja = fajaFromLon(lon);
+      if ($('gk_faja')) $('gk_faja').value = String(faja);
+
+      const cmCustom = $('gk_cm_custom')?.value;
+
+      const {X, Y} = LLtoGK(lat, lon, faja, cmCustom);
+
+      $('out_x').value = fmt(X);
+      $('out_y').value = fmt(Y);
+
+      lastBase = {X, Y, faja};
+      aplicarFormatos(X, Y, faja);
+
+      const cm = (cmCustom!=='' && !Number.isNaN(Number(cmCustom))) ? parseFloat(cmCustom) : lon0FromFaja(faja);
+      $('out_info').textContent = `Faja utilizada: ${faja} (meridiano central ${cm.toFixed(6)}°). GRS80 · k₀=1. Base sin falsos.`;
+
+      resultBox?.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+
+    $('btn_limpiar_gk')?.addEventListener('click', ()=>{
+      ['lat_d','lat_m','lat_s','lon_d','lon_m','lon_s','gk_cm_custom',
+       'out_x','out_y','out_x_fmt','out_y_fmt'].forEach(id=>{ const el=$(id); if(el) el.value=''; });
+
+      $('lat_h').value='S'; $('lon_h').value='O';
+      if ($('gk_faja')) { $('gk_faja').value=''; $('gk_faja').disabled = true; }
+
+      if ($('opt_prefijo')) $('opt_prefijo').checked = true;
+      if ($('opt_fn'))      $('opt_fn').checked      = true;
+      if ($('val_fn'))      $('val_fn').value        = 10000000;
+      if ($('val_fe'))      $('val_fe').value        = 0;
+
+      $('out_info').textContent='';
+      lastBase = null;
+    });
+
+    ['opt_prefijo','opt_fn','val_fn','val_fe'].forEach(id=>{
+      $(id)?.addEventListener('input', ()=>{
+        if (!lastBase) return;
+        aplicarFormatos(lastBase.X, lastBase.Y, lastBase.faja);
+      });
+    });
+
+    function copyToClipboard(targetId){
+      const el = document.getElementById(targetId);
+      if(!el || !el.value){ return; }
+      const text = el.value;
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(()=> feedback(targetId));
+      }else{
+        el.focus(); el.select();
+        try { document.execCommand('copy'); feedback(targetId); } catch(e){}
+      }
+    }
+    function feedback(targetId){
+      const btn = document.querySelector('#gk-posgar07-tool .copy-btn[data-target="'+targetId+'"]');
+      if(!btn) return;
+      const prev = btn.textContent;
+      btn.textContent = 'Copiado';
+      btn.disabled = true;
+      setTimeout(()=>{ btn.textContent = prev; btn.disabled = false; }, 1200);
+    }
+    document.querySelectorAll('#gk-posgar07-tool .copy-btn').forEach(btn=>{
+      btn.addEventListener('click', ()=> copyToClipboard(btn.dataset.target));
+    });
+  });
+})();
+  </script>
 </body>
 </html>

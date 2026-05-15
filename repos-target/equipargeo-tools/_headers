@@ -2,8 +2,14 @@
   X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(self)
-  Cache-Control: public, max-age=300
+  Permissions-Policy: geolocation=(self), clipboard-write=(self)
+  Cache-Control: public, max-age=600
 
 /shared/*
   Cache-Control: public, max-age=31536000, immutable
+
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+
+/manifest.json
+  Cache-Control: public, max-age=3600

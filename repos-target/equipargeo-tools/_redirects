@@ -1,0 +1,8 @@
+# Redirects para URLs viejas del WP (cuando el sitio principal haga cutover)
+# Estos redirects los necesita app.equipargeo.com porque las URLs viejas estaban en equipargeo.com
+
+# Las URLs viejas las maneja el sitio principal (equipargeo.com), no este subdominio.
+# Este archivo se mantiene para futuras redirecciones internas si las hay.
+
+# Fallback 404 → home
+/*    /    200

@@ -1,22 +1,233 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-AR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EQUIPAR Tools — En proceso de migración</title>
+  <title>Consulta de faja Gauss-Krüger — EQUIPAR Tools</title>
+  <meta name="description" content="Calculá si tu punto está a más de ±1° del meridiano central de la faja Gauss-Krüger argentina (fajas 1 a 7). Usa geolocalización o carga manual.">
+  <meta name="theme-color" content="#18354a">
+  <link rel="canonical" href="https://app.equipargeo.com/faja/">
+  <link rel="icon" type="image/svg+xml" href="/shared/favicon.svg">
+  <link rel="manifest" href="/shared/manifest.json">
   <link rel="stylesheet" href="/shared/base.css">
+  <style>
+    #faja-local-tool { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    #faja-local-tool .wrap {
+      background: var(--eg-bg);
+      border: 1px solid var(--eg-borde);
+      border-radius: 16px;
+      box-shadow: var(--eg-shadow);
+      padding: 24px;
+    }
+    #faja-local-tool h2 {
+      margin: 0 0 8px;
+      color: var(--eg-azul);
+      font-size: 1.6rem;
+      line-height: 1.15;
+    }
+    #faja-local-tool .sub {
+      margin: 0 0 16px;
+      color: var(--eg-gris);
+    }
+    #faja-local-tool .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    #faja-local-tool .btn {
+      display: inline-block;
+      border: 1px solid var(--eg-borde);
+      background: #eef3f9;
+      color: var(--eg-azul);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: filter 0.15s ease, transform 0.05s ease;
+    }
+    #faja-local-tool .btn:hover { filter: brightness(0.97); }
+    #faja-local-tool .btn:active { transform: translateY(1px); }
+    #faja-local-tool .btn.primary {
+      background: var(--eg-coral);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: var(--eg-shadow-coral);
+    }
+    #faja-local-tool .btn.primary:hover { background: var(--eg-coral-hover); }
+    #faja-local-tool .manual {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    #faja-local-tool .small {
+      flex: 1 1 100%;
+      font-size: 0.9rem;
+      color: var(--eg-text-muted);
+      margin: 0;
+    }
+    #faja-local-tool .manual input {
+      flex: 1 1 200px;
+      padding: 10px 12px;
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--eg-text);
+    }
+    #faja-local-tool .manual input:focus {
+      outline: 2px solid #d8e8f7;
+      border-color: #90caf9;
+    }
+    #faja-local-tool .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+      margin-top: 16px;
+    }
+    @media (max-width: 700px) {
+      #faja-local-tool .grid { grid-template-columns: 1fr; }
+    }
+    #faja-local-tool .card {
+      background: var(--eg-bg-soft);
+      border: 1px solid var(--eg-borde);
+      border-radius: 12px;
+      padding: 14px;
+      min-height: 80px;
+    }
+    #faja-local-tool .out {
+      color: var(--eg-text);
+      font-size: 0.96rem;
+    }
+    #faja-local-tool .out strong { color: var(--eg-azul); }
+    #faja-local-tool .hint {
+      color: var(--eg-text-muted);
+      font-size: 0.9rem;
+    }
+    #faja-local-tool .error {
+      color: #b91c1c;
+      font-size: 0.92rem;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <a href="/">← Herramientas EQUIPAR</a>
+  <header class="eg-topbar">
+    <div class="eg-topbar-inner">
+      <a class="eg-brand" href="/"><span class="eg-brand-dot"></span> EQUIPAR Tools</a>
+      <nav class="eg-nav" aria-label="Principal">
+        <a href="/">Inicio</a>
+        <a href="https://equipargeo.com/cursos/">Cursos</a>
+        <a href="https://equipargeo.com/contacto/">Contacto</a>
+      </nav>
+    </div>
   </header>
-  <main>
-    <h1>Herramienta en proceso de migración</h1>
-    <p>Esta herramienta está siendo migrada desde WordPress. Pronto estará disponible aquí.</p>
-    <p><a href="https://equipargeo.com">Mientras tanto, visitá equipargeo.com</a></p>
+
+  <main class="eg-main">
+    <div class="eg-page-header">
+      <nav class="eg-breadcrumb" aria-label="Migas"><a href="/">EQUIPAR Tools</a> · Consulta de faja</nav>
+    </div>
+
+    <section id="faja-local-tool">
+      <div class="wrap">
+        <h2>¿Conviene usar una faja local?</h2>
+        <p class="sub">Calculá si tu punto está a más de ±1° del meridiano central de la faja Gauss-Krüger en Argentina (fajas 1 a 7).</p>
+        <div class="actions">
+          <button class="btn primary" id="btnUbicacion" type="button">Obtener mi ubicación</button>
+          <button class="btn" id="btnAnalizar" type="button">Analizar faja Gauss-Krüger</button>
+        </div>
+        <div class="manual">
+          <label class="small" for="faja_lon_manual">O cargá tu longitud (decimal, Oeste negativa):</label>
+          <input id="faja_lon_manual" inputmode="decimal" placeholder="-58.500000" step="0.000001" type="number"/>
+          <button class="btn" id="btnUsarManual" type="button">Usar esta longitud</button>
+        </div>
+        <div class="grid">
+          <div class="card">
+            <div aria-live="polite" class="out" id="faja_coordenadas"></div>
+            <div aria-live="polite" class="hint" id="faja_detalle" style="margin-top:6px"></div>
+            <div class="error" id="faja_error" role="alert"></div>
+          </div>
+          <div class="card">
+            <div aria-live="polite" class="out" id="faja_resultado"></div>
+            <div aria-live="polite" class="hint" id="faja_sugerencia" style="margin-top:6px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer>
-    <p>EQUIPAR · <a href="https://equipargeo.com">equipargeo.com</a></p>
+
+  <footer class="eg-footer">
+    <div class="eg-footer-inner">
+      <div>© EQUIPAR · Herramienta gratuita</div>
+      <div><a href="https://equipargeo.com/">Ir al sitio principal</a></div>
+    </div>
   </footer>
+
+  <script>
+(function(){
+  let lat=null, lon=null;
+  const FAJAS=[{faja:1,centro:-72},{faja:2,centro:-69},{faja:3,centro:-66},{faja:4,centro:-63},{faja:5,centro:-60},{faja:6,centro:-57},{faja:7,centro:-54}];
+  const $=id=>document.getElementById(id);
+
+  function toDMS(x,t){const a=Math.abs(x),g=Math.floor(a),mD=(a-g)*60,m=Math.floor(mD),s=((mD-m)*60).toFixed(2),h=t==='lat'?(x>=0?'N':'S'):(x>=0?'E':'O');return `${g}° ${m}' ${s}" ${h}`;}
+  function toDMSabs(x){const a=Math.abs(x),g=Math.floor(a),mD=(a-g)*60,m=Math.floor(mD),s=((mD-m)*60).toFixed(2);return `${g}° ${m}' ${s}"`;}
+
+  function reset(){['faja_error','faja_resultado','faja_sugerencia','faja_coordenadas','faja_detalle'].forEach(id=>{const el=$(id);if(el){el.textContent='';el.innerHTML='';}});}
+
+  function obtenerUbicacion(){
+    reset();
+    if(!navigator.geolocation){$('faja_error').textContent='Tu navegador no soporta geolocalización.';return;}
+    navigator.geolocation.getCurrentPosition(
+      pos=>{
+        lat=pos.coords.latitude; lon=pos.coords.longitude;
+        $('faja_coordenadas').innerHTML=`Latitud: <strong>${toDMS(lat,'lat')}</strong> &nbsp;·&nbsp; Longitud: <strong>${toDMS(lon,'lon')}</strong>`;
+        $('faja_detalle').textContent='Ubicación capturada. Ahora presioná Analizar faja Gauss-Krüger.';
+      },
+      ()=>{ $('faja_error').textContent='No se pudo obtener la ubicación. Verificá permisos o cargá la longitud manualmente.'; }
+    );
+  }
+
+  function usarManual(){
+    reset();
+    const v=parseFloat($('faja_lon_manual').value);
+    if(Number.isNaN(v)){ $('faja_error').textContent='Ingresá una longitud válida en decimal (ej: -58.5).'; return; }
+    lon=v;
+    $('faja_coordenadas').innerHTML=`Longitud manual: <strong>${toDMS(lon,'lon')}</strong>`;
+    $('faja_detalle').textContent='Listo. Ahora presioná Analizar faja Gauss-Krüger.';
+  }
+
+  function analizar(){
+    $('faja_resultado').textContent='';
+    $('faja_sugerencia').textContent='';
+    if(lon===null){$('faja_resultado').textContent='Primero obtené tu ubicación o cargá una longitud.';return;}
+
+    const lonO=-Math.abs(lon);
+    const z=FAJAS.find(f=>lonO>=f.centro-1.5 && lonO<f.centro+1.5);
+    if(!z){$('faja_resultado').textContent='Estás fuera del rango de fajas Gauss-Krüger argentinas (1–7).';return;}
+
+    const dif=Math.abs(lonO-z.centro);
+    $('faja_resultado').innerHTML=`Faja ${z.faja} (meridiano central ${Math.abs(z.centro)}°O). Diferencia: <strong>${toDMSabs(dif)}</strong>`;
+
+    if(dif>1){
+      $('faja_sugerencia').innerHTML=`Recomendación: usar faja local con meridiano central en <strong>${toDMS(lonO,'lon')}</strong>.<br>Nombre sugerido: <strong>Faja Local ${Math.abs(lonO).toFixed(2)}°O</strong>.`;
+    }else{
+      $('faja_sugerencia').textContent='Dentro de ±1° del meridiano central. Podés usar la faja estándar sin faja local.';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function(){
+    const root=document.getElementById('faja-local-tool'); if(!root) return;
+    const ub=document.getElementById('btnUbicacion');
+    const an=document.getElementById('btnAnalizar');
+    const man=document.getElementById('btnUsarManual');
+    if(ub) ub.addEventListener('click', obtenerUbicacion);
+    if(an) an.addEventListener('click', analizar);
+    if(man) man.addEventListener('click', usarManual);
+  });
+})();
+  </script>
 </body>
 </html>

@@ -1,35 +1,152 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-AR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EQUIPAR Tools — Herramientas para profesionales del territorio</title>
-  <meta name="description" content="Herramientas gratuitas para agrimensores, topógrafos y profesionales del territorio. POSGAR07, DXF, puntos intermedios, faja GNSS.">
+  <meta name="description" content="Herramientas gratuitas para agrimensores, topógrafos y profesionales del territorio. Conversor POSGAR07, faja GNSS, puntos intermedios, CSV/TXT a DXF.">
+  <meta name="theme-color" content="#18354a">
   <link rel="canonical" href="https://app.equipargeo.com/">
-  <link rel="stylesheet" href="/shared/base.css">
+  <link rel="icon" type="image/svg+xml" href="/shared/favicon.svg">
   <link rel="manifest" href="/shared/manifest.json">
+  <link rel="stylesheet" href="/shared/base.css">
+  <meta property="og:title" content="EQUIPAR Tools — Herramientas para profesionales del territorio">
+  <meta property="og:description" content="Herramientas gratuitas: conversor POSGAR07, faja GNSS, puntos intermedios, CSV a DXF.">
+  <meta property="og:url" content="https://app.equipargeo.com/">
+  <meta property="og:type" content="website">
+  <style>
+    .eg-hero {
+      text-align: center;
+      padding: 32px 16px 24px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .eg-hero h1 {
+      font-size: clamp(1.7rem, 4vw, 2.2rem);
+      color: var(--eg-azul);
+      margin: 0 0 12px;
+      line-height: 1.15;
+    }
+    .eg-hero p {
+      color: var(--eg-text-muted);
+      font-size: 1.05rem;
+      margin: 0 0 20px;
+    }
+    .eg-tools-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    .eg-tool-card {
+      background: var(--eg-bg);
+      border: 1px solid var(--eg-borde);
+      border-radius: 14px;
+      padding: 22px 20px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: var(--eg-shadow);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .eg-tool-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.1);
+      border-color: var(--eg-coral);
+      text-decoration: none;
+    }
+    .eg-tool-card .eg-tool-badge {
+      display: inline-block;
+      background: var(--eg-coral);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 999px;
+      width: max-content;
+      margin-bottom: 4px;
+    }
+    .eg-tool-card h2 {
+      margin: 0;
+      color: var(--eg-azul);
+      font-size: 1.15rem;
+      line-height: 1.25;
+    }
+    .eg-tool-card p {
+      margin: 0;
+      color: var(--eg-text-muted);
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+    .eg-tool-arrow {
+      margin-top: auto;
+      padding-top: 10px;
+      color: var(--eg-coral);
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <a href="https://equipargeo.com">← Volver a equipargeo.com</a>
+  <header class="eg-topbar">
+    <div class="eg-topbar-inner">
+      <a class="eg-brand" href="/"><span class="eg-brand-dot"></span> EQUIPAR Tools</a>
+      <nav class="eg-nav" aria-label="Principal">
+        <a href="https://equipargeo.com/">Sitio principal</a>
+        <a href="https://equipargeo.com/cursos/">Cursos</a>
+        <a href="https://equipargeo.com/contacto/">Contacto</a>
+      </nav>
+    </div>
   </header>
 
-  <main>
-    <h1>EQUIPAR Tools</h1>
-    <p>Herramientas gratuitas para profesionales del territorio.</p>
+  <main class="eg-main">
+    <section class="eg-hero">
+      <h1>Herramientas gratuitas para profesionales del territorio</h1>
+      <p>Conversiones de coordenadas, faja Gauss-Krüger, generación de DXF y más. Funcionan offline, sin instalación, en cualquier dispositivo.</p>
+    </section>
 
-    <ul>
-      <li><a href="/faja/">Consulta de faja GNSS</a></li>
-      <li><a href="/posgar07/">Conversor coordenadas POSGAR07</a></li>
-      <li><a href="/puntos-intermedios/">Generador de puntos intermedios</a></li>
-      <li><a href="/conversor-dxf/">Conversor CSV → DXF R12</a></li>
-      <li><a href="/verificador-angulos/">Verificador ISO de ángulos</a> <em>(próximamente)</em></li>
-      <li><a href="/tin-curvas-nivel/">TIN + Curvas de nivel</a> <em>(próximamente)</em></li>
-    </ul>
+    <div class="eg-tools-grid">
+      <a class="eg-tool-card" href="/posgar07/">
+        <span class="eg-tool-badge">GNSS</span>
+        <h2>Conversor POSGAR07</h2>
+        <p>Coordenadas geográficas (lat/lon en DMS) a Gauss-Krüger 3° / POSGAR07, con prefijo de faja y falso norte opcionales.</p>
+        <span class="eg-tool-arrow">Abrir →</span>
+      </a>
+
+      <a class="eg-tool-card" href="/faja/">
+        <span class="eg-tool-badge">GNSS</span>
+        <h2>Consulta de faja</h2>
+        <p>Detecta automáticamente la faja Gauss-Krüger argentina (1-7) y sugiere faja local si la diferencia con el meridiano central supera ±1°.</p>
+        <span class="eg-tool-arrow">Abrir →</span>
+      </a>
+
+      <a class="eg-tool-card" href="/puntos-intermedios/">
+        <span class="eg-tool-badge">Topografía</span>
+        <h2>Generador de puntos intermedios</h2>
+        <p>Calcula puntos equidistantes entre dos coordenadas proyectadas. Exporta DXF R12 y CSV con la tabla completa.</p>
+        <span class="eg-tool-arrow">Abrir →</span>
+      </a>
+
+      <a class="eg-tool-card" href="/conversor-dxf/">
+        <span class="eg-tool-badge">Procesamiento</span>
+        <h2>CSV/TXT → DXF (R12)</h2>
+        <p>Importa nube de puntos en CSV/TXT, mapea columnas, previsualiza y exporta DXF R12 con capas separadas por código.</p>
+        <span class="eg-tool-arrow">Abrir →</span>
+      </a>
+    </div>
   </main>
 
-  <footer>
-    <p>EQUIPAR · <a href="https://equipargeo.com">equipargeo.com</a></p>
+  <footer class="eg-footer">
+    <div class="eg-footer-inner">
+      <div>© EQUIPAR · Herramientas gratuitas para el territorio</div>
+      <div><a href="https://equipargeo.com/">Ir al sitio principal</a></div>
+    </div>
   </footer>
 </body>
 </html>

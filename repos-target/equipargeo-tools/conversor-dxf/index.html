@@ -1,22 +1,694 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-AR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EQUIPAR Tools — En proceso de migración</title>
+  <title>CSV/TXT a DXF R12 — EQUIPAR Tools</title>
+  <meta name="description" content="Convertí archivos CSV o TXT con nubes de puntos a DXF R12. Mapeá columnas, previsualizá en canvas con zoom/pan, exportá con capas separadas por código.">
+  <meta name="theme-color" content="#18354a">
+  <link rel="canonical" href="https://app.equipargeo.com/conversor-dxf/">
+  <link rel="icon" type="image/svg+xml" href="/shared/favicon.svg">
+  <link rel="manifest" href="/shared/manifest.json">
   <link rel="stylesheet" href="/shared/base.css">
+  <style>
+    .egc2dxf-wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    .egc2dxf-card {
+      background: var(--eg-bg);
+      border: 1px solid var(--eg-borde);
+      border-radius: 16px;
+      box-shadow: var(--eg-shadow);
+      padding: 24px;
+    }
+    .egc2dxf-title {
+      margin: 0 0 8px;
+      color: var(--eg-azul);
+      font-size: 1.6rem;
+      line-height: 1.15;
+    }
+    .egc2dxf-sub {
+      margin: 0 0 16px;
+      color: var(--eg-text-muted);
+      font-size: 0.96rem;
+    }
+    .egc2dxf-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .egc2dxf-col-12 { grid-column: span 12; }
+    .egc2dxf-col-6  { grid-column: span 6; }
+    @media (max-width: 720px) {
+      .egc2dxf-col-6 { grid-column: span 12; }
+    }
+    .egc2dxf-col { display: flex; flex-direction: column; gap: 6px; }
+    .egc2dxf-label {
+      font-size: 0.9rem;
+      color: var(--eg-text-muted);
+      font-weight: 600;
+    }
+    .egc2dxf-input,
+    .egc2dxf-file,
+    .egc2dxf-wrap select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--eg-text);
+    }
+    .egc2dxf-input:focus, .egc2dxf-file:focus {
+      outline: 2px solid #d8e8f7;
+      border-color: #90caf9;
+    }
+    .egc2dxf-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.92rem;
+      color: var(--eg-text);
+      padding: 10px 0;
+    }
+    .egc2dxf-check input { accent-color: var(--eg-coral); }
+    .egc2dxf-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .egc2dxf-hint {
+      color: var(--eg-gris);
+      font-size: 0.85rem;
+    }
+    .egc2dxf-pill {
+      display: inline-block;
+      background: var(--eg-bg-soft);
+      border: 1px solid var(--eg-borde);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 0.82rem;
+      color: var(--eg-text-muted);
+    }
+    .egc2dxf-btn {
+      display: inline-block;
+      border: 1px solid var(--eg-borde);
+      background: #eef3f9;
+      color: var(--eg-azul);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.94rem;
+      transition: filter 0.15s ease;
+    }
+    .egc2dxf-btn:hover { filter: brightness(0.97); }
+    .egc2dxf-btn.egc2dxf-primary {
+      background: var(--eg-coral);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: var(--eg-shadow-coral);
+    }
+    .egc2dxf-preview {
+      margin-top: 8px;
+    }
+    #egc2dxf-plot {
+      width: 100%;
+      height: 380px;
+      background: #0b2232;
+      border-radius: 12px;
+      display: block;
+      border: 1px solid #0f2b3f;
+    }
+    .egc2dxf-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      background: #fff;
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .egc2dxf-table thead th {
+      text-align: left;
+      background: #f2f6fa;
+      padding: 10px;
+      border-bottom: 1px solid var(--eg-borde);
+      color: var(--eg-azul);
+      font-weight: 700;
+    }
+    .egc2dxf-table tbody td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eef2f7;
+      font-family: var(--eg-mono);
+      font-size: 0.88rem;
+    }
+    .egc2dxf-table tbody tr:hover { background: var(--eg-bg-soft); }
+    .egc2dxf-table tbody { display: block; max-height: 400px; overflow-y: auto; }
+    .egc2dxf-table thead, .egc2dxf-table tbody tr { display: table; width: 100%; table-layout: fixed; }
+  </style>
 </head>
 <body>
-  <header>
-    <a href="/">← Herramientas EQUIPAR</a>
+  <header class="eg-topbar">
+    <div class="eg-topbar-inner">
+      <a class="eg-brand" href="/"><span class="eg-brand-dot"></span> EQUIPAR Tools</a>
+      <nav class="eg-nav" aria-label="Principal">
+        <a href="/">Inicio</a>
+        <a href="https://equipargeo.com/cursos/">Cursos</a>
+        <a href="https://equipargeo.com/contacto/">Contacto</a>
+      </nav>
+    </div>
   </header>
-  <main>
-    <h1>Herramienta en proceso de migración</h1>
-    <p>Esta herramienta está siendo migrada desde WordPress. Pronto estará disponible aquí.</p>
-    <p><a href="https://equipargeo.com">Mientras tanto, visitá equipargeo.com</a></p>
+
+  <main class="eg-main">
+    <div class="eg-page-header">
+      <nav class="eg-breadcrumb" aria-label="Migas"><a href="/">EQUIPAR Tools</a> · CSV/TXT a DXF</nav>
+    </div>
+
+    <section aria-label="CSV/TXT a DXF" class="egc2dxf-wrap" id="eg-csv2dxf">
+      <div class="egc2dxf-card">
+        <h1 class="egc2dxf-title">CSV/TXT → DXF (R12)</h1>
+        <p class="egc2dxf-sub">
+          Subí un archivo, vinculá columnas y exportá el DXF con capas separadas por <b>código</b>
+          (Puntos, Texto nombre, Texto código).
+        </p>
+        <div class="egc2dxf-grid">
+          <div class="egc2dxf-col egc2dxf-col-12">
+            <label class="egc2dxf-label" for="egc2dxf-file">Archivo CSV/TXT</label>
+            <input accept=".csv,.txt" class="egc2dxf-file" id="egc2dxf-file" type="file"/>
+            <div class="egc2dxf-row egc2dxf-hint">
+              <span class="egc2dxf-pill">Delimitadores: coma, punto y coma, tab, |</span>
+              <span class="egc2dxf-pill" id="egc2dxf-infoRows"></span>
+            </div>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-6">
+            <label class="egc2dxf-label" for="egc2dxf-colName">Nombre de punto</label>
+            <select class="egc2dxf-input" id="egc2dxf-colName"></select>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-6">
+            <label class="egc2dxf-label" for="egc2dxf-colX">Coordenada X / Este</label>
+            <select class="egc2dxf-input" id="egc2dxf-colX"></select>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-6">
+            <label class="egc2dxf-label" for="egc2dxf-colY">Coordenada Y / Norte</label>
+            <select class="egc2dxf-input" id="egc2dxf-colY"></select>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-6">
+            <label class="egc2dxf-label" for="egc2dxf-colZ">Columna Z / Elevación (opcional)</label>
+            <select class="egc2dxf-input" id="egc2dxf-colZ"></select>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-6">
+            <label class="egc2dxf-label" for="egc2dxf-colCode">Columna Código (opcional)</label>
+            <select class="egc2dxf-input" id="egc2dxf-colCode"></select>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-6">
+            <label class="egc2dxf-label" for="egc2dxf-decSep">Separador decimal</label>
+            <select class="egc2dxf-input" id="egc2dxf-decSep">
+              <option value="dot">Punto 12.34</option>
+              <option value="comma">Coma 12,34</option>
+            </select>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-6">
+            <label class="egc2dxf-check">
+              <input checked id="egc2dxf-hasHeader" type="checkbox"/>
+              La primera fila es cabecera
+            </label>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-6">
+            <label class="egc2dxf-check">
+              <input checked id="egc2dxf-addTextName" type="checkbox"/>
+              Texto nombre de punto
+            </label>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-6">
+            <label class="egc2dxf-check">
+              <input id="egc2dxf-addTextCode" type="checkbox"/>
+              Texto código
+            </label>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-6">
+            <label class="egc2dxf-label" for="egc2dxf-textH">Altura de texto</label>
+            <input class="egc2dxf-input" id="egc2dxf-textH" min="0" step="0.01" type="number" value="1.5"/>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-12">
+            <div class="egc2dxf-row">
+              <button class="egc2dxf-btn" id="egc2dxf-previewBtn" type="button">Ver previsualización</button>
+              <button class="egc2dxf-btn egc2dxf-primary" id="egc2dxf-exportBtn" type="button">Descargar DXF</button>
+              <button class="egc2dxf-btn" id="egc2dxf-measureBtn" type="button">Medir distancia/azimut</button>
+              <button class="egc2dxf-btn" id="egc2dxf-resetMeasureBtn" type="button">Reset medición</button>
+              <button class="egc2dxf-btn" id="egc2dxf-reframeBtn" type="button">Reencuadrar</button>
+              <span class="egc2dxf-hint" id="egc2dxf-status"></span>
+            </div>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-12">
+            <div class="egc2dxf-row" style="gap:8px;align-items:center;margin:8px 0">
+              <label class="egc2dxf-label" for="egc2dxf-rowsLimit" style="margin:0">Filas en tabla</label>
+              <select class="egc2dxf-input" id="egc2dxf-rowsLimit" style="max-width:140px">
+                <option selected value="300">300</option>
+                <option value="1000">1000</option>
+                <option value="5000">5000</option>
+                <option value="0">Todos</option>
+              </select>
+            </div>
+          </div>
+          <div class="egc2dxf-col egc2dxf-col-12 egc2dxf-preview">
+            <div class="egc2dxf-row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
+              <span class="egc2dxf-hint">Previsualización 2D (zoom con rueda, pan arrastrando, doble clic reencuadra)</span>
+              <span class="egc2dxf-pill" id="egc2dxf-prevInfo"></span>
+            </div>
+            <div style="margin-bottom:12px;">
+              <canvas id="egc2dxf-plot"></canvas>
+            </div>
+            <div>
+              <table class="egc2dxf-table" id="egc2dxf-tblPreview">
+                <thead>
+                  <tr><th>#</th><th>X</th><th>Y</th><th>Z</th><th>Nombre</th><th>Código</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer>
-    <p>EQUIPAR · <a href="https://equipargeo.com">equipargeo.com</a></p>
+
+  <footer class="eg-footer">
+    <div class="eg-footer-inner">
+      <div>© EQUIPAR · Herramienta gratuita</div>
+      <div><a href="https://equipargeo.com/">Ir al sitio principal</a></div>
+    </div>
   </footer>
+
+  <script>
+(function(){
+  const rootId='eg-csv2dxf';
+  const $=(s,c=document)=>c.querySelector(s);
+
+  function els(){
+    const r=document.getElementById(rootId); if(!r) return null;
+    return {
+      r,
+      file:$('#egc2dxf-file',r), infoRows:$('#egc2dxf-infoRows',r), hasHeader:$('#egc2dxf-hasHeader',r),
+      colName:$('#egc2dxf-colName',r), colX:$('#egc2dxf-colX',r), colY:$('#egc2dxf-colY',r), colZ:$('#egc2dxf-colZ',r), colCode:$('#egc2dxf-colCode',r),
+      decSep:$('#egc2dxf-decSep',r), addTextName:$('#egc2dxf-addTextName',r), addTextCode:$('#egc2dxf-addTextCode',r), textH:$('#egc2dxf-textH',r),
+      tblBody:$('#egc2dxf-tblPreview tbody',r), prevInfo:$('#egc2dxf-prevInfo',r), plot:$('#egc2dxf-plot',r),
+      previewBtn:$('#egc2dxf-previewBtn',r), exportBtn:$('#egc2dxf-exportBtn',r),
+      measureBtn:$('#egc2dxf-measureBtn',r), resetMeasureBtn:$('#egc2dxf-resetMeasureBtn',r), reframeBtn:$('#egc2dxf-reframeBtn',r),
+      rowsLimit:$('#egc2dxf-rowsLimit',r),
+      status:$('#egc2dxf-status',r),
+    };
+  }
+
+  async function readFileSmart(file){
+    const buf=await file.arrayBuffer();
+    const tryDec=(enc)=>{
+      try{
+        const td=new TextDecoder(enc,{fatal:false});
+        let s=td.decode(buf);
+        s=s.replace(/^\uFEFF/,'').replace(/[\u0000-\u0008\u000B-\u000C\u000E-\u001F]/g,'');
+        const bad=(s.match(/\uFFFD/g)||[]).length;
+        return {s,bad};
+      }catch{ return {s:null,bad:Infinity}; }
+    };
+    const cand=['utf-8','iso-8859-1','windows-1252'].map(tryDec).sort((a,b)=>a.bad-b.bad);
+    return cand[0].s || await file.text();
+  }
+
+  function detectDelimiter(text){
+    const head=text.split(/\r?\n/).slice(0,12).join('\n');
+    const counts={ ',':(head.match(/,/g)||[]).length, ';':(head.match(/;/g)||[]).length, '\t':(head.match(/\t/g)||[]).length, '|':(head.match(/\|/g)||[]).length };
+    return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0]?.[0] || ',';
+  }
+  function toNumber(v,sep){
+    if(v==null||v==='') return NaN;
+    let s=(''+v).trim();
+    s=s.replace(/\s(?=\d{3}(?:\D|$))/g,'');
+    if(sep==='comma'){ s=s.replace(/\./g,'').replace(/,/g,'.'); }
+    return Number(s);
+  }
+  function parseCSV(text,delim,hasHeader){
+    const d=(delim==='\t')?'\t':delim;
+    const lines=text.split(/\r?\n/).filter(l=>l.trim()!=='');
+    const rows=lines.map(line=>{
+      const out=[]; let cur='',q=false;
+      for(let i=0;i<line.length;i++){
+        const ch=line[i];
+        if(ch==='\"'){
+          if(q && line[i+1]==='\"'){ cur+='\"'; i++; continue; }
+          q=!q; continue;
+        }
+        if(!q && ch===d){ out.push(cur); cur=''; } else cur+=ch;
+      }
+      out.push(cur);
+      return out;
+    });
+    const header = hasHeader ? rows.shift()
+                             : (rows[0]?.map((_,i)=>`col_${i+1}`) || []);
+    return {header,rows};
+  }
+
+  function fillSelect(sel, header){
+    sel.innerHTML='';
+    const o0=document.createElement('option'); o0.value=''; o0.textContent='— sin usar —'; sel.appendChild(o0);
+    header.forEach((h,i)=>{
+      const o=document.createElement('option'); o.value=String(i); o.textContent=`${i+1}: ${h}`; sel.appendChild(o);
+    });
+  }
+  function autoMap(E){
+    if(!table) return;
+    const lower=table.header.map(h=>(h||'').toLowerCase());
+    const f=rx=>lower.findIndex(h=>rx.test(h));
+    const iName=f(/(^|\b)(nombre|name|id|pto|punto)($|\b)/);
+    const iX   =f(/(^|\b)(x|este|easting|lon|longitud)($|\b)/);
+    const iY   =f(/(^|\b)(y|norte|northing|lat|latitud)($|\b)/);
+    const iZ   =f(/(^|\b)(z|cota|altura|elev)($|\b)/);
+    const iCode=f(/(^|\b)(cod|código|codigo|code)($|\b)/);
+    if(iName>=0) E.colName.value=String(iName);
+    if(iX>=0)    E.colX.value=String(iX);
+    if(iY>=0)    E.colY.value=String(iY);
+    if(iZ>=0)    E.colZ.value=String(iZ);
+    if(iCode>=0) E.colCode.value=String(iCode);
+  }
+  function getMap(E){
+    const pick=sel=> sel.value!==''?Number(sel.value):null;
+    return { iname:pick(E.colName), ix:pick(E.colX), iy:pick(E.colY), iz:pick(E.colZ), icode:pick(E.colCode) };
+  }
+
+  let table=null, delim=',';
+  let pts=[]; let bounds=null, view=null; let screenPts=[];
+  let measureMode=false, selA=null, selB=null, hover=null;
+  let rowsLimitVal = 300;
+  const pad=20;
+
+  function computeBounds(arr){
+    let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
+    for(const p of arr){
+      if(!Number.isFinite(p.x)||!Number.isFinite(p.y)) continue;
+      if(p.x<minX)minX=p.x; if(p.x>maxX)maxX=p.x;
+      if(p.y<minY)minY=p.y; if(p.y>maxY)maxY=p.y;
+    }
+    if(!isFinite(minX)||!isFinite(minY)) return null;
+    if(minX===maxX){minX-=1;maxX+=1}
+    if(minY===maxY){minY-=1;maxY+=1}
+    return {minX,maxX,minY,maxY};
+  }
+  function fitView(){
+    if(!bounds) return;
+    const dx=bounds.maxX-bounds.minX, dy=bounds.maxY-bounds.minY;
+    view={ minX:bounds.minX-dx*0.05, maxX:bounds.maxX+dx*0.05, minY:bounds.minY-dy*0.05, maxY:bounds.maxY+dy*0.05 };
+  }
+  function setupCanvas(cv){
+    const w=cv.clientWidth||600,h=cv.clientHeight||380;
+    cv.width=w*devicePixelRatio; cv.height=h*devicePixelRatio;
+    const ctx=cv.getContext('2d'); ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    return {ctx,w,h};
+  }
+  function worldToScreenFactory(cv){
+    const w=cv.clientWidth||600,h=cv.clientHeight||380;
+    const vx=view; if(!vx) return ()=>({x:0,y:0});
+    const sx=(w-2*pad)/(vx.maxX-vx.minX), sy=(h-2*pad)/(vx.maxY-vx.minY);
+    const s=Math.min(sx,sy);
+    const ox=pad + (w-2*pad - s*(vx.maxX-vx.minX))/2;
+    const oy=pad + (h-2*pad - s*(vx.maxY-vx.minY))/2;
+    return (x,y)=>({ x: ox + (x-vx.minX)*s, y: (h - (oy + (y-vx.minY)*s)) });
+  }
+  function screenToWorldFactory(cv){
+    const w=cv.clientWidth||600,h=cv.clientHeight||380;
+    const vx=view; if(!vx) return ()=>({x:0,y:0});
+    const sx=(w-2*pad)/(vx.maxX-vx.minX), sy=(h-2*pad)/(vx.maxY-vx.minY);
+    const s=Math.min(sx,sy);
+    const ox=pad + (w-2*pad - s*(vx.maxX-vx.minX))/2;
+    const oy=pad + (h-2*pad - s*(vx.maxY-vx.minY))/2;
+    return (px,py)=>({ x: vx.minX + (px-ox)/s, y: vx.minY + ((h - py) - oy)/s });
+  }
+  function nearestPoint(px,py,r=10){
+    let best=null, bestD=Infinity;
+    for(const sp of screenPts){
+      const d=Math.hypot(sp.sx-px, sp.sy-py);
+      if(d<r && d<bestD){ bestD=d; best=sp; }
+    }
+    return best;
+  }
+
+  function toPoints(E){
+    if(!table) throw new Error('Cargá un archivo primero.');
+    const {iname,ix,iy,iz,icode}=getMap(E);
+    if(ix==null||iy==null) throw new Error('Indicá columnas X e Y.');
+    const dec=E.decSep.value;
+    const out=[]; let bad=0;
+    for(const r of table.rows){
+      const x=toNumber(r[ix],dec), y=toNumber(r[iy],dec);
+      if(Number.isFinite(x)&&Number.isFinite(y)){
+        const z=(iz!=null)?toNumber(r[iz],dec):NaN;
+        const name=(iname!=null)?String(r[iname]??''):'';
+        const code=(icode!=null)?String(r[icode]??''):'';
+        out.push({x,y,z,name,code});
+      } else bad++;
+    }
+    return {points:out,bad};
+  }
+  function fillTable(E, arr){
+    const max = (rowsLimitVal && rowsLimitVal>0) ? rowsLimitVal : arr.length;
+    const f=n=> Number.isFinite(n)?n.toFixed(3):'';
+    E.tblBody.innerHTML='';
+    arr.slice(0,max).forEach((p,i)=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${i+1}</td><td>${f(p.x)}</td><td>${f(p.y)}</td><td>${f(p.z)}</td><td>${p.name||''}</td><td>${p.code||''}</td>`;
+      E.tblBody.appendChild(tr);
+    });
+    E.prevInfo.textContent = arr.length ? `${arr.length} registros (se muestran ${Math.min(arr.length,max)})` : 'Sin registros válidos';
+  }
+
+  function draw(E){
+    const cv=E.plot; const {ctx,w,h}=setupCanvas(cv);
+    ctx.clearRect(0,0,w,h);
+    if(!pts.length||!view) return;
+
+    ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=1; ctx.strokeRect(8,8,w-16,h-16);
+
+    const map=worldToScreenFactory(cv);
+    screenPts=pts.map(p=>{ const s=map(p.x,p.y); return {...p,sx:s.x,sy:s.y}; });
+
+    ctx.fillStyle='rgba(255,255,255,.92)';
+    for(const sp of screenPts){ ctx.beginPath(); ctx.arc(sp.sx,sp.sy,2,0,Math.PI*2); ctx.fill(); }
+
+    if(selA){ ctx.fillStyle='#22c55e'; ctx.beginPath(); ctx.arc(selA.sx,selA.sy,4,0,Math.PI*2); ctx.fill(); }
+    if(selB){ ctx.fillStyle='#f04e4e'; ctx.beginPath(); ctx.arc(selB.sx,selB.sy,4,0,Math.PI*2); ctx.fill(); }
+
+    if(hover){
+      const label = hover.name ? `Nombre: ${hover.name}` :
+                    hover.code ? `Código: ${hover.code}` :
+                    `X ${hover.x.toFixed(3)} · Y ${hover.y.toFixed(3)}`;
+      ctx.font='12px system-ui,-apple-system,Segoe UI,Roboto,Arial';
+      const wtxt=ctx.measureText(label).width + 10;
+      ctx.fillStyle='rgba(17,24,39,.9)'; ctx.fillRect(hover.sx+10, hover.sy-18, wtxt, 18);
+      ctx.fillStyle='#fff'; ctx.fillText(label, hover.sx+15, hover.sy-5);
+    }
+
+    if(selA && selB){
+      ctx.strokeStyle='#ef4444'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(selA.sx,selA.sy); ctx.lineTo(selB.sx,selB.sy); ctx.stroke();
+      const dx=selB.x-selA.x, dy=selB.y-selA.y;
+      const dist=Math.hypot(dx,dy), az=((Math.atan2(dx,dy)*180/Math.PI)+360)%360;
+      const mx=(selA.sx+selB.sx)/2, my=(selA.sy+selB.sy)/2;
+      const label=`${dist.toFixed(3)} | Az ${az.toFixed(2)}°`;
+      ctx.font='12px system-ui,-apple-system,Segoe UI,Roboto,Arial';
+      const lw=ctx.measureText(label).width+10;
+      ctx.fillStyle='rgba(17,24,39,.9)'; ctx.fillRect(mx-lw/2,my-18,lw,18);
+      ctx.fillStyle='#fff'; ctx.fillText(label, mx-lw/2+5, my-5);
+    }
+  }
+
+  function attachCanvasHandlers(E){
+    const cv=E.plot;
+    let dragging=false, dragStartW=null, viewStart=null;
+    cv.style.cursor='grab';
+
+    cv.addEventListener('mousedown',(e)=>{
+      if(e.button!==0) return;
+      dragging=true; cv.style.cursor='grabbing';
+      dragStartW=screenToWorldFactory(cv)(e.offsetX,e.offsetY);
+      viewStart={...view};
+    });
+    window.addEventListener('mouseup',()=>{ dragging=false; cv.style.cursor='grab'; });
+    cv.addEventListener('mousemove',(e)=>{
+      hover = nearestPoint(e.offsetX,e.offsetY,10) || null;
+      if(dragging && view){
+        const curW=screenToWorldFactory(cv)(e.offsetX,e.offsetY);
+        const dx=curW.x-dragStartW.x, dy=curW.y-dragStartW.y;
+        view.minX=viewStart.minX-dx; view.maxX=viewStart.maxX-dx;
+        view.minY=viewStart.minY-dy; view.maxY=viewStart.maxY-dy;
+      }
+      draw(E);
+    });
+    cv.addEventListener('wheel',(e)=>{
+      if(!view) return; e.preventDefault();
+      const factor=e.deltaY<0? 1/1.15 : 1.15;
+      const sw=screenToWorldFactory(cv)(e.offsetX,e.offsetY);
+      const w=view.maxX-view.minX, h=view.maxY-view.minY;
+      const nw=w*factor, nh=h*factor;
+      const rx=(sw.x-view.minX)/w, ry=(sw.y-view.minY)/h;
+      view.minX=sw.x-rx*nw; view.maxX=view.minX+nw;
+      view.minY=sw.y-ry*nh; view.maxY=view.minY+nh;
+      draw(E);
+    },{passive:false});
+    cv.addEventListener('dblclick',()=>{ fitView(); draw(E); });
+    cv.addEventListener('click',(e)=>{
+      const near=nearestPoint(e.offsetX,e.offsetY,10); if(!near) return;
+      if(!measureMode){ selA=near; selB=null; draw(E); return; }
+      if(!selA){ selA=near; selB=null; draw(E); return; }
+      if(!selB){ selB=near; draw(E); return; }
+      selA=near; selB=null; draw(E);
+    });
+  }
+
+  const NL='\r\n';
+  function stripAccents(s){ try{ return String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,''); }catch{ return String(s); } }
+  function sanitizeText(txt){
+    let s = stripAccents(txt ?? '');
+    s = s.replace(/\r?\n/g,' ').replace(/[\u0000-\u001F]/g,' ').replace(/[^\x20-\x7E]/g,'').replace(/\s+/g,' ').trim();
+    return s.slice(0,255);
+  }
+  function sanitizeCode(code){
+    let s = stripAccents(code ?? 'SIN_CODIGO').trim();
+    s = s.replace(/[^\x20-\x7E]/g,'').replace(/[^A-Za-z0-9_-]/g,'_').replace(/^_+|_+$/g,'');
+    if(!s) s='SIN_CODIGO';
+    return s;
+  }
+  function hashStr(t){ let h=0; for(let i=0;i<t.length;i++){ h=((h<<5)-h)+t.charCodeAt(i); h|=0; } return Math.abs(h).toString(36).toUpperCase(); }
+  function makeLayerName(prefix, raw){
+    const base = sanitizeCode(raw);
+    let name = `${prefix}${base}`;
+    if(name.length<=31) return name;
+    const tag = hashStr(base).slice(0,5);
+    const maxBase = Math.max(1, 31 - (prefix.length + 1 + tag.length));
+    return `${prefix}${base.slice(0,maxBase)}_${tag}`;
+  }
+  function colorFromCode(key){
+    const s=String(key); let h=0; for(let i=0;i<s.length;i++) h=(h*31 + s.charCodeAt(i))>>>0;
+    const aci=[1,2,3,4,5,6,8,9,10,30,140,141,190,200,210,220,230,240];
+    return aci[h % aci.length];
+  }
+  function headerWithLayers(layerMap){
+    const out=[];
+    out.push('0','SECTION','2','HEADER','9','$ACADVER','1','AC1009','0','ENDSEC');
+    out.push('0','SECTION','2','TABLES');
+      out.push('0','TABLE','2','LTYPE','70','1');
+        out.push('0','LTYPE','2','CONTINUOUS','70','0','3','Continuous','72','65','73','0','40','0');
+      out.push('0','ENDTAB');
+      out.push('0','TABLE','2','STYLE','70','1');
+        out.push('0','STYLE','2','STANDARD','70','0','40','0','41','1','50','0','71','0','42','0','3','txt','4','');
+      out.push('0','ENDTAB');
+      out.push('0','TABLE','2','LAYER','70', String(1 + layerMap.size));
+        out.push('0','LAYER','2','0','70','0','62','7','6','CONTINUOUS');
+        for(const [name,color] of layerMap.entries()){
+          out.push('0','LAYER','2',name,'70','0','62',String(color),'6','CONTINUOUS');
+        }
+      out.push('0','ENDTAB');
+    out.push('0','ENDSEC');
+    out.push('0','SECTION','2','BLOCKS','0','ENDSEC');
+    out.push('0','SECTION','2','ENTITIES');
+    return out;
+  }
+  function dxfFooter(out){ out.push('0','ENDSEC','0','EOF'); }
+  function entPOINT(out,x,y,z,layer){ out.push('0','POINT','8',layer,'10',String(x),'20',String(y),'30',Number.isFinite(z)?String(z):'0'); }
+  function entTEXT(out,x,y,h,txt,layer){ out.push('0','TEXT','8',layer,'10',String(x),'20',String(y),'40',String(h),'1',sanitizeText(txt),'7','STANDARD','50','0'); }
+
+  function exportDXF(E){
+    const {points,bad}=toPoints(E);
+    const addName=E.addTextName?.checked ?? true;
+    const addCode=E.addTextCode?.checked ?? false;
+    const h=parseFloat(E.textH?.value)||1.5;
+
+    const layers=new Map();
+    for(const p of points){
+      const key=sanitizeCode(p.code);
+      const col=colorFromCode(key);
+      layers.set(makeLayerName('EG_PUNTOS_', key), col);
+      if(addName && p.name) layers.set(makeLayerName('EG_TXT_NOMBRE_', key), col);
+      if(addCode && p.code) layers.set(makeLayerName('EG_TXT_CODIGO_', key), col);
+    }
+
+    const out = headerWithLayers(layers);
+    for(const p of points){
+      const key=sanitizeCode(p.code);
+      const lPts=makeLayerName('EG_PUNTOS_', key);
+      const lNom=makeLayerName('EG_TXT_NOMBRE_', key);
+      const lCod=makeLayerName('EG_TXT_CODIGO_', key);
+      entPOINT(out,p.x,p.y,p.z,lPts);
+      if(addName && p.name) entTEXT(out,p.x,p.y,h,p.name,lNom);
+      if(addCode && p.code) entTEXT(out,p.x,p.y,h,p.code,lCod);
+    }
+    dxfFooter(out);
+
+    const body = out.join(NL);
+    const blob = new Blob([body],{type:'application/dxf'});
+    const url = URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='export_R12_por_codigo.dxf'; a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1500);
+
+    if (E?.status){
+      E.status.innerHTML = `<span style="color:#86efac">${points.length} puntos</span>` +
+        (bad?` · <span style="color:#fca5a5">${bad} filas ignoradas</span>`:'');
+    }
+  }
+
+  function renderAll(E){
+    try{
+      const res=toPoints(E);
+      pts=res.points; bounds=computeBounds(pts); fitView();
+      selA=null; selB=null; hover=null;
+      fillTable(E, pts); draw(E);
+    }catch(err){ E.prevInfo.textContent=err.message; }
+  }
+
+  function init(){
+    const E=els(); if(!E) return;
+
+    attachCanvasHandlers(E);
+
+    E.previewBtn?.addEventListener('click',()=>renderAll(E));
+    E.exportBtn?.addEventListener('click',()=>{ try{ exportDXF(E); }catch(e){ E.status.textContent=e.message; }});
+    E.measureBtn?.addEventListener('click',()=>{ measureMode=!measureMode; E.measureBtn.classList.toggle('egc2dxf-primary',measureMode); selA=null; selB=null; draw(E); });
+    E.resetMeasureBtn?.addEventListener('click',()=>{ selA=null; selB=null; draw(E); });
+    E.reframeBtn?.addEventListener('click',()=>{ fitView(); draw(E); });
+    window.addEventListener('resize',()=>draw(E));
+
+    E.rowsLimit?.addEventListener('change', ()=>{
+      rowsLimitVal = Number(E.rowsLimit.value)||0;
+      fillTable(E, pts);
+    });
+
+    ['egc2dxf-colName','egc2dxf-colX','egc2dxf-colY','egc2dxf-colZ','egc2dxf-colCode','egc2dxf-decSep']
+      .forEach(id=>document.getElementById(id)?.addEventListener('change',()=>renderAll(E)));
+
+    E.file.addEventListener('change', async e=>{
+      const f=e.target.files[0]; if(!f) return;
+      const text=await readFileSmart(f);
+      delim=detectDelimiter(text);
+      table=parseCSV(text, delim, E.hasHeader.checked);
+
+      ['egc2dxf-colName','egc2dxf-colX','egc2dxf-colY','egc2dxf-colZ','egc2dxf-colCode']
+        .forEach(id=>fillSelect(document.getElementById(id), table.header));
+
+      autoMap(E);
+      E.infoRows.textContent=`${table.rows.length} filas`;
+      view=null; selA=null; selB=null; hover=null;
+      renderAll(E);
+    });
+
+    E.hasHeader?.addEventListener('change',()=>{
+      if(!E.file.files.length) return;
+      E.file.dispatchEvent(new Event('change'));
+    });
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
+  </script>
 </body>
 </html>

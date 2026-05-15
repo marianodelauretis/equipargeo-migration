@@ -1,0 +1,8 @@
+# robots.txt para app.equipargeo.com
+# Permite indexación normal. Las herramientas son contenido público útil.
+
+User-agent: *
+Allow: /
+Crawl-delay: 1
+
+Sitemap: https://app.equipargeo.com/sitemap.xml

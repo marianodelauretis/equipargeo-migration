@@ -1,50 +1,139 @@
-/* Base CSS común para todas las herramientas — minimalista, sin Bootstrap */
+/* ==========================================================================
+   EQUIPAR Tools — Base CSS compartido
+   Variables de marca, reset, topbar, footer, utilidades
+   ========================================================================== */
 
 :root {
-  --color-bg: #ffffff;
-  --color-text: #1a1a1a;
-  --color-primary: #0E2841;
-  --color-accent: #D0931F;
-  --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
+  --eg-coral: #f04e4e;
+  --eg-coral-hover: #ff5f5f;
+  --eg-azul: #18354a;
+  --eg-azul-dark: #1c3a50;
+  --eg-gris: #6e7b8d;
+  --eg-borde: #e5e7eb;
+  --eg-bg-soft: #fbfdff;
+  --eg-bg-card: #f8fafc;
+  --eg-text: #1f2f44;
+  --eg-text-muted: #4b596c;
+  --eg-bg: #ffffff;
+  --eg-shadow: 0 10px 24px rgba(0,0,0,.06);
+  --eg-shadow-coral: 0 10px 22px rgba(240,78,78,.25);
+  --eg-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --eg-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", monospace;
 }
 
-* { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; }
 
-html, body {
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
   margin: 0;
-  padding: 0;
-  font-family: var(--font-base);
-  color: var(--color-text);
-  background: var(--color-bg);
+  font-family: var(--eg-font);
+  color: var(--eg-text);
+  background: #f3f6fb;
   line-height: 1.5;
+  font-size: 16px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-header {
-  padding: 1rem;
-  border-bottom: 1px solid #eee;
-}
+a { color: var(--eg-azul); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-header a {
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: 500;
+/* ===== Top bar ===== */
+.eg-topbar {
+  background: linear-gradient(180deg, var(--eg-azul-dark), var(--eg-azul));
+  color: #fff;
+  padding: 14px 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-
-main {
+.eg-topbar-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.eg-brand {
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.eg-brand:hover { text-decoration: none; opacity: 0.9; }
+.eg-brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--eg-coral);
+  display: inline-block;
+}
+.eg-nav {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 0.92rem;
+}
+.eg-nav a { color: rgba(255,255,255,0.85); padding: 4px 8px; border-radius: 6px; transition: background 0.15s ease; }
+.eg-nav a:hover { color: #fff; background: rgba(255,255,255,0.08); text-decoration: none; }
+.eg-nav a[aria-current="page"] { color: #fff; background: rgba(255,255,255,0.12); }
+
+/* ===== Main ===== */
+.eg-main {
+  flex: 1 0 auto;
+  padding: 24px 0 40px;
 }
 
-footer {
-  padding: 2rem 1rem;
+/* ===== Footer ===== */
+.eg-footer {
+  background: var(--eg-azul);
+  color: rgba(255,255,255,0.7);
+  padding: 24px 20px;
+  margin-top: 60px;
+  font-size: 0.88rem;
   text-align: center;
-  font-size: 0.875rem;
-  color: #666;
-  border-top: 1px solid #eee;
+  flex-shrink: 0;
+}
+.eg-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.eg-footer a { color: rgba(255,255,255,0.85); }
+.eg-footer a:hover { color: #fff; }
+
+/* ===== Container utility ===== */
+.eg-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+  width: 100%;
 }
 
-footer a {
-  color: var(--color-primary);
+/* ===== Page header (per tool) ===== */
+.eg-page-header {
+  max-width: 1100px;
+  margin: 0 auto 20px;
+  padding: 0 16px;
+}
+.eg-breadcrumb {
+  font-size: 0.88rem;
+  color: var(--eg-gris);
+  margin-bottom: 8px;
+}
+.eg-breadcrumb a { color: var(--eg-gris); }
+.eg-breadcrumb a:hover { color: var(--eg-azul); }
+
+/* ===== Print-friendly ===== */
+@media print {
+  .eg-topbar, .eg-footer, .eg-nav, .eg-breadcrumb, .actions, .eg-actions, .eg-table-actions, .egc2dxf-row:has(button) { display: none !important; }
+  body { background: #fff; }
 }

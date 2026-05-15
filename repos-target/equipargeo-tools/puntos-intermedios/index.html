@@ -1,22 +1,470 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-AR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EQUIPAR Tools — En proceso de migración</title>
+  <title>Generador de puntos intermedios — EQUIPAR Tools</title>
+  <meta name="description" content="Calculá puntos equidistantes entre dos coordenadas proyectadas (POSGAR07 o cualquier proyección métrica). Exportá DXF R12 y CSV con la tabla completa.">
+  <meta name="theme-color" content="#18354a">
+  <link rel="canonical" href="https://app.equipargeo.com/puntos-intermedios/">
+  <link rel="icon" type="image/svg+xml" href="/shared/favicon.svg">
+  <link rel="manifest" href="/shared/manifest.json">
   <link rel="stylesheet" href="/shared/base.css">
+  <style>
+    #herramienta-puntos { max-width: 1100px; margin: 0 auto; padding: 0 16px; font-family: var(--eg-font); }
+    #herramienta-puntos .eg-card {
+      background: var(--eg-bg);
+      border-radius: 16px;
+      padding: 22px;
+      border: 1px solid var(--eg-borde);
+      box-shadow: var(--eg-shadow);
+    }
+    #herramienta-puntos .eg-card-title {
+      margin: 0 0 8px;
+      font-size: 1.4rem;
+      color: var(--eg-azul);
+    }
+    #herramienta-puntos .eg-muted { color: var(--eg-text-muted); margin: 0 0 14px; }
+    #herramienta-puntos .eg-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 16px;
+      margin-top: 12px;
+    }
+    @media (max-width: 860px) {
+      #herramienta-puntos .eg-grid { grid-template-columns: 1fr; }
+    }
+    #herramienta-puntos .eg-fieldset {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 560px) {
+      #herramienta-puntos .eg-fieldset { grid-template-columns: 1fr; }
+    }
+    #herramienta-puntos .eg-options {
+      display: grid;
+      gap: 12px;
+    }
+    #herramienta-puntos .eg-field { display: flex; flex-direction: column; gap: 6px; }
+    #herramienta-puntos label {
+      font-size: 0.9rem;
+      color: var(--eg-text-muted);
+    }
+    #herramienta-puntos input, #herramienta-puntos select {
+      height: 40px;
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 1rem;
+      background: var(--eg-bg-soft);
+      font-family: inherit;
+      color: var(--eg-text);
+    }
+    #herramienta-puntos input:focus, #herramienta-puntos select:focus {
+      outline: 2px solid #d8e8f7;
+      border-color: #90caf9;
+      background: #fff;
+    }
+    #herramienta-puntos .eg-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    #herramienta-puntos .eg-btn {
+      padding: 10px 14px;
+      border: 1px solid var(--eg-borde);
+      background: #eef5fb;
+      color: var(--eg-azul);
+      border-radius: 10px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: transform 0.05s ease, background 0.15s ease;
+    }
+    #herramienta-puntos .eg-btn:hover { background: #e4eef8; }
+    #herramienta-puntos .eg-btn:active { transform: scale(0.98); }
+    #herramienta-puntos .eg-btn-primary {
+      background: var(--eg-coral);
+      border-color: var(--eg-coral);
+      color: #fff;
+    }
+    #herramienta-puntos .eg-btn-primary:hover { background: var(--eg-coral-hover); }
+    #herramienta-puntos .eg-summary {
+      margin: 14px 0 6px;
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--eg-bg-soft);
+      border: 1px solid var(--eg-borde);
+      color: var(--eg-text);
+      font-size: 0.95rem;
+    }
+    #herramienta-puntos .eg-plot {
+      margin-top: 12px;
+      background: #0b2232;
+      border-radius: 14px;
+      padding: 10px;
+      border: 1px solid #0f2b3f;
+      min-height: 380px;
+    }
+    #herramienta-puntos .eg-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    #herramienta-puntos .eg-sep {
+      width: 1px;
+      height: 28px;
+      background: var(--eg-borde);
+    }
+    #herramienta-puntos .eg-table-wrap { margin-top: 14px; }
+    #herramienta-puntos .eg-table-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    #herramienta-puntos .eg-table-scroll {
+      overflow: auto;
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      max-height: 400px;
+    }
+    #herramienta-puntos table.eg-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.93rem;
+      background: #fff;
+    }
+    #herramienta-puntos .eg-table thead th {
+      text-align: left;
+      background: #f2f6fa;
+      padding: 10px;
+      border-bottom: 1px solid var(--eg-borde);
+      color: var(--eg-azul);
+      position: sticky;
+      top: 0;
+    }
+    #herramienta-puntos .eg-table tbody td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eef2f7;
+      font-family: var(--eg-mono);
+    }
+    #herramienta-puntos .eg-table tbody tr:hover { background: var(--eg-bg-soft); }
+  </style>
 </head>
 <body>
-  <header>
-    <a href="/">← Herramientas EQUIPAR</a>
+  <header class="eg-topbar">
+    <div class="eg-topbar-inner">
+      <a class="eg-brand" href="/"><span class="eg-brand-dot"></span> EQUIPAR Tools</a>
+      <nav class="eg-nav" aria-label="Principal">
+        <a href="/">Inicio</a>
+        <a href="https://equipargeo.com/cursos/">Cursos</a>
+        <a href="https://equipargeo.com/contacto/">Contacto</a>
+      </nav>
+    </div>
   </header>
-  <main>
-    <h1>Herramienta en proceso de migración</h1>
-    <p>Esta herramienta está siendo migrada desde WordPress. Pronto estará disponible aquí.</p>
-    <p><a href="https://equipargeo.com">Mientras tanto, visitá equipargeo.com</a></p>
+
+  <main class="eg-main">
+    <div class="eg-page-header">
+      <nav class="eg-breadcrumb" aria-label="Migas"><a href="/">EQUIPAR Tools</a> · Puntos intermedios</nav>
+    </div>
+
+    <section id="herramienta-puntos">
+      <div class="eg-card">
+        <h3 class="eg-card-title">Generador de puntos intermedios</h3>
+        <p class="eg-muted">
+          Calcula puntos equidistantes entre dos coordenadas proyectadas (<strong>POSGAR07 / Gauss-Krüger</strong> u otra proyección métrica).
+          Azimut reportado desde el <strong>Norte</strong> en sentido horario (0–360°).
+        </p>
+        <div class="eg-grid">
+          <div class="eg-fieldset">
+            <div class="eg-field">
+              <label for="e1">Este (X) P1</label>
+              <input id="e1" placeholder="Ej: 500000" step="any" type="number"/>
+            </div>
+            <div class="eg-field">
+              <label for="n1">Norte (Y) P1</label>
+              <input id="n1" placeholder="Ej: 6000000" step="any" type="number"/>
+            </div>
+            <div class="eg-field">
+              <label for="e2">Este (X) P2</label>
+              <input id="e2" placeholder="Ej: 500050" step="any" type="number"/>
+            </div>
+            <div class="eg-field">
+              <label for="n2">Norte (Y) P2</label>
+              <input id="n2" placeholder="Ej: 6000050" step="any" type="number"/>
+            </div>
+          </div>
+          <div class="eg-options">
+            <div class="eg-field">
+              <label for="intervalo">Intervalo (m)</label>
+              <select id="intervalo"></select>
+            </div>
+            <div class="eg-field">
+              <label for="intervaloManual">Valor manual (m)</label>
+              <input id="intervaloManual" placeholder="p.ej. 0.75" step="any" type="number"/>
+            </div>
+            <div class="eg-field">
+              <label for="decimales">Decimales (coords)</label>
+              <input id="decimales" max="4" min="0" type="number" value="3"/>
+            </div>
+            <div class="eg-field">
+              <label for="incluirExtremos">Incluir extremos</label>
+              <select id="incluirExtremos">
+                <option selected value="si">Sí (P1 y P2)</option>
+                <option value="no">No</option>
+              </select>
+            </div>
+            <div class="eg-actions">
+              <button class="eg-btn eg-btn-primary" id="btnGenerar">Generar puntos</button>
+              <button class="eg-btn" id="btnLimpiar" type="button">Limpiar</button>
+            </div>
+          </div>
+        </div>
+        <div class="eg-summary" hidden id="panelResumen">
+          <div><strong>Distancia:</strong> <span id="resDist">–</span> m</div>
+          <div><strong>Azimut (0–360°):</strong> <span id="resAzi">–</span></div>
+          <div><strong>Puntos:</strong> <span id="resPts">–</span></div>
+        </div>
+        <div class="eg-plot">
+          <canvas height="380" id="canvasXY"></canvas>
+        </div>
+        <div class="eg-toolbar">
+          <button class="eg-btn" id="btnFit">Ajustar a línea</button>
+          <button class="eg-btn" id="btnZoomIn">Zoom +</button>
+          <button class="eg-btn" id="btnZoomOut">Zoom −</button>
+          <button class="eg-btn" id="btnReset">Reset</button>
+          <span class="eg-sep"></span>
+          <button class="eg-btn" id="panUp">Arriba</button>
+          <button class="eg-btn" id="panLeft">Izquierda</button>
+          <button class="eg-btn" id="panRight">Derecha</button>
+          <button class="eg-btn" id="panDown">Abajo</button>
+        </div>
+        <div class="eg-table-wrap" hidden id="tablaWrap">
+          <div class="eg-table-actions">
+            <button class="eg-btn" id="btnDXF">Descargar DXF (R12)</button>
+            <button class="eg-btn" id="btnCSV">Descargar CSV</button>
+            <button class="eg-btn" id="btnCopiar">Copiar tabla</button>
+          </div>
+          <div class="eg-table-scroll">
+            <table class="eg-table" id="tablaPuntos">
+              <thead>
+                <tr><th>#</th><th>Este (X)</th><th>Norte (Y)</th><th>Progresiva (m)</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer>
-    <p>EQUIPAR · <a href="https://equipargeo.com">equipargeo.com</a></p>
+
+  <footer class="eg-footer">
+    <div class="eg-footer-inner">
+      <div>© EQUIPAR · Herramienta gratuita</div>
+      <div><a href="https://equipargeo.com/">Ir al sitio principal</a></div>
+    </div>
   </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+  <script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  let chart = null, puntos = [];
+  let dist = 0, azi = 0;
+  let lastInput = null;
+
+  if (window['chartjs-plugin-zoom']) { Chart.register(window['chartjs-plugin-zoom']); }
+
+  const sel = $('#intervalo');
+  [0.2, 0.25, 0.5, 1, 2, 5, 10].forEach(v => {
+    const o = document.createElement('option'); o.value = v; o.textContent = v; sel.appendChild(o);
+  });
+  sel.value = 1;
+
+  const round = (v, d) => +v.toFixed(d);
+  function azimutDesdeNorte(e1,n1,e2,n2){
+    const dx = e2 - e1, dy = n2 - n1;
+    let deg = Math.atan2(dx, dy) * 180 / Math.PI;
+    if (deg < 0) deg += 360;
+    return deg;
+  }
+
+  function generar() {
+    const e1 = parseFloat($('#e1').value);
+    const n1 = parseFloat($('#n1').value);
+    const e2 = parseFloat($('#e2').value);
+    const n2 = parseFloat($('#n2').value);
+    const dec = Math.min(4, Math.max(0, parseInt($('#decimales').value || '3',10)));
+    const man = parseFloat($('#intervaloManual').value);
+    const paso = isNaN(man) ? parseFloat($('#intervalo').value) : man;
+    const incluirExt = $('#incluirExtremos').value === 'si';
+
+    if ([e1,n1,e2,n2,paso].some(isNaN) || paso <= 0) {
+      alert('Completá correctamente las coordenadas y el intervalo.');
+      return;
+    }
+
+    lastInput = {e1,n1,e2,n2,dec};
+
+    const dx = e2 - e1, dy = n2 - n1;
+    dist = Math.hypot(dx, dy);
+    azi = azimutDesdeNorte(e1,n1,e2,n2);
+
+    const nSeg = Math.floor(dist / paso);
+    if (nSeg < 1) { alert('La distancia es corta para el intervalo elegido.'); return; }
+
+    puntos = [];
+    if (incluirExt) {
+      const internos = Math.max(0, nSeg - 1);
+      puntos.push({ label: 'P1', x: round(e1, dec), y: round(n1, dec), prog: 0.00 });
+      for (let k = 1; k <= internos; k++) {
+        const s = k * paso, f = s / dist;
+        puntos.push({ label: `P${k+1}`, x: round(e1 + dx * f, dec), y: round(n1 + dy * f, dec), prog: round(s, 2) });
+      }
+      puntos.push({ label: `P${internos+2}`, x: round(e2, dec), y: round(n2, dec), prog: round(dist,2) });
+    } else if (nSeg > 1) {
+      for (let k = 1; k <= nSeg - 1; k++) {
+        const s = k * paso, f = s / dist;
+        puntos.push({ label: `P${k}`, x: round(e1 + dx * f, dec), y: round(n1 + dy * f, dec), prog: round(s, 2) });
+      }
+    }
+
+    $('#panelResumen').hidden = false;
+    $('#resDist').textContent = round(dist, 3);
+    $('#resAzi').textContent  = round(azi, 2) + '°';
+    $('#resPts').textContent  = puntos.length;
+
+    const tb = $('#tablaPuntos tbody'); tb.innerHTML = '';
+    puntos.forEach((p,i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${i+1}</td><td>${p.x}</td><td>${p.y}</td><td>${p.prog}</td>`;
+      tb.appendChild(tr);
+    });
+    $('#tablaWrap').hidden = false;
+
+    renderChart(); fitLine();
+  }
+
+  function renderChart(){
+    const ctx = $('#canvasXY').getContext('2d');
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          label: 'Trayectoria',
+          data: puntos.map(p => ({x: p.x, y: p.y})),
+          showLine: true, borderWidth: 2,
+          pointRadius: 3, pointHoverRadius: 5
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          zoom: { pan: { enabled: true, mode: 'xy' }, zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'xy' } },
+          tooltip: { callbacks: { label: (c) => { const p = puntos[c.dataIndex]; return `${p.label}: (${p.x}, ${p.y})  —  ${p.prog} m`; } } }
+        },
+        scales: {
+          x: { title: { display: true, text: 'Este (X) [m]' } },
+          y: { title: { display: true, text: 'Norte (Y) [m]' } }
+        }
+      }
+    });
+  }
+
+  function fitLine(){
+    if (!chart || puntos.length === 0) return;
+    const xs = puntos.map(p=>p.x), ys = puntos.map(p=>p.y);
+    const minX = Math.min(...xs), maxX = Math.max(...xs);
+    const minY = Math.min(...ys), maxY = Math.max(...ys);
+    const padX = (maxX - minX) * 0.1 || 1;
+    const padY = (maxY - minY) * 0.1 || 1;
+    chart.options.scales.x.min = minX - padX;
+    chart.options.scales.x.max = maxX + padX;
+    chart.options.scales.y.min = minY - padY;
+    chart.options.scales.y.max = maxY + padY;
+    chart.update();
+  }
+
+  function limpiar(){
+    puntos = [];
+    $('#tablaPuntos tbody').innerHTML = '';
+    $('#tablaWrap').hidden = true;
+    $('#panelResumen').hidden = true;
+    if (chart){ chart.destroy(); chart = null; }
+  }
+
+  $('#btnCopiar').addEventListener('click', ()=>{
+    if (!puntos.length) return;
+    const rows = [['#','X','Y','Progresiva']];
+    puntos.forEach((p,i)=> rows.push([i+1,p.x,p.y,p.prog]));
+    const txt = rows.map(r=>r.join('\t')).join('\n');
+    navigator.clipboard.writeText(txt).then(()=> alert('Tabla copiada al portapapeles.'));
+  });
+  $('#btnCSV').addEventListener('click', ()=>{
+    if (!puntos.length) return;
+    const header = 'N;X;Y;Progresiva_m';
+    const lines = puntos.map((p,i)=>`${i+1};${p.x};${p.y};${p.prog}`);
+    const csv = [header, ...lines].join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'puntos_intermedios.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  function descargarDXF(){
+    if (!lastInput || puntos.length === 0){ alert('Generá los puntos primero.'); return; }
+    const {e1,n1,e2,n2} = lastInput;
+    const hTxt = 0.5, off = 0.3, rot = 0;
+
+    const L = [];
+    L.push('0','SECTION','2','HEADER','9','$ACADVER','1','AC1009','0','ENDSEC');
+    L.push('0','SECTION','2','ENTITIES');
+    L.push('0','POLYLINE','8','EQUIPARGEO_LINE','66','1','70','0');
+    L.push('0','VERTEX','8','EQUIPARGEO_LINE','10',String(e1),'20',String(n1));
+    L.push('0','VERTEX','8','EQUIPARGEO_LINE','10',String(e2),'20',String(n2));
+    L.push('0','SEQEND');
+    puntos.forEach(p=>{
+      L.push('0','POINT','8','EQUIPARGEO_PTS','10',String(p.x),'20',String(p.y));
+      L.push('0','TEXT','8','EQUIPARGEO_TXT','10',String(p.x + off),'20',String(p.y + off),'40',String(hTxt),'1',String(p.label),'50',String(rot));
+    });
+    L.push('0','ENDSEC','0','EOF');
+
+    const dxf = L.join('\n') + '\n';
+    const blob = new Blob([dxf], {type:'application/dxf;charset=utf-8;'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'puntos_intermedios_R12.dxf';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  $('#btnGenerar').addEventListener('click', (e)=>{ e.preventDefault(); generar(); });
+  $('#btnLimpiar').addEventListener('click', (e)=>{ e.preventDefault(); limpiar(); });
+  $('#btnFit').addEventListener('click', (e)=>{ e.preventDefault(); fitLine(); });
+  $('#btnZoomIn').addEventListener('click', (e)=>{ e.preventDefault(); if(chart) chart.zoom(1.2); });
+  $('#btnZoomOut').addEventListener('click', (e)=>{ e.preventDefault(); if(chart) chart.zoom(0.8); });
+  $('#btnReset').addEventListener('click', (e)=>{ e.preventDefault(); if(chart) chart.resetZoom(); fitLine(); });
+  const panStep = 50;
+  $('#panUp').addEventListener('click',  e=>{ e.preventDefault(); chart && chart.pan({x:0,y: panStep}); });
+  $('#panDown').addEventListener('click',e=>{ e.preventDefault(); chart && chart.pan({x:0,y:-panStep}); });
+  $('#panLeft').addEventListener('click',e=>{ e.preventDefault(); chart && chart.pan({x: panStep,y:0}); });
+  $('#panRight').addEventListener('click',e=>{ e.preventDefault(); chart && chart.pan({x:-panStep,y:0}); });
+  $('#btnDXF').addEventListener('click', (e)=>{ e.preventDefault(); descargarDXF(); });
+})();
+  </script>
 </body>
 </html>
