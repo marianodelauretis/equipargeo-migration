@@ -1,0 +1,90 @@
+# ============================================================================
+# Redirects equipargeo.com — migración de WordPress a Astro
+# ============================================================================
+# Sintaxis Cloudflare Pages: <origen> <destino> <código> [condición]
+# Código 301 = redirect permanente (para SEO). 302 = temporal. 410 = removido.
+# Patrones admiten /* para wildcard y :splat para capturar el resto.
+# ============================================================================
+
+# ---- 12 cursos: URLs viejas WP -> nuevas Astro -------------------------------
+
+# GNSS
+/programa-completo-curso-gnss/    /cursos/gnss/                       301
+/programa-completo-curso-gnss     /cursos/gnss/                       301
+/curso-gnss-modulo-1/             /cursos/gnss-modulo-1/              301
+/curso-gnss-modulo-1              /cursos/gnss-modulo-1/              301
+/curso-gnss-modulo-2/             /cursos/gnss-modulo-2/              301
+/curso-gnss-modulo-2              /cursos/gnss-modulo-2/              301
+/curso-gnss-modulo-3/             /cursos/gnss-modulo-3/              301
+/curso-gnss-modulo-3              /cursos/gnss-modulo-3/              301
+
+# Topografía
+/programa-completo-topografia/    /cursos/topografia/                 301
+/programa-completo-topografia     /cursos/topografia/                 301
+/modulo-1-topografia-basica/      /cursos/topografia-modulo-1/        301
+/modulo-1-topografia-basica       /cursos/topografia-modulo-1/        301
+/modulo-2-nivelacion/             /cursos/topografia-modulo-2/        301
+/modulo-2-nivelacion              /cursos/topografia-modulo-2/        301
+/modulo-3-estacion-total/         /cursos/topografia-modulo-3/        301
+/modulo-3-estacion-total          /cursos/topografia-modulo-3/        301
+
+# Fotogrametría
+/programa-completo-fotogrametria/                       /cursos/fotogrametria/                301
+/programa-completo-fotogrametria                        /cursos/fotogrametria/                301
+/modulo-1-manejo-basico-de-drones/                      /cursos/fotogrametria-modulo-1/       301
+/modulo-1-manejo-basico-de-drones                       /cursos/fotogrametria-modulo-1/       301
+/modulo-2-captura-de-datos-y-fotogrametria-aplicada/    /cursos/fotogrametria-modulo-2/       301
+/modulo-2-captura-de-datos-y-fotogrametria-aplicada     /cursos/fotogrametria-modulo-2/       301
+/modulo-3-procesamiento-y-productos-avanzados/          /cursos/fotogrametria-modulo-3/       301
+/modulo-3-procesamiento-y-productos-avanzados           /cursos/fotogrametria-modulo-3/       301
+
+# ---- 4 herramientas: URLs viejas WP -> nuevo subdomain app -------------------
+# IMPORTANTE: confirmar los slugs exactos del WP actual antes del cutover.
+# Estos son los más probables. Si en el WP la URL era distinta, agregar variantes.
+
+/conversor-coordenadas/           https://app.equipargeo.com/posgar07/             301
+/conversor-coordenadas            https://app.equipargeo.com/posgar07/             301
+/consulta-faja/                   https://app.equipargeo.com/faja/                 301
+/consulta-faja                    https://app.equipargeo.com/faja/                 301
+/puntos-intermedios/              https://app.equipargeo.com/puntos-intermedios/   301
+/puntos-intermedios               https://app.equipargeo.com/puntos-intermedios/   301
+/conversor-a-dxf/                 https://app.equipargeo.com/conversor-dxf/        301
+/conversor-a-dxf                  https://app.equipargeo.com/conversor-dxf/        301
+
+# ---- Bloqueo de paths WordPress que no existen en Astro ---------------------
+# Devuelven 404 (no redirect), porque no hay equivalente y no queremos
+# que bots los exploren. Si tu WP tenía algún path adicional, agregalo acá.
+
+/wp-admin/*       /404  410
+/wp-admin         /404  410
+/wp-login.php     /404  410
+/wp-content/*     /404  410
+/wp-includes/*    /404  410
+/xmlrpc.php       /404  410
+/wp-json/*        /404  410
+/feed/            /404  410
+/feed/*           /404  410
+/comments/feed/   /404  410
+/?author=*        /404  410
+
+# ---- Plurales y variantes comunes que la gente puede tipear -----------------
+/curso/         /cursos/    301
+/curso          /cursos/    301
+/noticia/       /noticias/  301
+/noticia        /noticias/  301
+/blog/          /noticias/  301
+/blog           /noticias/  301
+/blog/*         /noticias/  301
+/herramientas/  https://app.equipargeo.com/  301
+/herramientas   https://app.equipargeo.com/  301
+/tools/         https://app.equipargeo.com/  301
+/tools          https://app.equipargeo.com/  301
+
+# ---- Querystrings antiguos de WordPress -------------------------------------
+# Astro no maneja query params en _redirects con la misma flexibilidad que .htaccess,
+# así que estos catch-alls capturan los path típicos.
+/index.php   /  301
+/index.html  /  301
+
+# ---- Final: cualquier path que no matchee se sirve normalmente ---------------
+# (NO agregar catch-all /* aquí — eso rompe el routing normal de Astro)

@@ -35,6 +35,23 @@ const shouldNoIndex = noindex || isStaging || !isProd;
   <title>{title}</title>
   <meta name="description" content={description} />
   <meta name="theme-color" content="#18354a" />
+
+  <!-- ========================================================================
+       Google Tag Manager — DESACTIVADO. Activar después del cutover.
+       Reemplazar 'GTM-XXXXXXX' por el container ID real cuando se decida
+       activar tracking. Cloudflare Web Analytics se activa primero desde
+       el panel (sin tocar código).
+       ======================================================================== -->
+  <!--
+  <script is:inline>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-XXXXXXX');
+  </script>
+  -->
+
   <link rel="canonical" href={canonicalURL} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
@@ -63,6 +80,14 @@ const shouldNoIndex = noindex || isStaging || !isProd;
   <slot name="head" />
 </head>
 <body class={bodyClass}>
+  <!-- GTM noscript fallback — descomentar junto con el script del head -->
+  <!--
+  <noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
+  </noscript>
+  -->
+
   <Header />
 
   <main class="flex-1 w-full">

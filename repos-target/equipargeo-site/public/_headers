@@ -1,0 +1,46 @@
+# ============================================================================
+# Headers equipargeo.com — config para Cloudflare Pages
+# ============================================================================
+# Sintaxis: la primera línea es el path pattern, las siguientes (con indent)
+# son los headers que se aplican a ese pattern. Aplican en orden de aparición.
+# ============================================================================
+
+# ---- Security headers (aplican a todo el sitio) -----------------------------
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-XSS-Protection: 1; mode=block
+
+# ---- Cache HTML corto: para que cambios de contenido se vean rápido ---------
+# Las páginas HTML revalidan en cada visita, el server decide si sirve cache.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# ---- Cache largo para assets versionados ------------------------------------
+# Astro genera nombres con hash (ej: chunk.abc123.js), así que cache infinito
+# es seguro: si cambia el contenido cambia el nombre.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# ---- Cache medio para assets estáticos del sitio (imagenes, etc) ------------
+/images/*
+  Cache-Control: public, max-age=86400
+
+/favicon.svg
+  Cache-Control: public, max-age=86400
+
+# ---- robots.txt y sitemap: cache corto para SEO -----------------------------
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+/sitemap-index.xml
+  Cache-Control: public, max-age=3600
+
+/sitemap-*.xml
+  Cache-Control: public, max-age=3600
