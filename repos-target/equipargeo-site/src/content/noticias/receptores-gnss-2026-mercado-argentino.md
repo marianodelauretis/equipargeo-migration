@@ -7,7 +7,7 @@ autor: "Equipo EQUIPAR"
 tags: ["receptores", "gnss", "rtk", "trimble", "chc", "sokkia", "stonex", "emlid", "comparativa"]
 cursoRelacionado: /cursos/gnss-modulo-1/
 destacada: true
-publicada: true
+publicada: false
 ---
 
 Si estás evaluando comprar un receptor GNSS en Argentina en 2026, el menú es bastante distinto al que existía hace 5 años. Marcas que antes no se conseguían hoy tienen distribución local; marcas tradicionales lanzaron modelos nuevos; y empezaron a aparecer alternativas open-hardware que cambian el cálculo costo-beneficio para algunos perfiles.

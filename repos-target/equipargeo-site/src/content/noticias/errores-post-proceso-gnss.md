@@ -7,7 +7,7 @@ autor: "Equipo EQUIPAR"
 tags: ["post-proceso", "gnss", "ambigüedades", "multipath", "qa-qc", "rinex"]
 cursoRelacionado: /cursos/gnss-modulo-3/
 destacada: true
-publicada: true
+publicada: false
 ---
 
 En el post-proceso GNSS, la mayoría de los errores que cuestan trabajo y reputación no son errores del software: son **errores del operador que el software permite que pasen**. Un fix verde no garantiza un resultado correcto, y los reportes con tablas prolijas pueden ocultar problemas serios si no sabés qué mirar.

@@ -57,7 +57,11 @@ Los **9 modulos** tienen precios extraidos del WordPress e insertados en frontma
 - Topografia Mod 1-3: ARS $375.000 / USD 250 (comunidad: ARS $93.750 / USD 62)
 - Fotogrametria Mod 1-3: ARS $750.000 / USD 500 (comunidad: ARS $187.500 / USD 125)
 
-Los **3 programas completos** (gnss.md, topografia.md, fotogrametria.md) no tienen tarjeta de precios individual en el WordPress (la inversion es la suma de los modulos). **No se modificaron** — reportados como blocker.
+Los **3 programas completos** tienen precios calculados como suma de los 3 modulos:
+- GNSS y Topografia: ARS $1.125.000 / USD 750 (comunidad: ARS $281.250 / USD 186)
+- Fotogrametria: ARS $2.250.000 / USD 1.500 (comunidad: ARS $562.500 / USD 375)
+
+CursoLayout incluye nota explicativa "Total cursando los 3 modulos" para programas completos.
 
 Cambios realizados:
 - Schema `config.ts` extendido con campos `formato`, `fechas`, `precios` (objeto estructurado con ars/usd).
@@ -80,23 +84,23 @@ Se verifico el archivo existente (91 lineas) y se agregaron redirects faltantes:
 - `index.astro`: 3 ProgramaCard links `/cursos/?programa=X` → `/cursos/X/`
 
 ### [Fase 5.1] Build
-- Exitoso: 23 paginas, 0 errores, 0 warnings.
-- Tamaño dist: 631 KB.
+- Exitoso: 20 paginas (post cierre de blockers), 0 errores.
 - Sitemap generado por @astrojs/sitemap (`sitemap-index.xml`).
+- Sitemap verificado: 0 URLs de noticias individuales (despublicadas). `/noticias/` presente como index.
 
 ---
 
-## BLOCKERS (impiden cutover)
+## BLOCKERS (impiden cutover) — RESUELTOS
 
-### 1. Precios de programas completos (3 archivos)
-Los 3 programas completos (gnss.md, topografia.md, fotogrametria.md) no tienen precios en el WordPress. Sus cuerpos mantienen textos tipo "Consultá precios..." El layout muestra el sidebar sin seccion de inversion para estos. **Requiere decision**: definir si el programa completo tiene precio propio o es suma de modulos.
+### 1. ~~Precios de programas completos~~ RESUELTO
+Precios calculados como suma de 3 modulos e insertados en frontmatter de gnss.md, topografia.md, fotogrametria.md.
+CursoLayout muestra nota "Total cursando los 3 modulos" para programas completos.
 
-### 2. Marcadores `<!-- COMPLETAR -->` en noticias (3 archivos, 18 ocurrencias)
-Las 3 noticias tienen secciones incompletas con marcadores COMPLETAR. Son contenido editorial que requiere redaccion manual:
-- `receptores-gnss-2026-mercado-argentino.md`: 7 COMPLETAR (precios orientativos, opiniones de modelos, tabla de recomendaciones)
-- `trimble-business-center-2026-review.md`: 7 COMPLETAR (novedades, comparativas, recomendaciones)
-- `errores-post-proceso-gnss.md`: 3 COMPLETAR (descripciones tecnicas detalladas)
-- `contacto.astro`: 1 COMPLETAR (horario real — es un comentario HTML, no visible al usuario)
+### 2. ~~Marcadores COMPLETAR en noticias~~ RESUELTO
+Las 3 noticias despublicadas (`publicada: false`). No se generan en el build ni aparecen en el sitemap.
+Seccion `/noticias/` muestra placeholder "Notas tecnicas — seccion en preparacion" con CTA a WhatsApp.
+Las notas quedan en el repo para completar editorialmente post-cutover.
+- `contacto.astro`: 1 COMPLETAR residual es un comentario HTML interno (no visible al usuario), no es blocker.
 
 ---
 
@@ -137,3 +141,9 @@ El archivo `_headers` incluye HSTS (`max-age=31536000; includeSubDomains`). El p
 
 ## Reemplazos contextuales de copy que requieren revision manual
 Ver `docs/audit/COPY-REVIEW.md` para las 3 frases prohibidas detectadas con sugerencias de reemplazo.
+
+---
+
+## Plan editorial post-cutover
+
+Calendario de publicaciones a definir la semana del 18-22/05/2026. Las 3 notas tecnicas estan redactadas parcialmente en `src/content/noticias/` con `publicada: false`. Completar el contenido editorial, cambiar a `publicada: true` y pushear para que se publiquen automaticamente.
