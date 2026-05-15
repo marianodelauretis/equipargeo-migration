@@ -1,7 +1,7 @@
 ---
 programa: topografia
 titulo: "Programa completo de Topografía de Obra"
-descripcion: "Capacitación integral en técnicas de medición, replanteo y control. Desde el nivel óptico hasta la estación total, con enfoque 100% práctico para obra civil."
+descripcion: "Formación completa en técnicas de medición, replanteo y control. Desde el nivel óptico hasta la estación total, con ejercicios sobre datos reales de obra civil."
 esPrograma: true
 modalidad: online
 duracion: "3 módulos · 12 unidades en total"

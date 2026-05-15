@@ -1,7 +1,7 @@
 ---
 programa: gnss
 titulo: "Programa completo GNSS"
-descripcion: "Itinerario de formación GNSS en 3 módulos: fundamentos, RTK en campo y post-proceso profesional. Capacitación integral para agrimensores, topógrafos e ingenieros que trabajan con receptores satelitales."
+descripcion: "Itinerario de formación GNSS en 3 módulos: fundamentos, RTK en campo y post-proceso profesional. Formación completa para agrimensores, topógrafos e ingenieros que trabajan con receptores satelitales."
 esPrograma: true
 modalidad: online
 duracion: "3 módulos · 12 unidades en total"
