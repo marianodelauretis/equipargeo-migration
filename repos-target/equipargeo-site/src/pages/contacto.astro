@@ -1,0 +1,82 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/Hero.astro';
+import Breadcrumb from '@components/Breadcrumb.astro';
+
+// PLACEHOLDER: cambiar por la URL real del Google Form de contacto cuando Mariano la pase.
+const googleFormSrc = 'https://docs.google.com/forms/d/e/PLACEHOLDER-FORM-CONTACTO/viewform?embedded=true';
+const whatsappNum = '5491155722266';
+const whatsappLink = `https://wa.me/${whatsappNum}?text=${encodeURIComponent('Hola, vengo de equipargeo.com')}`;
+---
+<BaseLayout
+  title="Contacto — EQUIPAR"
+  description="Contactá a EQUIPAR para cursos, asesoría técnica, capacitaciones in-company o consultas sobre las herramientas gratuitas."
+>
+  <Hero
+    titulo="Hablemos"
+    subtitulo="Sobre cursos, asesoría, equipamiento o cualquier consulta técnica. Te respondemos en 24-48 hs hábiles."
+    variante="compact"
+  />
+
+  <div class="container-eg py-8">
+    <Breadcrumb items={[{ href: '/', label: 'Inicio' }, { label: 'Contacto', current: true }]} />
+  </div>
+
+  <section class="section-eg">
+    <div class="container-eg grid lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2">
+        <h2 class="mb-4">Formulario de contacto</h2>
+        <div class="card-eg p-0 overflow-hidden">
+          <iframe
+            src={googleFormSrc}
+            width="100%"
+            height="900"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0"
+            title="Formulario de contacto EQUIPAR"
+            class="w-full"
+          >
+            Cargando formulario…
+          </iframe>
+        </div>
+        <p class="text-sm text-eg-text-muted mt-4">
+          ¿Preferís otro canal? Mirá las opciones de la derecha.
+          <a href={googleFormSrc.replace('?embedded=true', '')} target="_blank" rel="noopener noreferrer" class="text-eg-coral font-bold">Abrir form en otra pestaña</a>.
+        </p>
+      </div>
+
+      <aside>
+        <h2 class="mb-4">Otros canales</h2>
+
+        <div class="card-eg mb-4">
+          <h3 class="text-eg-azul text-lg mb-2 flex items-center gap-2">
+            <span class="text-2xl">💬</span> WhatsApp
+          </h3>
+          <p class="text-sm text-eg-text-muted mb-3">Para consultas rápidas o coordinación de cursos.</p>
+          <a href={whatsappLink} target="_blank" rel="noopener noreferrer" class="btn-eg-primary w-full">
+            Abrir WhatsApp →
+          </a>
+        </div>
+
+        <div class="card-eg mb-4">
+          <h3 class="text-eg-azul text-lg mb-2 flex items-center gap-2">
+            <span class="text-2xl">📅</span> Agendar curso
+          </h3>
+          <p class="text-sm text-eg-text-muted mb-3">Si ya sabés qué curso querés tomar.</p>
+          <a href="/agenda/" class="btn-eg-secondary w-full">Ir a agenda →</a>
+        </div>
+
+        <div class="card-eg">
+          <h3 class="text-eg-azul text-lg mb-2 flex items-center gap-2">
+            <span class="text-2xl">🛠️</span> Herramientas
+          </h3>
+          <p class="text-sm text-eg-text-muted mb-3">No necesitás contactarnos para usarlas — son gratis.</p>
+          <a href="https://app.equipargeo.com/" target="_blank" rel="noopener noreferrer" class="btn-eg-ghost w-full">
+            Ver herramientas ↗
+          </a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

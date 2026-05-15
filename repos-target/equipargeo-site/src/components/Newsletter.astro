@@ -1,0 +1,31 @@
+---
+// Newsletter placeholder. Activar cuando MailerLite esté configurado y haya 3-5 notas publicadas.
+// Por ahora muestra mensaje "Próximamente" sin form activo.
+const activo = false;
+---
+<section class="section-eg bg-eg-azul text-white">
+  <div class="container-eg max-w-2xl text-center">
+    <h2 class="text-white mb-3">Novedades por email</h2>
+    <p class="text-white/85 mb-6 leading-relaxed">
+      {activo
+        ? 'Una vez por semana, novedades de instrumental, software y normativa para profesionales del territorio. Sin spam.'
+        : 'Próximamente vas a poder suscribirte para recibir novedades de instrumental, software y normativa. Mientras tanto, seguinos por las redes.'
+      }
+    </p>
+
+    {activo ? (
+      <form class="flex flex-col sm:flex-row gap-2 max-w-md mx-auto" data-newsletter-form>
+        <input
+          type="email"
+          name="email"
+          required
+          placeholder="tu@email.com"
+          class="flex-1 px-4 py-3 rounded-xl text-eg-text-main bg-white border-0 focus:ring-2 focus:ring-eg-coral"
+        />
+        <button type="submit" class="btn-eg-primary">Suscribirme</button>
+      </form>
+    ) : (
+      <span class="inline-block px-4 py-2 bg-white/10 rounded-full text-sm">📬 Próximamente</span>
+    )}
+  </div>
+</section>

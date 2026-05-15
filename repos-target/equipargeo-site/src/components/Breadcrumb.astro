@@ -1,0 +1,42 @@
+---
+export interface BreadcrumbItem {
+  href?: string;
+  label: string;
+  current?: boolean;
+}
+
+export interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items
+    .filter((item) => item.href || item.current)
+    .map((item, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: item.label,
+      ...(item.href && { item: new URL(item.href, Astro.site).toString() }),
+    })),
+};
+---
+<nav aria-label="Migas de pan" class="text-sm text-eg-text-muted mb-4">
+  <ol class="flex flex-wrap items-center gap-1.5">
+    {items.map((item, i) => (
+      <li class="flex items-center gap-1.5">
+        {i > 0 && <span class="text-eg-gris/60" aria-hidden="true">·</span>}
+        {item.current ? (
+          <span class="text-eg-text-main font-medium" aria-current="page">{item.label}</span>
+        ) : (
+          <a href={item.href} class="hover:text-eg-azul">{item.label}</a>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

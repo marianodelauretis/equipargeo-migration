@@ -1,0 +1,103 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/Hero.astro';
+import Breadcrumb from '@components/Breadcrumb.astro';
+
+const servicios = [
+  {
+    icono: '🎯',
+    titulo: 'Asesoría técnica',
+    desc: 'Consultoría puntual para resolver problemas específicos: configuración de receivers, calibración de equipos, ajuste de redes, validación de mediciones, revisión de workflows.',
+    items: [
+      'Diagnóstico de mediciones y datos crudos',
+      'Configuración de bases RTK / NTRIP',
+      'Ajuste de redes geodésicas',
+      'Validación de procesamiento POSGAR07',
+      'Revisión de workflows GNSS / TS / drones',
+    ],
+  },
+  {
+    icono: '🛒',
+    titulo: 'Asesoría en equipamiento',
+    desc: 'Te ayudamos a elegir y configurar el equipo correcto según tu tipo de trabajo, presupuesto y necesidades reales. Sin comisiones ni intereses con vendedores.',
+    items: [
+      'Evaluación de necesidades reales',
+      'Comparativa entre modelos y marcas',
+      'Optimización del presupuesto',
+      'Setup inicial post-compra',
+      'Capacitación al equipo en uso del nuevo instrumental',
+    ],
+  },
+  {
+    icono: '👥',
+    titulo: 'Capacitación a medida',
+    desc: 'Programas in-company para estudios, municipios y empresas. Diseñamos el contenido alrededor de tu flujo de trabajo real, no un curso enlatado.',
+    items: [
+      'Análisis previo de necesidades del equipo',
+      'Programa custom según workflows internos',
+      'Modalidad presencial, online o híbrida',
+      'Material adaptado a sus procesos',
+      'Soporte post-capacitación',
+    ],
+  },
+];
+---
+<BaseLayout
+  title="Asesoría técnica y consultoría — EQUIPAR"
+  description="Asesoría técnica, consultoría en equipamiento GNSS y capacitación a medida para estudios y empresas. Sin comisiones, sin compromiso de compra."
+>
+  <Hero
+    titulo="Asesoría técnica para profesionales y empresas"
+    subtitulo="Te ayudamos a resolver problemas puntuales, elegir el equipo correcto o capacitar a tu equipo en herramientas y workflows específicos."
+    ctaPrimario={{ href: '/contacto/', label: 'Pedir asesoría' }}
+    variante="compact"
+  />
+
+  <div class="container-eg py-8">
+    <Breadcrumb items={[{ href: '/', label: 'Inicio' }, { label: 'Asesoría', current: true }]} />
+  </div>
+
+  <section class="section-eg">
+    <div class="container-eg">
+      <div class="grid lg:grid-cols-3 gap-8">
+        {servicios.map((s) => (
+          <article class="card-eg flex flex-col gap-3">
+            <div class="text-4xl mb-2">{s.icono}</div>
+            <h3 class="text-eg-azul">{s.titulo}</h3>
+            <p class="text-eg-text-muted text-sm leading-relaxed">{s.desc}</p>
+            <ul class="text-sm text-eg-text-main space-y-1.5 pt-3 border-t border-eg-borde mt-2">
+              {s.items.map((item) => (
+                <li class="flex gap-2"><span class="text-eg-coral font-bold">✓</span> {item}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section-eg bg-eg-bg-soft">
+    <div class="container-eg max-w-3xl text-center">
+      <h2 class="mb-4">¿Cómo trabajamos?</h2>
+      <div class="grid sm:grid-cols-3 gap-6 mt-8">
+        <div>
+          <div class="w-12 h-12 rounded-full bg-eg-coral text-white text-xl font-bold flex items-center justify-center mx-auto mb-3">1</div>
+          <h4 class="text-eg-azul mb-2">Charla inicial</h4>
+          <p class="text-eg-text-muted text-sm">Entendemos qué necesitás, sin compromiso.</p>
+        </div>
+        <div>
+          <div class="w-12 h-12 rounded-full bg-eg-coral text-white text-xl font-bold flex items-center justify-center mx-auto mb-3">2</div>
+          <h4 class="text-eg-azul mb-2">Propuesta</h4>
+          <p class="text-eg-text-muted text-sm">Definimos alcance, tiempos y costo claros.</p>
+        </div>
+        <div>
+          <div class="w-12 h-12 rounded-full bg-eg-coral text-white text-xl font-bold flex items-center justify-center mx-auto mb-3">3</div>
+          <h4 class="text-eg-azul mb-2">Ejecución</h4>
+          <p class="text-eg-text-muted text-sm">Trabajamos hasta que el problema esté resuelto.</p>
+        </div>
+      </div>
+
+      <a href="/contacto/" class="btn-eg-primary mt-10">Pedir asesoría</a>
+    </div>
+  </section>
+</BaseLayout>

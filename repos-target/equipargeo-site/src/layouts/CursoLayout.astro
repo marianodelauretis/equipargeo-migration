@@ -1,0 +1,126 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '@components/Breadcrumb.astro';
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  curso: CollectionEntry<'cursos'>;
+}
+
+const { curso } = Astro.props;
+const { titulo, descripcion, programa, modulo, esPrograma, modalidad, duracion, precio, instructor, fechaInicio, requisitos, temario } = curso.data;
+
+const programaLabels = {
+  gnss: 'GNSS',
+  topografia: 'Topografía',
+  fotogrametria: 'Fotogrametría',
+};
+
+const breadcrumbItems = [
+  { href: '/', label: 'Inicio' },
+  { href: '/cursos/', label: 'Cursos' },
+  { href: `/cursos/?programa=${programa}`, label: programaLabels[programa] },
+  { label: titulo, current: true },
+];
+
+const schemaCurso = {
+  '@context': 'https://schema.org',
+  '@type': 'Course',
+  name: titulo,
+  description: descripcion,
+  provider: {
+    '@type': 'Organization',
+    name: 'EQUIPAR',
+    sameAs: 'https://equipargeo.com',
+  },
+  inLanguage: 'es-AR',
+  educationalLevel: 'Professional',
+};
+---
+<BaseLayout title={`${titulo} — EQUIPAR`} description={descripcion}>
+  <article class="container-eg py-8 md:py-12">
+    <Breadcrumb items={breadcrumbItems} />
+
+    <header class="mb-8 animate-fade-in">
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <span class="badge-eg">{programaLabels[programa]}</span>
+        {esPrograma && <span class="badge-eg bg-eg-azul">Programa completo</span>}
+        {modulo && <span class="text-eg-text-muted text-sm">Módulo {modulo}</span>}
+        <span class="text-eg-text-muted text-sm">· {modalidad === 'online' ? 'Online' : modalidad === 'presencial' ? 'Presencial' : 'Híbrida'}</span>
+      </div>
+
+      <h1 class="mb-3">{titulo}</h1>
+      <p class="text-lg text-eg-text-muted leading-relaxed">{descripcion}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 prose-eg">
+        <slot />
+      </div>
+
+      <aside class="lg:col-span-1">
+        <div class="card-eg sticky top-6">
+          <h3 class="text-lg mb-4 pb-3 border-b border-eg-borde">Detalles</h3>
+
+          {duracion && (
+            <div class="mb-3">
+              <div class="text-xs uppercase tracking-wide text-eg-gris font-bold">Duración</div>
+              <div class="text-eg-text-main">{duracion}</div>
+            </div>
+          )}
+
+          {fechaInicio && (
+            <div class="mb-3">
+              <div class="text-xs uppercase tracking-wide text-eg-gris font-bold">Próxima fecha</div>
+              <div class="text-eg-text-main">{fechaInicio}</div>
+            </div>
+          )}
+
+          {instructor && (
+            <div class="mb-3">
+              <div class="text-xs uppercase tracking-wide text-eg-gris font-bold">Instructor</div>
+              <div class="text-eg-text-main">{instructor}</div>
+            </div>
+          )}
+
+          {precio && (
+            <div class="mb-3">
+              <div class="text-xs uppercase tracking-wide text-eg-gris font-bold">Inversión</div>
+              <div class="text-eg-text-main font-bold text-lg">{precio}</div>
+            </div>
+          )}
+
+          {requisitos && requisitos.length > 0 && (
+            <div class="mb-4">
+              <div class="text-xs uppercase tracking-wide text-eg-gris font-bold mb-2">Requisitos previos</div>
+              <ul class="list-disc pl-5 text-sm text-eg-text-main space-y-1">
+                {requisitos.map((req) => <li>{req}</li>)}
+              </ul>
+            </div>
+          )}
+
+          <a href="/agenda/" class="btn-eg-primary w-full mt-4">Inscribirme</a>
+          <a href="/contacto/" class="btn-eg-ghost w-full mt-2">Consultar dudas</a>
+        </div>
+      </aside>
+    </div>
+
+    {temario && temario.length > 0 && (
+      <section class="mt-12">
+        <h2 class="mb-6">Temario detallado</h2>
+        <ol class="space-y-3">
+          {temario.map((item, i) => (
+            <li class="flex gap-4 items-start p-4 bg-eg-bg-soft rounded-xl border border-eg-borde">
+              <span class="flex-shrink-0 w-8 h-8 rounded-full bg-eg-coral text-white font-bold flex items-center justify-center text-sm">
+                {i + 1}
+              </span>
+              <span class="text-eg-text-main pt-1">{item}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+    )}
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify(schemaCurso)} />
+</BaseLayout>

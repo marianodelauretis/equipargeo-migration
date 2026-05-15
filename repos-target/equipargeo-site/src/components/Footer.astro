@@ -1,0 +1,45 @@
+---
+const year = new Date().getFullYear();
+---
+<footer class="bg-eg-azul text-white/70 mt-16">
+  <div class="container-eg-wide py-12 grid md:grid-cols-4 gap-8">
+    <div class="md:col-span-2">
+      <div class="flex items-center gap-2 font-bold text-white text-lg mb-3">
+        <span class="w-2.5 h-2.5 rounded-full bg-eg-coral inline-block"></span>
+        EQUIPAR
+      </div>
+      <p class="text-sm leading-relaxed max-w-md">
+        Cursos prácticos y herramientas para profesionales del territorio. GNSS, topografía,
+        fotogrametría y procesamiento. Instructores en actividad, material descargable, casos reales.
+      </p>
+    </div>
+
+    <div>
+      <h4 class="text-white text-sm font-bold uppercase tracking-wide mb-3">Recursos</h4>
+      <ul class="space-y-2 text-sm">
+        <li><a href="/cursos/" class="hover:text-white">Cursos</a></li>
+        <li><a href="/noticias/" class="hover:text-white">Noticias</a></li>
+        <li><a href="https://app.equipargeo.com/" target="_blank" rel="noopener noreferrer" class="hover:text-white">Herramientas gratuitas ↗</a></li>
+        <li><a href="/asesoria/" class="hover:text-white">Asesoría técnica</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 class="text-white text-sm font-bold uppercase tracking-wide mb-3">Contacto</h4>
+      <ul class="space-y-2 text-sm">
+        <li><a href="/contacto/" class="hover:text-white">Formulario</a></li>
+        <li><a href="/sobre/" class="hover:text-white">Sobre EQUIPAR</a></li>
+        <li><a href="/agenda/" class="hover:text-white">Agendar curso</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="container-eg-wide py-4 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div>© {year} EQUIPAR · Capacitación para profesionales del territorio</div>
+      <div class="flex gap-4">
+        <a href="https://app.equipargeo.com/" target="_blank" rel="noopener noreferrer" class="hover:text-white">app.equipargeo.com ↗</a>
+      </div>
+    </div>
+  </div>
+</footer>

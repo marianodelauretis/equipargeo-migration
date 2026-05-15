@@ -1,0 +1,75 @@
+---
+import Header from '@components/Header.astro';
+import Footer from '@components/Footer.astro';
+import CtaWhatsapp from '@components/CtaWhatsapp.astro';
+import '@styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  noindex?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage = '/images/og-default.jpg',
+  noindex = false,
+  bodyClass = '',
+} = Astro.props;
+
+const canonicalURL = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
+const isStaging = Astro.url.hostname.includes('pages.dev') || Astro.url.hostname.includes('staging');
+const isProd = import.meta.env.MODE === 'production';
+const shouldNoIndex = noindex || isStaging || !isProd;
+---
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta name="theme-color" content="#18354a" />
+  <link rel="canonical" href={canonicalURL} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  {shouldNoIndex && <meta name="robots" content="noindex,nofollow,noarchive" />}
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:site_name" content="EQUIPAR" />
+  {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site).toString()} />}
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+
+  <!-- Sitemap -->
+  <link rel="sitemap" href="/sitemap-index.xml" />
+
+  <!-- Preconnect a CDN (para futuras herramientas embebidas) -->
+  <link rel="preconnect" href="https://app.equipargeo.com" />
+
+  <slot name="head" />
+</head>
+<body class={bodyClass}>
+  <Header />
+
+  <main class="flex-1 w-full">
+    <slot />
+  </main>
+
+  <Footer />
+  <CtaWhatsapp />
+</body>
+</html>

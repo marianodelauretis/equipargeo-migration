@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   EQUIPARGEO — Estilos globales
+   ========================================================================== */
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans text-eg-text-main bg-white antialiased;
+    margin: 0;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-eg-azul font-bold;
+    line-height: 1.2;
+  }
+
+  h1 { @apply text-3xl md:text-4xl; }
+  h2 { @apply text-2xl md:text-3xl; }
+  h3 { @apply text-xl md:text-2xl; }
+  h4 { @apply text-lg md:text-xl; }
+
+  p { @apply leading-relaxed; }
+
+  a { @apply text-eg-azul; }
+  a:hover { @apply underline; }
+
+  /* Focus visible accesibilidad */
+  :focus-visible {
+    outline: 3px solid #d8e8f7;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  /* Container estándar */
+  .container-eg {
+    @apply mx-auto px-4 w-full;
+    max-width: 1100px;
+  }
+
+  .container-eg-wide {
+    @apply mx-auto px-4 w-full;
+    max-width: 1200px;
+  }
+
+  /* Botones */
+  .btn-eg {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-150 no-underline;
+  }
+  .btn-eg-primary {
+    @apply btn-eg bg-eg-coral text-white shadow-eg-coral;
+  }
+  .btn-eg-primary:hover {
+    @apply bg-eg-coral-hover -translate-y-0.5;
+    text-decoration: none;
+  }
+  .btn-eg-secondary {
+    @apply btn-eg bg-white text-eg-azul border-2 border-eg-azul;
+  }
+  .btn-eg-secondary:hover {
+    @apply bg-eg-azul text-white;
+    text-decoration: none;
+  }
+  .btn-eg-ghost {
+    @apply btn-eg bg-transparent text-eg-azul border border-eg-borde;
+  }
+  .btn-eg-ghost:hover {
+    @apply bg-eg-bg-soft;
+    text-decoration: none;
+  }
+
+  /* Cards */
+  .card-eg {
+    @apply bg-white border border-eg-borde rounded-2xl p-6 shadow-eg;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+  .card-eg-hover:hover {
+    @apply shadow-eg-lg border-eg-coral;
+    transform: translateY(-3px);
+  }
+
+  /* Badge */
+  .badge-eg {
+    @apply inline-block bg-eg-coral text-white text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full;
+  }
+
+  /* Section spacing */
+  .section-eg {
+    @apply py-12 md:py-16;
+  }
+
+  /* Prose tweaks para markdown */
+  .prose-eg {
+    @apply max-w-none;
+  }
+  .prose-eg h2 { @apply mt-10 mb-4; }
+  .prose-eg h3 { @apply mt-8 mb-3; }
+  .prose-eg p { @apply my-4 text-eg-text-main; }
+  .prose-eg ul { @apply my-4 pl-6 list-disc; }
+  .prose-eg ol { @apply my-4 pl-6 list-decimal; }
+  .prose-eg li { @apply my-2; }
+  .prose-eg a { @apply text-eg-coral underline; }
+  .prose-eg a:hover { @apply text-eg-coral-hover; }
+  .prose-eg strong { @apply text-eg-azul; }
+  .prose-eg blockquote {
+    @apply pl-4 border-l-4 border-eg-coral italic text-eg-text-muted my-6;
+  }
+  .prose-eg code {
+    @apply bg-eg-bg-soft px-1.5 py-0.5 rounded text-eg-azul font-mono text-sm;
+  }
+}
+
+/* Animaciones de entrada */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

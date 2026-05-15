@@ -1,0 +1,81 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/Hero.astro';
+import Breadcrumb from '@components/Breadcrumb.astro';
+import { getCollection } from 'astro:content';
+
+const cursos = await getCollection('cursos', ({ data }) => data.publicado);
+
+const programas = {
+  gnss: { titulo: 'GNSS', icono: '📡', desc: 'Receivers, RTK, post-proceso. Desde fundamentos hasta resolución de ambigüedades.' },
+  topografia: { titulo: 'Topografía', icono: '📐', desc: 'Estaciones totales, nivelación y replanteo. Vuelco a CAD.' },
+  fotogrametria: { titulo: 'Fotogrametría', icono: '🚁', desc: 'Drones, captura, procesamiento y productos finales.' },
+};
+
+const cursosPorPrograma = (prog: keyof typeof programas) =>
+  cursos
+    .filter((c) => c.data.programa === prog)
+    .sort((a, b) => a.data.orden - b.data.orden);
+
+const programaKeys = Object.keys(programas) as Array<keyof typeof programas>;
+---
+<BaseLayout
+  title="Cursos — EQUIPAR"
+  description="Cursos prácticos en GNSS, topografía y fotogrametría. 3 programas, 3 módulos cada uno. Online, con material descargable y casos reales."
+>
+  <Hero
+    titulo="Cursos prácticos para profesionales del territorio"
+    subtitulo="Tres programas de tres módulos cada uno. Cursá el programa completo o módulos sueltos según lo que necesites."
+    variante="compact"
+  />
+
+  <div class="container-eg py-8">
+    <Breadcrumb items={[{ href: '/', label: 'Inicio' }, { label: 'Cursos', current: true }]} />
+  </div>
+
+  {programaKeys.map((key) => {
+    const programa = programas[key];
+    const cursosDelPrograma = cursosPorPrograma(key);
+    const programaCompleto = cursosDelPrograma.find((c) => c.data.esPrograma);
+    const modulos = cursosDelPrograma.filter((c) => !c.data.esPrograma);
+
+    return (
+      <section class="section-eg" id={key}>
+        <div class="container-eg">
+          <div class="mb-8 flex flex-wrap items-end gap-4 justify-between">
+            <div class="flex items-center gap-4">
+              <div class="text-5xl">{programa.icono}</div>
+              <div>
+                <h2 class="mb-2">{programa.titulo}</h2>
+                <p class="text-eg-text-muted">{programa.desc}</p>
+              </div>
+            </div>
+            {programaCompleto && (
+              <a href={`/cursos/${programaCompleto.slug}/`} class="btn-eg-secondary">
+                Ver programa completo →
+              </a>
+            )}
+          </div>
+
+          {modulos.length > 0 ? (
+            <div class="grid md:grid-cols-3 gap-6">
+              {modulos.map((modulo) => (
+                <a href={`/cursos/${modulo.slug}/`} class="card-eg card-eg-hover flex flex-col gap-3 no-underline hover:no-underline">
+                  <div class="text-sm text-eg-coral font-bold">Módulo {modulo.data.modulo}</div>
+                  <h3 class="text-eg-azul text-lg">{modulo.data.titulo}</h3>
+                  <p class="text-eg-text-muted text-sm leading-relaxed flex-1">{modulo.data.descripcion}</p>
+                  <div class="flex items-center justify-between pt-3 border-t border-eg-borde text-sm">
+                    <span class="text-eg-text-muted">{modulo.data.duracion ?? 'Consultar'}</span>
+                    <span class="text-eg-coral font-bold">Ver módulo →</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <p class="text-eg-text-muted italic">Próximamente.</p>
+          )}
+        </div>
+      </section>
+    );
+  })}
+</BaseLayout>

@@ -1,0 +1,51 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/Hero.astro';
+import Breadcrumb from '@components/Breadcrumb.astro';
+
+// PLACEHOLDER: cambiar por la URL real del Google Form de agenda cuando Mariano la pase.
+// Para obtener la URL embed: en Google Forms → "Enviar" → ícono <> → copiar src del iframe.
+const googleFormSrc = 'https://docs.google.com/forms/d/e/PLACEHOLDER-FORM-AGENDA/viewform?embedded=true';
+---
+<BaseLayout
+  title="Agendar curso — EQUIPAR"
+  description="Reservá tu lugar en un curso de EQUIPAR. Te confirmamos disponibilidad, fechas y forma de pago a la brevedad."
+>
+  <Hero
+    titulo="Agendá tu curso"
+    subtitulo="Completá el formulario y te confirmamos disponibilidad, próximas fechas y formas de pago."
+    variante="compact"
+  />
+
+  <div class="container-eg py-8">
+    <Breadcrumb items={[{ href: '/', label: 'Inicio' }, { label: 'Agendar', current: true }]} />
+  </div>
+
+  <section class="section-eg">
+    <div class="container-eg max-w-3xl">
+      <div class="card-eg p-0 overflow-hidden">
+        <iframe
+          src={googleFormSrc}
+          width="100%"
+          height="900"
+          frameborder="0"
+          marginheight="0"
+          marginwidth="0"
+          title="Formulario de agenda EQUIPAR"
+          class="w-full"
+        >
+          Cargando formulario…
+        </iframe>
+      </div>
+
+      <p class="text-center text-sm text-eg-text-muted mt-6">
+        ¿Problemas con el formulario?
+        <a href="/contacto/" class="text-eg-coral font-bold">Escribinos directo</a>
+        o
+        <a href={googleFormSrc.replace('?embedded=true', '')} target="_blank" rel="noopener noreferrer" class="text-eg-coral font-bold">
+          abrilo en una pestaña nueva
+        </a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,21 @@
+{
+  "name": "equipargeo-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sitio principal de equipargeo.com en Astro + Tailwind",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.0.0",
+    "@astrojs/tailwind": "^5.1.4",
+    "@astrojs/mdx": "^4.0.0",
+    "@astrojs/sitemap": "^3.2.1",
+    "tailwindcss": "^3.4.17"
+  }
+}

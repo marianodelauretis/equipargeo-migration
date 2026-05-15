@@ -1,0 +1,52 @@
+---
+export interface Props {
+  titulo: string;
+  subtitulo?: string;
+  ctaPrimario?: { href: string; label: string };
+  ctaSecundario?: { href: string; label: string };
+  variante?: 'default' | 'compact';
+}
+
+const {
+  titulo,
+  subtitulo,
+  ctaPrimario,
+  ctaSecundario,
+  variante = 'default',
+} = Astro.props;
+---
+<section class:list={[
+  'relative overflow-hidden bg-gradient-to-b from-eg-azul-dark to-eg-azul text-white',
+  variante === 'default' ? 'py-16 md:py-24' : 'py-10 md:py-14',
+]}>
+  <!-- Patrón sutil de fondo -->
+  <div class="absolute inset-0 opacity-10 pointer-events-none">
+    <div class="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-eg-coral blur-3xl"></div>
+    <div class="absolute -bottom-20 -left-20 w-72 h-72 rounded-full bg-white blur-3xl"></div>
+  </div>
+
+  <div class="container-eg relative text-center animate-fade-in">
+    <h1 class="text-white mb-4 text-3xl md:text-5xl font-extrabold max-w-3xl mx-auto leading-tight">
+      {titulo}
+    </h1>
+    {subtitulo && (
+      <p class="text-white/85 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-8">
+        {subtitulo}
+      </p>
+    )}
+    {(ctaPrimario || ctaSecundario) && (
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        {ctaPrimario && (
+          <a href={ctaPrimario.href} class="btn-eg-primary">
+            {ctaPrimario.label}
+          </a>
+        )}
+        {ctaSecundario && (
+          <a href={ctaSecundario.href} class="btn-eg inline-flex bg-white/10 text-white border-2 border-white/30 hover:bg-white hover:text-eg-azul">
+            {ctaSecundario.label}
+          </a>
+        )}
+      </div>
+    )}
+  </div>
+</section>

@@ -1,0 +1,85 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/Hero.astro';
+import Breadcrumb from '@components/Breadcrumb.astro';
+---
+<BaseLayout
+  title="Sobre EQUIPAR — Capacitación para el territorio"
+  description="Somos un equipo de profesionales del territorio dedicados a compartir lo que aprendemos en obra y gabinete. Capacitación, asesoría y herramientas para Argentina."
+>
+  <Hero
+    titulo="Sobre EQUIPAR"
+    subtitulo="Somos un equipo de profesionales del territorio que se cansó de los cursos teóricos."
+    variante="compact"
+  />
+
+  <div class="container-eg py-8">
+    <Breadcrumb items={[{ href: '/', label: 'Inicio' }, { label: 'Sobre', current: true }]} />
+  </div>
+
+  <article class="container-eg max-w-3xl section-eg prose-eg">
+    <h2>Nuestra historia</h2>
+    <p>
+      EQUIPAR nace de la necesidad concreta de profesionales del territorio que trabajan todos los días con GNSS,
+      topografía y fotogrametría: <strong>la capacitación disponible no acompaña la realidad del trabajo.</strong> Cursos
+      llenos de teoría, instructores que no salieron a obra hace años, materiales genéricos sin contexto argentino.
+    </p>
+
+    <p>
+      Empezamos como un proyecto chico para compartir lo que íbamos aprendiendo entre nosotros: workflows que nos
+      funcionaban, errores típicos que detectábamos en mediciones, herramientas que hacíamos para resolver problemas
+      puntuales del día a día. Con el tiempo, eso se convirtió en cursos estructurados, asesoría técnica y un conjunto
+      de herramientas gratuitas que podés usar en este momento.
+    </p>
+
+    <h2>Cómo trabajamos</h2>
+    <p>
+      <strong>Los instructores están en actividad.</strong> Cada profesional que da clases en EQUIPAR sigue trabajando hoy en
+      proyectos reales de agrimensura, topografía o fotogrametría. No son teóricos, no son académicos. Te enseñan lo que
+      hicieron la semana pasada.
+    </p>
+
+    <p>
+      <strong>Casos reales.</strong> Los ejercicios y ejemplos vienen de proyectos concretos: mensuras en Buenos Aires, replanteos
+      en obra civil, levantamientos con drone para urbanismo, estudios de cuenca, monitoreo de estructuras. Si te
+      encontrás con un problema en obra, probablemente lo cubrimos en algún módulo.
+    </p>
+
+    <p>
+      <strong>Material que te queda.</strong> Apuntes, planillas, plantillas de cálculo, ejemplos de archivos crudos, configuraciones
+      de software. Todo descargable para que lo tengas como referencia cuando lo necesites en el trabajo.
+    </p>
+
+    <h2>Qué hacemos</h2>
+    <ul>
+      <li><strong><a href="/cursos/">Cursos prácticos</a></strong> en GNSS, topografía y fotogrametría — 3 programas de 3 módulos cada uno.</li>
+      <li><strong><a href="/asesoria/">Asesoría técnica y consultoría</a></strong> en equipamiento y workflows.</li>
+      <li><strong><a href="https://app.equipargeo.com/" target="_blank" rel="noopener noreferrer">Herramientas gratuitas</a></strong> que usan miles de profesionales en Argentina: conversor POSGAR07, faja GNSS, generador de puntos intermedios, conversor a DXF.</li>
+      <li><strong><a href="/noticias/">Novedades</a></strong> de instrumental, software y normativa para que estés al día sin tener que perseguir 20 fuentes distintas.</li>
+    </ul>
+
+    <h2>Nuestro compromiso</h2>
+    <p>
+      <strong>No vendemos equipos.</strong> No tenemos comisiones con marcas. Las recomendaciones de equipamiento son honestas y se
+      basan en lo que funciona realmente, no en lo que nos dejaría más margen.
+    </p>
+
+    <p>
+      <strong>No prometemos lo que no podemos cumplir.</strong> Si una capacitación no es la adecuada para tu nivel o necesidad,
+      te lo decimos. Si una asesoría se resuelve en una llamada, no te cobramos como si fuera un proyecto de 3 meses.
+    </p>
+
+    <p>
+      <strong>Te acompañamos después.</strong> Una vez que terminás un curso, las consultas técnicas siguen abiertas. Que el material
+      te quede en disco es lo mínimo; que los instructores sigan disponibles cuando aparezca un problema raro en obra es lo
+      que hace la diferencia.
+    </p>
+
+    <h2>¿Querés sumarte?</h2>
+    <p>
+      Si querés capacitarte, pedir una asesoría puntual o consultar por un proyecto a medida, podés
+      <a href="/contacto/">contactarnos por acá</a>. Si solo querés probar las herramientas, son
+      <a href="https://app.equipargeo.com/" target="_blank" rel="noopener noreferrer">gratuitas y están disponibles ahora mismo</a>.
+    </p>
+  </article>
+</BaseLayout>

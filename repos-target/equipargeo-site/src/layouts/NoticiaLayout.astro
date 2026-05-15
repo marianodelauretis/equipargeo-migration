@@ -1,0 +1,93 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '@components/Breadcrumb.astro';
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  noticia: CollectionEntry<'noticias'>;
+}
+
+const { noticia } = Astro.props;
+const { titulo, descripcion, fecha, categoria, autor, tags, imagen, imagenAlt, cursoRelacionado } = noticia.data;
+
+const categoriaLabels: Record<string, string> = {
+  'instrumental-gnss': 'Instrumental GNSS',
+  'estaciones-totales-nivelacion': 'Estaciones totales y nivelación',
+  'drones-fotogrametria': 'Drones y fotogrametría',
+  'escaneres-slam': 'Escáneres y SLAM',
+  'software-procesamiento': 'Software y procesamiento',
+  'normativa-catastro': 'Normativa y catastro',
+  'casos-practicos': 'Casos prácticos',
+  'comunidad-eventos': 'Comunidad y eventos',
+};
+
+const fechaFormateada = fecha.toLocaleDateString('es-AR', {
+  day: 'numeric', month: 'long', year: 'numeric',
+});
+
+const breadcrumbItems = [
+  { href: '/', label: 'Inicio' },
+  { href: '/noticias/', label: 'Noticias' },
+  { href: `/noticias/?categoria=${categoria}`, label: categoriaLabels[categoria] },
+  { label: titulo, current: true },
+];
+
+const schemaArticle = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: titulo,
+  description: descripcion,
+  datePublished: fecha.toISOString(),
+  author: { '@type': 'Organization', name: autor },
+  publisher: { '@type': 'Organization', name: 'EQUIPAR', url: 'https://equipargeo.com' },
+  inLanguage: 'es-AR',
+};
+---
+<BaseLayout title={`${titulo} — EQUIPAR`} description={descripcion} ogImage={imagen}>
+  <article class="container-eg py-8 md:py-12 max-w-3xl">
+    <Breadcrumb items={breadcrumbItems} />
+
+    <header class="mb-8 animate-fade-in">
+      <div class="flex flex-wrap items-center gap-3 mb-4 text-sm">
+        <span class="badge-eg">{categoriaLabels[categoria]}</span>
+        <time datetime={fecha.toISOString()} class="text-eg-text-muted">{fechaFormateada}</time>
+      </div>
+
+      <h1 class="mb-4">{titulo}</h1>
+      <p class="text-lg text-eg-text-muted leading-relaxed">{descripcion}</p>
+
+      {imagen && (
+        <figure class="mt-6 -mx-4 md:mx-0">
+          <img src={imagen} alt={imagenAlt ?? titulo} class="w-full md:rounded-2xl" loading="eager" />
+        </figure>
+      )}
+    </header>
+
+    <div class="prose-eg">
+      <slot />
+    </div>
+
+    {tags && tags.length > 0 && (
+      <footer class="mt-12 pt-6 border-t border-eg-borde">
+        <div class="text-xs uppercase tracking-wide text-eg-gris font-bold mb-2">Tags</div>
+        <div class="flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <span class="text-sm px-3 py-1 bg-eg-bg-soft border border-eg-borde rounded-full text-eg-text-muted">
+              {tag}
+            </span>
+          ))}
+        </div>
+      </footer>
+    )}
+
+    {cursoRelacionado && (
+      <aside class="mt-12 p-6 bg-eg-bg-soft border border-eg-borde rounded-2xl">
+        <h3 class="mb-2">Capacitate en este tema</h3>
+        <p class="text-eg-text-muted mb-4">Profundizá lo visto en este artículo con el curso correspondiente.</p>
+        <a href={cursoRelacionado} class="btn-eg-primary">Ver curso</a>
+      </aside>
+    )}
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify(schemaArticle)} />
+</BaseLayout>

@@ -1,0 +1,48 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  noticia: CollectionEntry<'noticias'>;
+}
+
+const { noticia } = Astro.props;
+const { titulo, descripcion, fecha, categoria, imagen, imagenAlt } = noticia.data;
+
+const categoriaLabels: Record<string, string> = {
+  'instrumental-gnss': 'Instrumental GNSS',
+  'estaciones-totales-nivelacion': 'Estaciones y nivelación',
+  'drones-fotogrametria': 'Drones',
+  'escaneres-slam': 'Escáneres y SLAM',
+  'software-procesamiento': 'Software',
+  'normativa-catastro': 'Normativa',
+  'casos-practicos': 'Casos prácticos',
+  'comunidad-eventos': 'Comunidad',
+};
+
+const fechaFormateada = fecha.toLocaleDateString('es-AR', {
+  day: 'numeric', month: 'short', year: 'numeric',
+});
+
+const href = `/noticias/${noticia.slug}/`;
+---
+<a href={href} class="card-eg card-eg-hover flex flex-col gap-3 no-underline hover:no-underline p-0 overflow-hidden">
+  {imagen ? (
+    <div class="aspect-video bg-eg-bg-soft overflow-hidden">
+      <img src={imagen} alt={imagenAlt ?? titulo} class="w-full h-full object-cover" loading="lazy" />
+    </div>
+  ) : (
+    <div class="aspect-video bg-gradient-to-br from-eg-azul to-eg-azul-dark flex items-center justify-center">
+      <span class="text-white/40 text-6xl font-bold">EG</span>
+    </div>
+  )}
+
+  <div class="p-5 flex flex-col gap-2 flex-1">
+    <div class="flex items-center justify-between text-xs">
+      <span class="text-eg-coral font-bold uppercase tracking-wide">{categoriaLabels[categoria]}</span>
+      <time datetime={fecha.toISOString()} class="text-eg-text-muted">{fechaFormateada}</time>
+    </div>
+    <h3 class="text-eg-azul text-lg leading-tight">{titulo}</h3>
+    <p class="text-eg-text-muted text-sm leading-relaxed line-clamp-3 flex-1">{descripcion}</p>
+    <span class="text-eg-coral font-bold text-sm mt-2">Leer más →</span>
+  </div>
+</a>

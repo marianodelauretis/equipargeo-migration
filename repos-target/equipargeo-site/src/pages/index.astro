@@ -1,0 +1,147 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/Hero.astro';
+import ProgramaCard from '@components/ProgramaCard.astro';
+import HerramientasFeatured from '@components/HerramientasFeatured.astro';
+import Newsletter from '@components/Newsletter.astro';
+import NoticiaCard from '@components/NoticiaCard.astro';
+import { getCollection } from 'astro:content';
+
+// Últimas 3 noticias publicadas
+const noticias = await getCollection('noticias', ({ data }) => data.publicada);
+const noticiasRecientes = noticias
+  .sort((a, b) => b.data.fecha.valueOf() - a.data.fecha.valueOf())
+  .slice(0, 3);
+
+const features = [
+  { icon: '🎯', titulo: 'Instructores en actividad', desc: 'Aprendés de profesionales que están trabajando hoy en obra y gabinete, no de teóricos.' },
+  { icon: '📋', titulo: 'Material descargable', desc: 'Apuntes, guías y plantillas que te quedan para consulta posterior.' },
+  { icon: '🛠️', titulo: 'Casos reales', desc: 'Ejercicios basados en proyectos reales de agrimensura argentina.' },
+  { icon: '💬', titulo: 'Acompañamiento técnico', desc: 'Consultas resueltas por los instructores durante y después del curso.' },
+];
+---
+<BaseLayout
+  title="EQUIPAR — Cursos prácticos y herramientas para profesionales del territorio"
+  description="Capacitación en GNSS, topografía y fotogrametría con instructores en actividad. Herramientas gratuitas, casos reales, material descargable."
+>
+  <Hero
+    titulo="Cursos prácticos y herramientas para profesionales del territorio"
+    subtitulo="Capacitación en GNSS, topografía y fotogrametría con instructores en actividad. Material descargable, casos reales, acompañamiento técnico."
+    ctaPrimario={{ href: '/cursos/', label: 'Ver cursos' }}
+    ctaSecundario={{ href: '/asesoria/', label: 'Pedir asesoría' }}
+  />
+
+  <!-- Programas -->
+  <section class="section-eg">
+    <div class="container-eg">
+      <div class="text-center mb-10 max-w-2xl mx-auto">
+        <h2 class="mb-3">Tres programas, un mismo enfoque práctico</h2>
+        <p class="text-eg-text-muted text-lg">
+          Cada programa se divide en 3 módulos. Podés cursar el programa completo o módulos sueltos según lo que necesites profundizar.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <ProgramaCard
+          icono="📡"
+          titulo="GNSS"
+          descripcion="Receivers, RTK, post-proceso. Desde fundamentos hasta resolución de ambigüedades en software profesional."
+          modulos={3}
+          modalidad="Online"
+          href="/cursos/?programa=gnss"
+          destacado={true}
+        />
+        <ProgramaCard
+          icono="📐"
+          titulo="Topografía"
+          descripcion="Estaciones totales, nivelación y replanteo. Operación, cálculo y vuelco a software CAD."
+          modulos={3}
+          modalidad="Online"
+          href="/cursos/?programa=topografia"
+        />
+        <ProgramaCard
+          icono="🚁"
+          titulo="Fotogrametría"
+          descripcion="Drones, planificación de vuelos, captura, procesamiento y productos finales."
+          modulos={3}
+          modalidad="Online"
+          href="/cursos/?programa=fotogrametria"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Herramientas -->
+  <HerramientasFeatured />
+
+  <!-- Por qué EQUIPAR -->
+  <section class="section-eg">
+    <div class="container-eg">
+      <div class="text-center mb-10 max-w-2xl mx-auto">
+        <h2 class="mb-3">Por qué EQUIPAR</h2>
+        <p class="text-eg-text-muted text-lg">
+          Capacitación pensada para resolver problemas reales del trabajo de campo y gabinete.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {features.map((f) => (
+          <div class="text-center">
+            <div class="text-4xl mb-3">{f.icon}</div>
+            <h3 class="text-eg-azul text-lg mb-2">{f.titulo}</h3>
+            <p class="text-eg-text-muted text-sm leading-relaxed">{f.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Últimas novedades -->
+  {noticiasRecientes.length > 0 && (
+    <section class="section-eg bg-eg-bg-soft">
+      <div class="container-eg">
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+          <div>
+            <h2 class="mb-2">Últimas novedades</h2>
+            <p class="text-eg-text-muted">Instrumental, software y normativa al día.</p>
+          </div>
+          <a href="/noticias/" class="btn-eg-ghost">Ver todas →</a>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          {noticiasRecientes.map((noticia) => (
+            <NoticiaCard noticia={noticia} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Sobre EQUIPAR (preview) -->
+  <section class="section-eg">
+    <div class="container-eg max-w-3xl text-center">
+      <h2 class="mb-4">Sobre EQUIPAR</h2>
+      <p class="text-eg-text-muted text-lg leading-relaxed mb-6">
+        Somos un equipo de profesionales del territorio dedicado a compartir lo que aprendemos en obra y gabinete.
+        Capacitamos, asesoramos y desarrollamos herramientas para quienes trabajan con GNSS, topografía y fotogrametría en Argentina.
+      </p>
+      <a href="/sobre/" class="btn-eg-secondary">Conocer más</a>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <Newsletter />
+
+  <!-- CTA cierre -->
+  <section class="section-eg">
+    <div class="container-eg">
+      <div class="bg-gradient-to-br from-eg-azul-dark to-eg-azul text-white rounded-3xl p-8 md:p-12 text-center">
+        <h2 class="text-white mb-3">¿Necesitás capacitación a medida para tu equipo?</h2>
+        <p class="text-white/85 text-lg mb-6 max-w-2xl mx-auto">
+          Diseñamos programas in-company para estudios, municipios y empresas que necesitan formar a su equipo en herramientas y workflows específicos.
+        </p>
+        <a href="/contacto/" class="btn-eg-primary">Pedir propuesta</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

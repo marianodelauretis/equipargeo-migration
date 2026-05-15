@@ -1,0 +1,33 @@
+---
+export interface Props {
+  icono: string;
+  titulo: string;
+  descripcion: string;
+  modulos: number;
+  modalidad: string;
+  href: string;
+  destacado?: boolean;
+}
+
+const { icono, titulo, descripcion, modulos, modalidad, href, destacado = false } = Astro.props;
+---
+<a href={href} class:list={[
+  'card-eg card-eg-hover flex flex-col gap-3 no-underline hover:no-underline',
+  destacado && 'border-2 border-eg-coral relative',
+]}>
+  {destacado && (
+    <span class="absolute -top-3 left-6 badge-eg text-xs">Más popular</span>
+  )}
+
+  <div class="w-12 h-12 rounded-xl bg-eg-bg-soft border border-eg-borde flex items-center justify-center text-2xl">
+    {icono}
+  </div>
+
+  <h3 class="text-eg-azul">{titulo}</h3>
+  <p class="text-eg-text-muted leading-relaxed flex-1">{descripcion}</p>
+
+  <div class="flex items-center justify-between pt-3 border-t border-eg-borde text-sm">
+    <span class="text-eg-text-muted">{modulos} módulos · {modalidad}</span>
+    <span class="text-eg-coral font-bold">Ver programa →</span>
+  </div>
+</a>
