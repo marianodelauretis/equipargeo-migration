@@ -1,9 +1,9 @@
 ---
 const herramientas = [
-  { nombre: 'Conversor POSGAR07', desc: 'Lat/Lon DMS → Gauss-Krüger', href: 'https://equipargeo-tools.pages.dev/posgar07/', icon: '🧭' },
-  { nombre: 'Consulta de faja', desc: 'Detector de faja GNSS', href: 'https://equipargeo-tools.pages.dev/faja/', icon: '📍' },
-  { nombre: 'Puntos intermedios', desc: 'Generador con DXF/CSV export', href: 'https://equipargeo-tools.pages.dev/puntos-intermedios/', icon: '📐' },
-  { nombre: 'CSV → DXF', desc: 'Conversor con preview canvas', href: 'https://equipargeo-tools.pages.dev/conversor-dxf/', icon: '🗂️' },
+  { nombre: 'Conversor POSGAR07', desc: 'Lat/Lon DMS → Gauss-Krüger', href: 'https://equipargeo-tools.pages.dev/posgar07/' },
+  { nombre: 'Consulta de faja', desc: 'Detector de faja GNSS', href: 'https://equipargeo-tools.pages.dev/faja/' },
+  { nombre: 'Puntos intermedios', desc: 'Generador con DXF/CSV export', href: 'https://equipargeo-tools.pages.dev/puntos-intermedios/' },
+  { nombre: 'CSV → DXF', desc: 'Conversor con preview canvas', href: 'https://equipargeo-tools.pages.dev/conversor-dxf/' },
 ];
 ---
 <section class="section-eg bg-eg-bg-soft">
@@ -19,7 +19,6 @@ const herramientas = [
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       {herramientas.map((h) => (
         <a href={h.href} target="_blank" rel="noopener noreferrer" class="card-eg card-eg-hover flex flex-col gap-2 no-underline hover:no-underline">
-          <div class="text-3xl mb-1">{h.icon}</div>
           <h3 class="text-eg-azul text-base font-bold">{h.nombre}</h3>
           <p class="text-eg-text-muted text-sm leading-snug">{h.desc}</p>
           <span class="text-eg-coral font-bold text-sm mt-auto">Abrir ↗</span>

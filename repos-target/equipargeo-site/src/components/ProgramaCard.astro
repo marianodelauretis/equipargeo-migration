@@ -1,6 +1,6 @@
 ---
 export interface Props {
-  icono: string;
+  icono?: string;
   titulo: string;
   descripcion: string;
   modulos: number;
@@ -9,7 +9,7 @@ export interface Props {
   destacado?: boolean;
 }
 
-const { icono, titulo, descripcion, modulos, modalidad, href, destacado = false } = Astro.props;
+const { icono, titulo, descripcion, modulos, modalidad, href, destacado = false } = Astro.props as Props;
 ---
 <a href={href} class:list={[
   'card-eg card-eg-hover flex flex-col gap-3 no-underline hover:no-underline',
@@ -19,9 +19,11 @@ const { icono, titulo, descripcion, modulos, modalidad, href, destacado = false 
     <span class="absolute -top-3 left-6 badge-eg text-xs">Más popular</span>
   )}
 
-  <div class="w-12 h-12 rounded-xl bg-eg-bg-soft border border-eg-borde flex items-center justify-center text-2xl">
-    {icono}
-  </div>
+  {icono && (
+    <div class="w-12 h-12 rounded-xl bg-eg-bg-soft border border-eg-borde flex items-center justify-center text-2xl">
+      {icono}
+    </div>
+  )}
 
   <h3 class="text-eg-azul">{titulo}</h3>
   <p class="text-eg-text-muted leading-relaxed flex-1">{descripcion}</p>
