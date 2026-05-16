@@ -5,7 +5,6 @@ import Breadcrumb from '@components/Breadcrumb.astro';
 
 const servicios = [
   {
-    icono: '🎯',
     titulo: 'Asesoría técnica',
     desc: 'Consultoría puntual para resolver problemas específicos: configuración de receivers, calibración de equipos, ajuste de redes, validación de mediciones, revisión de workflows.',
     items: [
@@ -17,7 +16,6 @@ const servicios = [
     ],
   },
   {
-    icono: '🛒',
     titulo: 'Asesoría en equipamiento',
     desc: 'Te ayudamos a elegir y configurar el equipo correcto según tu tipo de trabajo, presupuesto y necesidades reales. Sin comisiones ni intereses con vendedores.',
     items: [
@@ -29,7 +27,6 @@ const servicios = [
     ],
   },
   {
-    icono: '👥',
     titulo: 'Capacitación a medida',
     desc: 'Programas in-company para estudios, municipios y empresas. Diseñamos el contenido alrededor de tu flujo de trabajo real, no un curso enlatado.',
     items: [
@@ -62,7 +59,6 @@ const servicios = [
       <div class="grid lg:grid-cols-3 gap-8">
         {servicios.map((s) => (
           <article class="card-eg flex flex-col gap-3">
-            <div class="text-4xl mb-2">{s.icono}</div>
             <h3 class="text-eg-azul">{s.titulo}</h3>
             <p class="text-eg-text-muted text-sm leading-relaxed">{s.desc}</p>
             <ul class="text-sm text-eg-text-main space-y-1.5 pt-3 border-t border-eg-borde mt-2">
