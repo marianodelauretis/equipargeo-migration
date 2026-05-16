@@ -1,52 +1,56 @@
 # equipargeo-migration
 
-Proyecto de migración de equipargeo.com desde WordPress (theme flixita + child britely) a una arquitectura split en Cloudflare Pages.
+Sitio web de EQUIPAR — capacitación, consultoría y herramientas para agrimensura, topografía y fotogrametría en Argentina.
 
-## Arquitectura objetivo
-
-- **`app.equipargeo.com`** — subdomain de herramientas técnicas (6 apps estáticas HTML+JS vanilla, instalables como PWA).
-- **`equipargeo.com`** (root) — sitio principal en Astro con home, cursos, asesoría, agenda, contacto y sección de noticias/novedades de instrumental.
+**Producción:** https://equipargeo.com (sitio) + https://app.equipargeo.com (tools)  
+**Staging:** https://equipargeo-site.pages.dev + https://equipargeo-tools.pages.dev
 
 ## Stack
 
-| Capa | Stack | Razón |
-|---|---|---|
-| Herramientas | HTML + JS vanilla puro | Las herramientas ya están en JS vanilla, no hay nada que ganar con framework. |
-| Sitio principal | Astro 5.x + Tailwind | Content collections para noticias, MDX si se necesita, perfomance brutal por default. |
-| Hosting ambos | Cloudflare Pages | Free tier amplio, autodeploy desde Git, edge global. |
-| Analytics | Google Tag `GT-NNQ4JFFT` + Cloudflare Web Analytics (paralelo) | Mantener tracking actual + cookies-less complementario. |
+- **Framework:** Astro 5 (content collections)
+- **Estilos:** Tailwind CSS
+- **Hosting:** Cloudflare Pages (auto-deploy on push a `main`)
+- **DNS:** Cloudflare
 
-## Estructura del repo
+## Estructura
 
-- `auditoria/` — punto cero del proyecto. Reporte técnico de Chrome con estado del sitio actual. Inmutable.
-- `plan/` — planes de migración (general, por herramienta, sitio principal, sección noticias, fase pulido).
-- `decisiones/` — registro append-only de decisiones arquitectónicas tomadas.
-- `repos-target/equipargeo-tools/` — scaffold del repo destino de herramientas (subdominio `app.equipargeo.com`).
-- `repos-target/equipargeo-site/` — placeholder del repo destino del sitio principal (Astro, scaffold en otra sesión).
+```
+.
+├── repos-target/
+│   ├── equipargeo-site/      Sitio principal (equipargeo.com)
+│   └── equipargeo-tools/     Herramientas standalone (app.equipargeo.com)
+├── docs/
+│   └── audit/                Auditorías y reportes operativos
+├── decisiones/               ADRs — decisiones técnicas
+├── auditoria/                Auditoría del WordPress original (referencia)
+└── archive/                  Material del proceso de migración (gitignored)
+```
 
-## Fases
+## Desarrollo local
 
-1. **Fase 1 — Cloudflare delante de WP actual** (1 hora). Ganancia: SSL, HTTP/3, Brotli, protección DDoS, métricas. Riesgo cero, reversible. *No urgente — el sitio actual ya rinde bien.*
-2. **Fase 2 — Migración de 6 herramientas a `app.equipargeo.com`** (2 fines de semana). Migrar tal cual están, sin refactorizar.
-3. **Fase 3 — Setup Astro + home nueva + layouts** (1 fin de semana).
-4. **Fase 4 — Páginas de cursos** (1-2 fines de semana). Solo copiar contenido a markdown, layouts ya están.
-5. **Fase 5 — Sección noticias** (1 fin de semana). Content collection + primeras 3-5 notas piloto.
-6. **Fase 6 — Forms, analytics, 301 redirects, SEO** (1 fin de semana). Lo más delicado.
-7. **Fase 7 — Cutover final** (1 día). Switch de DNS, monitoreo.
-8. **Fase 8 (futuro, no urgente) — Pulido de herramientas**: refactor, eliminación de cross-page bleed, mejoras de UX, conversión a Lit/Web Components si se quiere.
+```bash
+cd repos-target/equipargeo-site
+npm install
+npm run dev          # http://localhost:4321
+npm run build        # genera dist/
+npm run preview      # sirve el build
+```
 
-## Cómo retomar
+Para las herramientas (HTML/JS estáticos): abrir `repos-target/equipargeo-tools/index.html` o servir con cualquier servidor estático.
 
-Leer `HANDOFF.md`.
+## Deploy
+
+Push a `main` dispara auto-deploy en Cloudflare Pages para ambos sitios. Build output: `dist/` en cada subproyecto.
 
 ## Convenciones
 
-- Conventional Commits en español.
-- No pushear sin revisión manual.
-- Mantener la auditoría base inmutable.
+- **Copy:** lenguaje técnico argentino concreto. Ver `docs/audit/COPY-REVIEW.md`.
+- **Imágenes:** `astro:assets` con archivos en `src/assets/`. `public/images/` solo para assets globales (og-default).
+- **Redirects WP → Astro:** `repos-target/equipargeo-site/public/_redirects`.
+- **Security headers:** `repos-target/equipargeo-site/public/_headers`.
 
----
+## Estado actual
 
-**Última actualización:** 2026-05-14
-**Proyecto técnico hermano (ya cerrado):** `C:\Users\agrim\GitHub\axioma-ads-audit\`
-**Workspace de gestión:** `C:\Users\agrim\GitHub\mariano-workspace\` (integración pendiente en otra sesión).
+- Migración WordPress → Astro completada.
+- Auditoría pre-cutover completada (ver `docs/audit/REPORT.md`).
+- Cutover DNS programado: 16/05/2026.

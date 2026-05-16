@@ -1,68 +1,45 @@
----
-tipo: handoff
-proyecto: equipargeo-migration
-sprint: scaffold-inicial
-estado: scaffold-creado
-ultimo_cambio: 2026-05-14
-tags:
-  - equipargeo
-  - migracion
-  - cloudflare-pages
-  - astro
----
-
 # HANDOFF — equipargeo-migration
 
-## Estado actual
+> Estado al 15/05/2026. Migración técnica completada, cutover de DNS programado para mañana.
 
-**Fase:** Scaffold inicial creado. Pre-Fase 1.
+## Estado del proyecto
 
-## Lo que ya está hecho
+- Sitio Astro funcional en `repos-target/equipargeo-site/`.
+- Tools standalone en `repos-target/equipargeo-tools/`.
+- Ambos deployados automáticamente en Cloudflare Pages desde `main`.
+- Build limpio: 20 páginas, 0 errores, 0 warnings funcionales.
 
-1. Auditoría técnica completa con Claude for Chrome de las 4 herramientas operativas + 2 fantasma detectadas (Verificador ISO Ángulos + TIN/Curvas de nivel) — ver `auditoria/2026-05-14_chrome_audit_equipargeo.md`.
-2. Plan de migración por fases documentado en `plan/`.
-3. Decisiones arquitectónicas registradas en `decisiones/`.
-4. Scaffold inicial del repo target `equipargeo-tools/` creado en `repos-target/`.
+## Próximo paso operativo
 
-## Lo que viene
+**Cutover de DNS — 16/05/2026.** Cambiar nameservers en DonWeb apuntando a Cloudflare. Propagación típica entre 5 minutos y 4 horas.
 
-### Inmediato (próxima sesión)
+Después del cutover:
+1. Verificar `https://equipargeo.com/` en incognito desde varias redes.
+2. Probar redirects de URLs viejas: `/capacitaciones`, `/curso-gnss-modulo-1`, `/conversor-a-dxf`, `/asesoria-tecnica`.
+3. Confirmar que `app.equipargeo.com` resuelva al sitio de tools.
 
-**Fase 2 — Migrar las 6 herramientas a Cloudflare Pages.** El plan está en `plan/herramienta_*.md`. Orden recomendado por complejidad ascendente:
+## Pendientes post-cutover
 
-1. Consulta de faja (3.3 KB JS) — *prueba de concepto del flujo*
-2. Conversor POSGAR07 (7.3 KB JS)
-3. Generador puntos intermedios (7.8 KB JS, canvas)
-4. Conversor CSV→DXF (18.4 KB JS, FileReader + canvas + DXF)
-5. Verificador ISO Ángulos (21 KB JS, fantasma)
-6. TIN/Curvas de nivel (18 KB JS, fantasma — la más rica)
+Por orden de prioridad:
 
-**Pasos operativos por herramienta:**
-- Bajar el HTML crudo de la página WP (usar `curl` o copiar desde editor WP).
-- Extraer el `<section>` de la herramienta + su `<script>` IIFE + sus `<style>` inline.
-- Pegar en `repos-target/equipargeo-tools/<slug>/index.html` con shell HTML mínimo.
-- Verificar que funciona localmente (`python -m http.server` o `npx serve`).
-- Commit en este repo (`equipargeo-migration`) con el HTML migrado.
+1. **Plan editorial — Notas técnicas.** Primera publicación: semana del 18/05/2026. Calendario: 1 nota por semana, alternando argumentativas y educativas neutrales. Las 3 notas placeholder están en `repos-target/equipargeo-site/src/content/noticias/` con `publicada: false`.
+2. **Imágenes:** foto-banco propio del rubro + abstractos con Higgsfield. Integración con `astro:assets`.
+3. **Refactor URLs hardcodeadas de tools:** 14 ocurrencias de `equipargeo-tools.pages.dev` a reemplazar por env var `PUBLIC_TOOLS_URL`.
+4. **Auditoría de tools** individualmente (POSGAR07, Faja, Puntos intermedios, CSV→DXF): copy, UX, responsive.
 
-### Medio plazo
+## Cómo se trabaja
 
-- Fase 3-7: ver `README.md` para fases completas.
-- Integración con `mariano-workspace` (siguiendo patrón axioma-ads): crear `proyectos/equipargeo/` con HANDOFF stub + DECISIONS + WORKLOG + entrada en INDEX. **Esto va en otra sesión separada.**
+- Branch principal: `main`. Push dispara deploy automático.
+- Cambios menores: directo a main.
+- Cambios grandes (refactors, features): branch separada.
+- Reportes operativos en `docs/audit/`.
+- Decisiones técnicas en `decisiones/` (formato ADR).
 
-### Largo plazo / pendiente
+## Documentación relacionada
 
-- Cuando el subdominio `app.equipargeo.com` esté funcionando, crear el repo independiente `equipargeo-tools` en GitHub a partir de `repos-target/equipargeo-tools/`.
-- Cuando el sitio principal esté listo, crear el repo `equipargeo-site` a partir de `repos-target/equipargeo-site/`.
-
-## Decisiones pendientes
-
-1. ¿Cloudflare Web Analytics en paralelo a Google Tag, o solo Google Tag? (default propuesto: ambos, sin redundar tracking).
-2. ¿Cuenta de Cloudflare donde hostear: la misma del dashboard PWA (`index-mariano.pages.dev`) o cuenta separada para AXIOMA / EQUIPAR? (default propuesto: misma cuenta, proyectos separados).
-3. ¿Categorías iniciales para sección Noticias? (propuesta en `plan/seccion_noticias.md`, validar antes de implementar).
-
-## Archivos clave a leer al retomar
-
-1. Este `HANDOFF.md` (punto de entrada).
-2. `auditoria/2026-05-14_chrome_audit_equipargeo.md` (estado del sitio actual, inmutable).
-3. `plan/plan_general.md` (overview de fases).
-4. `plan/herramienta_01_faja.md` (próximo paso operativo).
+- `README.md` — overview del repo y stack.
+- `docs/audit/REPORT.md` — auditoría pre-cutover detallada.
+- `docs/audit/INVENTORY.md` — inventario inicial del repo.
+- `docs/audit/DATOS-CURSOS.json` — precios extraídos del WP, fuente de verdad.
+- `docs/audit/COPY-REVIEW.md` — frases prohibidas y normas de copy.
+- `decisiones/*.md` — decisiones técnicas del proceso.
