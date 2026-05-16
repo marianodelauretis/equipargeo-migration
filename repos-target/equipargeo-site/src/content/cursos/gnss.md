@@ -16,6 +16,19 @@ precios:
     general: "USD 750"
     comunidad: "USD 186"
     asesoria: "USD 75"
+modulos:
+  - numero: 1
+    titulo: "Fundamentos y Teoría GNSS"
+    descripcion: "Constelaciones, marcos de referencia, coordenadas y planificación para mediciones de calidad."
+    href: "/cursos/gnss-modulo-1/"
+  - numero: 2
+    titulo: "RTK: Configuración y Obra"
+    descripcion: "Configuración de bases y rovers, NTRIP, replanteo en campo y troubleshooting."
+    href: "/cursos/gnss-modulo-2/"
+  - numero: 3
+    titulo: "Post-proceso GNSS Profesional"
+    descripcion: "Procesamiento estático y cinemático, QA/QC e informes para organismos."
+    href: "/cursos/gnss-modulo-3/"
 orden: 0
 destacado: true
 publicado: true
@@ -36,41 +49,6 @@ Si nunca usaste un GPS de uso profesional, te recomendamos arrancar por el **Mó
 - Detectar errores típicos antes de que se vuelvan reclamos del cliente.
 - Hacer post-proceso de datos estáticos y cinemáticos con QA/QC documentado.
 - Entregar informes técnicos válidos para ARBA, IGN y otros organismos.
-
-## Estructura del programa
-
-### Módulo 1 — Fundamentos y Teoría GNSS
-
-La base obligatoria. Comprendé constelaciones, marcos de referencia, coordenadas y planificación para mediciones de calidad.
-
-- **U1 · Sistemas y marcos:** GPS, GLONASS, Galileo, BeiDou. Señales, POSGAR 2007, ITRF, proyecciones Gauss-Krüger / UTM.
-- **U2 · Observables y errores:** código vs fase, DOP, ionósfera, tropósfera, multicamino, relojes. Precisiones esperables.
-- **U3 · Planificación:** ventanas satelitales, PDOP/HDOP, máscara de elevación, KP, condiciones de campo.
-- **U4 · QA/QC básico:** bitácora, chequeos redundantes, control en recepción, validaciones rápidas.
-
-[Ver módulo 1 completo →](/cursos/gnss-modulo-1/)
-
-### Módulo 2 — RTK: Configuración y Obra
-
-Aprendé a configurar bases y rovers, operar con NTRIP, replantear en campo y solucionar problemas en tiempo real.
-
-- **U1 · Configuración:** base/rover, mensajes RTCM, NTRIP. Sistemas locales y parámetros del proyecto.
-- **U2 · Flujo en obra:** levantamiento y replanteo, control en tiempo real, gestión de códigos y metadatos.
-- **U3 · QA/QC en RTK:** chequeos redundantes, tolerancias, cierre y entrega.
-- **U4 · Troubleshooting:** pérdida de fix, interferencias, soluciones prácticas en campo.
-
-[Ver módulo 2 completo →](/cursos/gnss-modulo-2/)
-
-### Módulo 3 — Post-proceso GNSS Profesional
-
-Procesá estático/cinemático con QA/QC, compará soluciones y entregá reportes técnicos para organismos.
-
-- **U1 · Preparación de datos:** descarga RINEX, efemérides, metadatos, depuración, estructura del proyecto.
-- **U2 · Procesamiento:** parámetros, fijado de ambigüedades, análisis de residuos, validaciones.
-- **U3 · Comparación de soluciones:** estático vs cinemático, ajustes, control de consistencia.
-- **U4 · Reporte final:** QA/QC, anexos, presentación para ARBA/IGN/organismos.
-
-[Ver módulo 3 completo →](/cursos/gnss-modulo-3/)
 
 ## Modalidad
 

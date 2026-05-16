@@ -21,6 +21,12 @@ const cursos = defineCollection({
     fechaInicio: z.string().optional(),
     requisitos: z.array(z.string()).optional(),
     temario: z.array(z.string()).optional(),
+    modulos: z.array(z.object({
+      numero: z.number(),
+      titulo: z.string(),
+      descripcion: z.string(),
+      href: z.string(),
+    })).optional(),
     orden: z.number().default(0),
     destacado: z.boolean().default(false),
     publicado: z.boolean().default(true),

@@ -16,6 +16,19 @@ precios:
     general: "USD 750"
     comunidad: "USD 186"
     asesoria: "USD 75"
+modulos:
+  - numero: 1
+    titulo: "Topografía Básica de Obra"
+    descripcion: "Interpretación de planos, medición de distancias y ángulos, replanteo básico."
+    href: "/cursos/topografia-modulo-1/"
+  - numero: 2
+    titulo: "Nivelación y Control Altimétrico"
+    descripcion: "Nivel óptico, láser, digital. Control de cotas, rasantes y tolerancias en obra."
+    href: "/cursos/topografia-modulo-2/"
+  - numero: 3
+    titulo: "Estación Total y Técnicas Avanzadas"
+    descripcion: "Operación de estación total para levantamientos planialtimétricos y replanteos de precisión."
+    href: "/cursos/topografia-modulo-3/"
 orden: 0
 destacado: true
 publicado: true
@@ -36,26 +49,6 @@ Si ya operás estación total con soltura y solo querés perfeccionar replanteo 
 - Realizar nivelaciones geométricas con cierre y transporte de cotas.
 - Operar **estaciones totales de cualquier marca** para levantamientos y replanteos.
 - Integrar los datos de campo con software CAD para entregar trabajo profesional.
-
-## Estructura del programa
-
-### Módulo 1 — Topografía Básica de Obra
-
-Interpretación de planos, medición de distancias y ángulos, replanteo básico. La puerta de entrada.
-
-[Ver módulo 1 →](/cursos/topografia-modulo-1/)
-
-### Módulo 2 — Nivelación y Control Altimétrico
-
-Nivel óptico, láser, digital. Control de cotas, rasantes y tolerancias en obra.
-
-[Ver módulo 2 →](/cursos/topografia-modulo-2/)
-
-### Módulo 3 — Estación Total y Técnicas Avanzadas
-
-Operación de estación total para levantamientos planialtimétricos y replanteos de precisión.
-
-[Ver módulo 3 →](/cursos/topografia-modulo-3/)
 
 ## Modalidad
 

@@ -1,0 +1,18 @@
+---
+export interface Props {
+  numero: number;
+  titulo: string;
+  descripcion: string;
+  href: string;
+}
+
+const { numero, titulo, descripcion, href } = Astro.props;
+---
+<a href={href} class="card-eg card-eg-hover flex flex-col gap-3 no-underline hover:no-underline">
+  <div class="text-xs uppercase tracking-wide text-eg-gris font-bold">Módulo {numero}</div>
+  <h3 class="text-eg-azul text-lg">{titulo}</h3>
+  <p class="text-eg-text-muted text-sm leading-relaxed flex-1">{descripcion}</p>
+  <div class="flex items-center justify-end pt-3 border-t border-eg-borde">
+    <span class="text-eg-coral font-bold text-sm">Ver módulo →</span>
+  </div>
+</a>

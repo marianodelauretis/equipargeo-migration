@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import Breadcrumb from '@components/Breadcrumb.astro';
+import ModuloCard from '@components/ModuloCard.astro';
 import type { CollectionEntry } from 'astro:content';
 
 export interface Props {
@@ -8,7 +9,7 @@ export interface Props {
 }
 
 const { curso } = Astro.props;
-const { titulo, descripcion, programa, modulo, esPrograma, modalidad, duracion, formato, fechas, precio, precios, instructor, fechaInicio, requisitos, temario } = curso.data;
+const { titulo, descripcion, programa, modulo, esPrograma, modalidad, duracion, formato, fechas, precio, precios, instructor, fechaInicio, requisitos, temario, modulos } = curso.data;
 
 const programaLabels = {
   gnss: 'GNSS',
@@ -139,6 +140,17 @@ const schemaCurso = {
         </div>
       </aside>
     </div>
+
+    {modulos && modulos.length > 0 && (
+      <section class="mt-12">
+        <h2 class="mb-6">Estructura del programa</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+          {modulos.map((m) => (
+            <ModuloCard numero={m.numero} titulo={m.titulo} descripcion={m.descripcion} href={m.href} />
+          ))}
+        </div>
+      </section>
+    )}
 
     {temario && temario.length > 0 && (
       <section class="mt-12">

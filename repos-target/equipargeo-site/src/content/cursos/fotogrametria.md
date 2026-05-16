@@ -16,6 +16,19 @@ precios:
     general: "USD 1.500"
     comunidad: "USD 375"
     asesoria: "USD 150"
+modulos:
+  - numero: 1
+    titulo: "Manejo Básico de Drones"
+    descripcion: "Sistemas aéreos, principios de vuelo, seguridad operativa y normativa ANAC."
+    href: "/cursos/fotogrametria-modulo-1/"
+  - numero: 2
+    titulo: "Captura de Datos y Fotogrametría Aplicada"
+    descripcion: "Planificación de vuelos técnicos, GSD, GCP, PPK y buenas prácticas de campo."
+    href: "/cursos/fotogrametria-modulo-2/"
+  - numero: 3
+    titulo: "Procesamiento y Productos Avanzados"
+    descripcion: "Ortomosaicos, nubes de puntos, DTM/DSM, exportación CAD/GIS."
+    href: "/cursos/fotogrametria-modulo-3/"
 orden: 0
 destacado: true
 publicado: true
@@ -37,26 +50,6 @@ No se requiere experiencia previa volando, pero sí tener disponibilidad para pr
 - **Procesar imágenes** en software fotogramétrico para generar ortomosaicos georreferenciados.
 - Generar **modelos digitales del terreno (DTM)** y **de superficie (DSM)**, y nubes de puntos densas.
 - Integrar los productos en flujos CAD/GIS para entregables técnicos profesionales.
-
-## Estructura del programa
-
-### Módulo 1 — Manejo Básico de Drones
-
-Sistemas aéreos, principios de vuelo, seguridad operativa y normativa.
-
-[Ver módulo 1 →](/cursos/fotogrametria-modulo-1/)
-
-### Módulo 2 — Captura de Datos y Fotogrametría Aplicada
-
-Planificación de vuelos técnicos, GSD, GCP, PPK y buenas prácticas de campo.
-
-[Ver módulo 2 →](/cursos/fotogrametria-modulo-2/)
-
-### Módulo 3 — Procesamiento y Productos Avanzados
-
-Software fotogramétrico, ortomosaicos, nubes de puntos, DTM/DSM, exportación CAD/GIS.
-
-[Ver módulo 3 →](/cursos/fotogrametria-modulo-3/)
 
 ## Modalidad
 
