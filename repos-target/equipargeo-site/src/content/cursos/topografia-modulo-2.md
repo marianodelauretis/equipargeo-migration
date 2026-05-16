@@ -16,6 +16,8 @@ precios:
     general: "USD 250"
     comunidad: "USD 62"
     asesoria: "USD 25"
+formUrl: "https://forms.gle/NRRBpNBvAhgd8qst8"
+waUrl: "https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20Nivelaci%C3%B3n"
 orden: 2
 publicado: true
 temario:
@@ -47,8 +49,3 @@ Pensado para topógrafos, sobrestantes de obra, capataces especializados y técn
 - Ejemplos reales con cálculos resueltos.
 - Certificado de participación oficial de EQUIPAR.
 
-## Inscripción
-
-[Preinscribirme ahora →](https://forms.gle/NRRBpNBvAhgd8qst8)
-
-¿Dudas? [WhatsApp](https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20Nivelaci%C3%B3n).

@@ -29,6 +29,8 @@ modulos:
     titulo: "Estación Total y Técnicas Avanzadas"
     descripcion: "Operación de estación total para levantamientos planialtimétricos y replanteos de precisión."
     href: "/cursos/topografia-modulo-3/"
+formUrl: "https://forms.gle/NRRBpNBvAhgd8qst8"
+waUrl: "https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20tengo%20consultas%20sobre%20el%20programa%20de%20Topograf%C3%ADa"
 orden: 0
 destacado: true
 publicado: true
@@ -50,10 +52,6 @@ Si ya operás estación total con soltura y solo querés perfeccionar replanteo 
 - Operar **estaciones totales de cualquier marca** para levantamientos y replanteos.
 - Integrar los datos de campo con software CAD para entregar trabajo profesional.
 
-## Modalidad
-
-Cursada **100% online** con clases en vivo, grabaciones y atención por chat con los instructores.
-
 ## Material incluido
 
 - Slides completas de cada unidad.
@@ -62,6 +60,3 @@ Cursada **100% online** con clases en vivo, grabaciones y atención por chat con
 - Ejemplos resueltos de proyectos reales.
 - Certificado de participación oficial de EQUIPAR.
 
-## ¿Listo para sumarte?
-
-[Formulario de inscripción →](https://forms.gle/NRRBpNBvAhgd8qst8) o [consultanos por WhatsApp](https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20tengo%20consultas%20sobre%20el%20programa%20de%20Topograf%C3%ADa).

@@ -1,0 +1,20 @@
+---
+export interface Props {
+  formUrl: string;
+  waUrl: string;
+}
+
+const { formUrl, waUrl } = Astro.props;
+---
+<section class="mt-12">
+  <div class="bg-gradient-to-br from-eg-azul-dark to-eg-azul text-white rounded-3xl p-8 md:p-10 text-center">
+    <h2 class="text-white mb-3">¿Listo para sumarte?</h2>
+    <p class="text-white/85 mb-6 max-w-xl mx-auto">
+      La preinscripción no implica compromiso de pago. Te asegura prioridad de cupo para la próxima cohorte.
+    </p>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <a href={formUrl} target="_blank" rel="noopener noreferrer" class="btn-eg-primary">Preinscribirme</a>
+      <a href={waUrl} target="_blank" rel="noopener noreferrer" class="btn-eg bg-white/15 text-white border border-white/30 hover:bg-white/25 hover:no-underline">Consultar por WhatsApp</a>
+    </div>
+  </div>
+</section>

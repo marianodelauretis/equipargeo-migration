@@ -16,6 +16,8 @@ precios:
     general: "USD 500"
     comunidad: "USD 125"
     asesoria: "USD 50"
+formUrl: "https://forms.gle/JrB1bAoPzcWBi78k6"
+waUrl: "https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20Drones%20M%C3%B3dulo%202"
 orden: 2
 publicado: true
 requisitos:
@@ -48,8 +50,3 @@ Para quienes ya operan drones con seguridad y necesitan dar el salto al **uso fo
 - Especificaciones técnicas comparadas de drones más usados.
 - Certificado de participación oficial de EQUIPAR.
 
-## Inscripción
-
-[Preinscribirme ahora →](https://forms.gle/JrB1bAoPzcWBi78k6)
-
-¿Dudas? [WhatsApp](https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20Drones%20M%C3%B3dulo%202).

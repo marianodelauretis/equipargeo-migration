@@ -16,6 +16,8 @@ precios:
     general: "USD 250"
     comunidad: "USD 62"
     asesoria: "USD 25"
+formUrl: "https://forms.gle/NRRBpNBvAhgd8qst8"
+waUrl: "https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20Estaci%C3%B3n%20Total"
 orden: 3
 publicado: true
 requisitos:
@@ -47,8 +49,3 @@ Para profesionales que necesitan operar **estación total con soltura** en proye
 - Datasets reales para practicar gabinete.
 - Certificado de participación oficial de EQUIPAR.
 
-## Inscripción
-
-[Preinscribirme ahora →](https://forms.gle/NRRBpNBvAhgd8qst8)
-
-¿Dudas? [WhatsApp](https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20Estaci%C3%B3n%20Total).

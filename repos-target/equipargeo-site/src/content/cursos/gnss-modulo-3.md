@@ -16,6 +16,8 @@ precios:
     general: "USD 250"
     comunidad: "USD 62"
     asesoria: "USD 25"
+formUrl: "https://forms.gle/wiRnmaW5759EuP2f6"
+waUrl: "https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20el%20M%C3%B3dulo%203%20GNSS"
 orden: 3
 publicado: true
 requisitos:
@@ -50,8 +52,3 @@ Está pensado para profesionales que necesitan **trabajar en gabinete** los dato
 - Ejemplos de informes aprobados por organismos.
 - Certificado de participación oficial de EQUIPAR.
 
-## Inscripción
-
-[Preinscribirme ahora →](https://forms.gle/wiRnmaW5759EuP2f6)
-
-¿Dudas técnicas? [Escribinos por WhatsApp](https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20el%20M%C3%B3dulo%203%20GNSS).

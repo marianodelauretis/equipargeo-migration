@@ -16,6 +16,8 @@ precios:
     general: "USD 250"
     comunidad: "USD 62"
     asesoria: "USD 25"
+formUrl: "https://forms.gle/wiRnmaW5759EuP2f6"
+waUrl: "https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20el%20M%C3%B3dulo%202%20GNSS"
 orden: 2
 publicado: true
 requisitos:
@@ -49,8 +51,3 @@ Si trabajás en obra civil, mensuras, replanteos urbanos, control de estructuras
 - Checklist pre-trabajo en obra.
 - Certificado de participación oficial de EQUIPAR.
 
-## Inscripción
-
-[Preinscribirme ahora →](https://forms.gle/wiRnmaW5759EuP2f6)
-
-¿Dudas? [Consultanos por WhatsApp](https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20el%20M%C3%B3dulo%202%20GNSS).

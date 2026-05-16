@@ -29,6 +29,8 @@ modulos:
     titulo: "Post-proceso GNSS Profesional"
     descripcion: "Procesamiento estático y cinemático, QA/QC e informes para organismos."
     href: "/cursos/gnss-modulo-3/"
+formUrl: "https://forms.gle/wiRnmaW5759EuP2f6"
+waUrl: "https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20tengo%20consultas%20sobre%20el%20programa%20GNSS%20completo"
 orden: 0
 destacado: true
 publicado: true
@@ -50,10 +52,6 @@ Si nunca usaste un GPS de uso profesional, te recomendamos arrancar por el **Mó
 - Hacer post-proceso de datos estáticos y cinemáticos con QA/QC documentado.
 - Entregar informes técnicos válidos para ARBA, IGN y otros organismos.
 
-## Modalidad
-
-Cursada **100% online** con clases en vivo, grabaciones disponibles y atención por chat con los instructores.
-
 ## Material incluido
 
 - Slides completas de cada unidad para consulta posterior.
@@ -62,6 +60,3 @@ Cursada **100% online** con clases en vivo, grabaciones disponibles y atención 
 - Datasets reales para practicar post-proceso.
 - Certificado de participación oficial de EQUIPAR.
 
-## ¿Listo para sumarte?
-
-Completá el [formulario de preinscripción](https://forms.gle/wiRnmaW5759EuP2f6) o escribinos directo por [WhatsApp](https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20tengo%20consultas%20sobre%20el%20programa%20GNSS%20completo) para despejar dudas rápidas antes de inscribirte.

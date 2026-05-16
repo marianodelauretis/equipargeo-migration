@@ -16,6 +16,8 @@ precios:
     general: "USD 250"
     comunidad: "USD 62"
     asesoria: "USD 25"
+formUrl: "https://forms.gle/NRRBpNBvAhgd8qst8"
+waUrl: "https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20el%20M%C3%B3dulo%201%20de%20Topograf%C3%ADa"
 orden: 1
 publicado: true
 temario:
@@ -44,8 +46,3 @@ Módulo introductorio pensado para quienes están **arrancando en obra** o viene
 - Ejemplos resueltos de replanteo en obra real.
 - Certificado de participación oficial de EQUIPAR.
 
-## Inscripción
-
-[Preinscribirme ahora →](https://forms.gle/NRRBpNBvAhgd8qst8)
-
-¿Dudas? [WhatsApp](https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20el%20M%C3%B3dulo%201%20de%20Topograf%C3%ADa).

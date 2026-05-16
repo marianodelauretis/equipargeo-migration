@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Breadcrumb from '@components/Breadcrumb.astro';
 import ModuloCard from '@components/ModuloCard.astro';
+import CtaCurso from '@components/CtaCurso.astro';
 import type { CollectionEntry } from 'astro:content';
 
 export interface Props {
@@ -9,7 +10,7 @@ export interface Props {
 }
 
 const { curso } = Astro.props;
-const { titulo, descripcion, programa, modulo, esPrograma, modalidad, duracion, formato, fechas, precio, precios, instructor, fechaInicio, requisitos, temario, modulos } = curso.data;
+const { titulo, descripcion, programa, modulo, esPrograma, modalidad, duracion, formato, fechas, precio, precios, instructor, fechaInicio, requisitos, temario, modulos, formUrl, waUrl } = curso.data;
 
 const programaLabels = {
   gnss: 'GNSS',
@@ -166,6 +167,10 @@ const schemaCurso = {
           ))}
         </ol>
       </section>
+    )}
+
+    {formUrl && waUrl && (
+      <CtaCurso formUrl={formUrl} waUrl={waUrl} />
     )}
   </article>
 

@@ -16,6 +16,8 @@ precios:
     general: "USD 250"
     comunidad: "USD 62"
     asesoria: "USD 25"
+formUrl: "https://forms.gle/wiRnmaW5759EuP2f6"
+waUrl: "https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20el%20M%C3%B3dulo%201%20GNSS"
 orden: 1
 publicado: true
 temario:
@@ -45,8 +47,3 @@ Está pensado para quienes ya tienen formación técnica en agrimensura, topogra
 - Plantilla de bitácora de campo.
 - Certificado de participación oficial de EQUIPAR.
 
-## Inscripción
-
-[Preinscribirme ahora →](https://forms.gle/wiRnmaW5759EuP2f6)
-
-¿Tenés dudas antes de inscribirte? [Escribinos por WhatsApp](https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20el%20M%C3%B3dulo%201%20GNSS) y te respondemos en horario laboral.

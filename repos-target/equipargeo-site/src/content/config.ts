@@ -21,6 +21,8 @@ const cursos = defineCollection({
     fechaInicio: z.string().optional(),
     requisitos: z.array(z.string()).optional(),
     temario: z.array(z.string()).optional(),
+    formUrl: z.string().optional(),
+    waUrl: z.string().optional(),
     modulos: z.array(z.object({
       numero: z.number(),
       titulo: z.string(),

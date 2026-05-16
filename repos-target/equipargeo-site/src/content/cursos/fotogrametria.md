@@ -29,6 +29,8 @@ modulos:
     titulo: "Procesamiento y Productos Avanzados"
     descripcion: "Ortomosaicos, nubes de puntos, DTM/DSM, exportación CAD/GIS."
     href: "/cursos/fotogrametria-modulo-3/"
+formUrl: "https://forms.gle/JrB1bAoPzcWBi78k6"
+waUrl: "https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20el%20curso%20de%20Drones"
 orden: 0
 destacado: true
 publicado: true
@@ -51,10 +53,6 @@ No se requiere experiencia previa volando, pero sí tener disponibilidad para pr
 - Generar **modelos digitales del terreno (DTM)** y **de superficie (DSM)**, y nubes de puntos densas.
 - Integrar los productos en flujos CAD/GIS para entregables técnicos profesionales.
 
-## Modalidad
-
-Cursada **100% online** con clases en vivo.
-
 ## Material incluido
 
 - Slides completas de cada unidad.
@@ -69,6 +67,3 @@ Si tenés un trabajo en curso y no podés esperar a capacitarte, **consultá por
 
 [Solicitar servicio de procesamiento →](https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20me%20interesa%20el%20servicio%20de%20procesamiento%20de%20im%C3%A1genes)
 
-## ¿Listo para sumarte?
-
-[Formulario de inscripción →](https://forms.gle/JrB1bAoPzcWBi78k6) o [consultanos por WhatsApp](https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20el%20curso%20de%20Drones).
