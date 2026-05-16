@@ -1,6 +1,6 @@
 ---
 programa: gnss
-titulo: "Módulo 3 — Post-proceso GNSS Profesional"
+titulo: "Post-proceso GNSS Profesional"
 descripcion: "Procesá estático y cinemático con control de calidad (QA/QC), compará soluciones y generá informes técnicos válidos para organismos."
 modulo: 3
 modalidad: online

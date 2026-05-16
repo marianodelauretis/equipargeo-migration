@@ -7,9 +7,9 @@ import { getCollection } from 'astro:content';
 const cursos = await getCollection('cursos', ({ data }) => data.publicado);
 
 const programas = {
-  gnss: { titulo: 'GNSS', icono: '📡', desc: 'Receivers, RTK, post-proceso. Desde fundamentos hasta resolución de ambigüedades.' },
-  topografia: { titulo: 'Topografía', icono: '📐', desc: 'Estaciones totales, nivelación y replanteo. Vuelco a CAD.' },
-  fotogrametria: { titulo: 'Fotogrametría', icono: '🚁', desc: 'Drones, captura, procesamiento y productos finales.' },
+  gnss: { titulo: 'GNSS', desc: 'Receptores GNSS, RTK, post-proceso. Desde fundamentos hasta resolución de ambigüedades.' },
+  topografia: { titulo: 'Topografía', desc: 'Estaciones totales, nivelación y replanteo. Vuelco a CAD.' },
+  fotogrametria: { titulo: 'Fotogrametría', desc: 'Drones, captura, procesamiento y productos finales.' },
 };
 
 const cursosPorPrograma = (prog: keyof typeof programas) =>
@@ -43,12 +43,9 @@ const programaKeys = Object.keys(programas) as Array<keyof typeof programas>;
       <section class="section-eg" id={key}>
         <div class="container-eg">
           <div class="mb-8 flex flex-wrap items-end gap-4 justify-between">
-            <div class="flex items-center gap-4">
-              <div class="text-5xl">{programa.icono}</div>
-              <div>
-                <h2 class="mb-2">{programa.titulo}</h2>
-                <p class="text-eg-text-muted">{programa.desc}</p>
-              </div>
+            <div>
+              <h2 class="mb-2">{programa.titulo}</h2>
+              <p class="text-eg-text-muted">{programa.desc}</p>
             </div>
             {programaCompleto && (
               <a href={`/cursos/${programaCompleto.slug}/`} class="btn-eg-secondary">

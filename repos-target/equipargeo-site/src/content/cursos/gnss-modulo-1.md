@@ -1,6 +1,6 @@
 ---
 programa: gnss
-titulo: "Módulo 1 — Fundamentos y Teoría GNSS"
+titulo: "Fundamentos y Teoría GNSS"
 descripcion: "La base obligatoria. Comprendé constelaciones, marcos de referencia, coordenadas y planificación para realizar mediciones de calidad."
 modulo: 1
 modalidad: online

@@ -1,6 +1,6 @@
 ---
 programa: topografia
-titulo: "Módulo 1 — Topografía Básica de Obra"
+titulo: "Topografía Básica de Obra"
 descripcion: "La puerta de entrada a la topografía. Aprendé a interpretar planos, medir correctamente y realizar replanteos básicos sin errores."
 modulo: 1
 modalidad: online

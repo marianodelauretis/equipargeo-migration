@@ -1,6 +1,6 @@
 ---
 programa: fotogrametria
-titulo: "Módulo 1 — Manejo Básico de Drones"
+titulo: "Manejo Básico de Drones"
 descripcion: "Introducción completa a los sistemas aéreos. Aprendé principios de vuelo, seguridad operativa, normativa y configuración inicial."
 modulo: 1
 modalidad: online

@@ -1,6 +1,6 @@
 ---
 programa: gnss
-titulo: "Módulo 2 — RTK: Configuración y Obra"
+titulo: "RTK: Configuración y Obra"
 descripcion: "Aprendé a configurar bases y rovers, trabajar con NTRIP, replantear en campo y solucionar problemas técnicos en tiempo real."
 modulo: 2
 modalidad: online

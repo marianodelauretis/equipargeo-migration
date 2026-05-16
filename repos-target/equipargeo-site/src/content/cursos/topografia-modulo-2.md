@@ -1,6 +1,6 @@
 ---
 programa: topografia
-titulo: "Módulo 2 — Nivelación y Control Altimétrico"
+titulo: "Nivelación y Control Altimétrico"
 descripcion: "Dominá las cotas. Aprendé a usar niveles ópticos, láser y digitales para garantizar la verticalidad y horizontalidad de tu obra."
 modulo: 2
 modalidad: online

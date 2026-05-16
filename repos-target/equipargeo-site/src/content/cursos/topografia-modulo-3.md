@@ -1,6 +1,6 @@
 ---
 programa: topografia
-titulo: "Módulo 3 — Estación Total y Técnicas Avanzadas"
+titulo: "Estación Total y Técnicas Avanzadas"
 descripcion: "Tecnología de precisión. Aprendé a operar la Estación Total para relevamientos planialtimétricos complejos y replanteos milimétricos."
 modulo: 3
 modalidad: online

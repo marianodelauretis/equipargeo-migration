@@ -1,6 +1,6 @@
 ---
 programa: fotogrametria
-titulo: "Módulo 3 — Procesamiento y Productos Avanzados"
+titulo: "Procesamiento y Productos Avanzados"
 descripcion: "Del dato al entregable. Procesamiento fotogramétrico en gabinete, generación de nubes de puntos, modelos digitales y ortomosaicos."
 modulo: 3
 modalidad: online

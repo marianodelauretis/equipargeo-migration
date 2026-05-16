@@ -1,6 +1,6 @@
 ---
 programa: fotogrametria
-titulo: "Módulo 2 — Captura de Datos y Fotogrametría Aplicada"
+titulo: "Captura de Datos y Fotogrametría Aplicada"
 descripcion: "Planificá y ejecutá vuelos técnicos. GSD, solapes, puntos de control y cómo capturar imágenes de calidad para topografía."
 modulo: 2
 modalidad: online
