@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caja de herramientas RINEX — EQUIPAR Tools</title>
+  <meta name="description" content="Inspección, corte, decimado y reparación de archivos RINEX de observación v3. Coordenadas POSGAR07, mapa y descarga de efemérides del día.">
+  <meta name="theme-color" content="#18354a">
+  <link rel="canonical" href="https://app.equipargeo.com/rinex/">
+  <link rel="icon" type="image/svg+xml" href="/shared/favicon.svg">
+  <link rel="manifest" href="/shared/manifest.json">
+  <link rel="stylesheet" href="/shared/base.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <style>
+    /* ===== RINEX tool — estilos locales ===== */
+    .rnx-wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+
+    .rnx-intro {
+      background: var(--eg-bg);
+      border: 1px solid var(--eg-borde);
+      border-radius: 16px;
+      box-shadow: var(--eg-shadow);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .rnx-intro h2 {
+      margin: 0 0 8px;
+      color: var(--eg-azul);
+      font-size: 1.6rem;
+      line-height: 1.15;
+    }
+    .rnx-intro .rnx-sub {
+      margin: 0 0 16px;
+      color: var(--eg-text-muted);
+      font-size: 0.96rem;
+      line-height: 1.55;
+    }
+    .rnx-priv {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--eg-gris);
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      padding: 8px 14px;
+      background: var(--eg-bg-soft);
+    }
+    .rnx-priv-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--eg-coral);
+      flex: none;
+    }
+
+    /* drop zone */
+    .rnx-drop {
+      border: 2px dashed var(--eg-borde);
+      border-radius: 14px;
+      background: var(--eg-bg-soft);
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .rnx-drop:hover, .rnx-drop.hot {
+      border-color: var(--eg-coral);
+      background: #fff7f5;
+    }
+    .rnx-drop .rnx-drop-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--eg-azul);
+    }
+    .rnx-drop .rnx-drop-hint {
+      color: var(--eg-text-muted);
+      font-size: 0.92rem;
+      margin-top: 6px;
+    }
+    .rnx-drop .rnx-drop-exts {
+      color: var(--eg-gris);
+      font-size: 0.82rem;
+      margin-top: 12px;
+      letter-spacing: 0.3px;
+    }
+    input[type=file] { display: none; }
+
+    /* error */
+    .rnx-err {
+      border: 1px solid #e8685c;
+      background: #fef2f2;
+      color: #991b1b;
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin-top: 16px;
+      font-size: 0.9rem;
+      display: none;
+      white-space: pre-wrap;
+    }
+    .rnx-err.show { display: block; }
+
+    /* cards (secciones) */
+    .rnx-card {
+      background: var(--eg-bg);
+      border: 1px solid var(--eg-borde);
+      border-radius: 16px;
+      box-shadow: var(--eg-shadow);
+      margin-top: 20px;
+    }
+    .rnx-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--eg-borde);
+      background: var(--eg-bg-soft);
+      border-radius: 16px 16px 0 0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .rnx-card-head .rnx-card-title {
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--eg-azul);
+      letter-spacing: 0.2px;
+    }
+    .rnx-card-head .rnx-card-num {
+      color: var(--eg-coral);
+      margin-right: 8px;
+      font-weight: 800;
+    }
+    .rnx-card-body { padding: 20px; }
+
+    /* grid metadata */
+    .rnx-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1px;
+      background: var(--eg-borde);
+      border: 1px solid var(--eg-borde);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .rnx-cell {
+      background: var(--eg-bg);
+      padding: 12px 14px;
+    }
+    .rnx-cell .rnx-cell-lab {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--eg-gris);
+      font-weight: 600;
+    }
+    .rnx-cell .rnx-cell-val {
+      font-size: 1rem;
+      margin-top: 4px;
+      font-weight: 700;
+      color: var(--eg-text);
+      word-break: break-word;
+    }
+    .rnx-cell .rnx-cell-val.acc { color: var(--eg-coral); }
+    .rnx-cell .rnx-cell-val.warn { color: #d97706; }
+
+    /* constelaciones */
+    .rnx-constel { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+    .rnx-chip {
+      font-size: 0.82rem;
+      border: 1px solid var(--eg-borde);
+      border-radius: 8px;
+      padding: 4px 10px;
+      color: var(--eg-text-muted);
+      background: var(--eg-bg-soft);
+      font-weight: 600;
+    }
+
+    /* salud */
+    .rnx-health {
+      margin-top: 14px;
+      font-size: 0.9rem;
+      color: var(--eg-text-muted);
+      border-top: 1px solid var(--eg-borde);
+      padding-top: 14px;
+      line-height: 1.6;
+    }
+    .rnx-health .ok { color: #16a34a; font-weight: 700; }
+    .rnx-health .bad { color: #d97706; font-weight: 700; }
+
+    /* coordenadas */
+    .rnx-coordrow {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1px;
+      background: var(--eg-borde);
+      border: 1px solid var(--eg-borde);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .rnx-cr {
+      background: var(--eg-bg);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .rnx-cr .rnx-cr-k {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--eg-gris);
+      font-weight: 600;
+    }
+    .rnx-cr .rnx-cr-v { color: var(--eg-text); font-weight: 700; }
+    .rnx-cr .rnx-cr-v.acc { color: var(--eg-coral); }
+
+    /* mapa */
+    #map {
+      height: 300px;
+      border: 1px solid var(--eg-borde);
+      border-radius: 12px;
+      margin-top: 14px;
+      background: var(--eg-bg-soft);
+    }
+
+    /* hint text */
+    .rnx-hint {
+      color: var(--eg-gris);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .rnx-sub-text {
+      color: var(--eg-text-muted);
+      font-size: 0.94rem;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    /* segmento (archivos descargables) */
+    .rnx-seg {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--eg-borde);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+      background: var(--eg-bg);
+    }
+    .rnx-seg .rnx-seg-fn {
+      color: var(--eg-coral);
+      font-weight: 700;
+      font-size: 0.92rem;
+      word-break: break-all;
+    }
+    .rnx-seg .rnx-seg-meta {
+      color: var(--eg-text-muted);
+      font-size: 0.85rem;
+      margin-top: 3px;
+    }
+    .rnx-seg .rnx-seg-meta b { color: var(--eg-text); }
+
+    /* tabs */
+    .rnx-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--eg-borde);
+      margin-bottom: 16px;
+    }
+    .rnx-tab {
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 8px 14px;
+      cursor: pointer;
+      color: var(--eg-gris);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: color 0.12s ease;
+    }
+    .rnx-tab.sel { color: var(--eg-coral); border-bottom-color: var(--eg-coral); }
+    .rnx-tab:hover { color: var(--eg-azul); }
+
+    .rnx-op { display: none; }
+    .rnx-op.show { display: block; }
+
+    /* modos de corte */
+    .rnx-modes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+    }
+    .rnx-mode {
+      border: 1px solid var(--eg-borde);
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      transition: border-color 0.12s ease, background 0.12s ease;
+    }
+    .rnx-mode:hover { border-color: var(--eg-coral); }
+    .rnx-mode.sel { border-color: var(--eg-coral); background: #fff7f5; }
+    .rnx-mode .rnx-mode-t {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--eg-azul);
+    }
+    .rnx-mode.sel .rnx-mode-t { color: var(--eg-coral); }
+    .rnx-mode .rnx-mode-d {
+      font-size: 0.82rem;
+      color: var(--eg-text-muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* params */
+    .rnx-params { margin-top: 16px; display: none; }
+    .rnx-params.show { display: block; }
+    .rnx-field {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .rnx-field label {
+      font-size: 0.9rem;
+      color: var(--eg-text-muted);
+      min-width: 170px;
+      font-weight: 600;
+    }
+
+    /* inputs y selects */
+    .rnx-wrap input[type=number],
+    .rnx-wrap input[type=text],
+    .rnx-wrap select {
+      font-family: var(--eg-mono);
+      font-size: 0.95rem;
+      background: #fff;
+      border: 1px solid var(--eg-borde);
+      color: var(--eg-text);
+      padding: 10px 12px;
+      border-radius: 10px;
+    }
+    .rnx-wrap input[type=number],
+    .rnx-wrap input[type=text] { width: 140px; }
+    .rnx-wrap input:focus, .rnx-wrap select:focus {
+      outline: 2px solid #d8e8f7;
+      border-color: #90caf9;
+    }
+
+    /* botones */
+    .rnx-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .rnx-btn {
+      display: inline-block;
+      border: 1px solid var(--eg-borde);
+      background: #eef3f9;
+      color: var(--eg-azul);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: filter 0.15s ease;
+    }
+    .rnx-btn:hover { filter: brightness(0.97); }
+    .rnx-btn.primary {
+      background: var(--eg-coral);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: var(--eg-shadow-coral);
+      font-size: 1rem;
+      padding: 12px 24px;
+    }
+    .rnx-btn.primary:hover { background: var(--eg-coral-hover); }
+    .rnx-btn.primary:disabled {
+      background: var(--eg-borde);
+      color: var(--eg-gris);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* lab label (efemérides) */
+    .rnx-lab {
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--eg-gris);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    /* notas footer */
+    .rnx-notes {
+      margin-top: 28px;
+      border: 1px solid var(--eg-borde);
+      border-radius: 12px;
+      background: var(--eg-bg);
+      padding: 16px 20px;
+      font-size: 0.88rem;
+      color: var(--eg-text-muted);
+      line-height: 1.6;
+    }
+    .rnx-notes b { color: var(--eg-text); font-weight: 700; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 600px) {
+      .rnx-card-head { padding: 12px 16px; }
+      .rnx-card-body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="eg-topbar">
+    <div class="eg-topbar-inner">
+      <a class="eg-brand" href="/"><span class="eg-brand-dot"></span> EQUIPAR Tools</a>
+      <nav class="eg-nav" aria-label="Principal">
+        <a href="/">Inicio</a>
+        <a href="https://equipargeo.com/cursos/">Cursos</a>
+        <a href="https://equipargeo.com/contacto/">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="eg-main">
+    <div class="eg-page-header">
+      <nav class="eg-breadcrumb" aria-label="Migas"><a href="/">EQUIPAR Tools</a> · Caja de herramientas RINEX</nav>
+    </div>
+
+    <section class="rnx-wrap">
+      <div class="rnx-intro">
+        <h2>Caja de herramientas RINEX</h2>
+        <p class="rnx-sub">Cargá un RINEX de observación v3.0x y trabajalo sin instalar nada: ubicación del punto en POSGAR07, chequeo de salud, descarga de efemérides del día, corte por tiempo, decimado de intervalo y reparación de archivos del conversor South.</p>
+        <span class="rnx-priv"><span class="rnx-priv-dot"></span><span>Todo se procesa <b>en tu navegador</b>. Los datos no se suben a internet (salvo la descarga de efemérides públicas).</span></span>
+      </div>
+
+      <div class="rnx-drop" id="drop">
+        <input type="file" id="file" accept=".rnx,.obs,.O,.o,.25o,.26o,.27o,.txt">
+        <div class="rnx-drop-title">Arrastrá tu RINEX acá</div>
+        <div class="rnx-drop-hint">o hacé clic para elegir el archivo de observación</div>
+        <div class="rnx-drop-exts">.rnx · .obs · .##O — RINEX v3.0x</div>
+      </div>
+      <div class="rnx-err" id="err"></div>
+
+      <!-- 01 sesión + salud -->
+      <div class="rnx-card hidden" id="sessionCard">
+        <div class="rnx-card-head"><div class="rnx-card-title"><span class="rnx-card-num">01</span>Sesión y salud</div></div>
+        <div class="rnx-card-body">
+          <div class="rnx-meta-grid" id="metaGrid"></div>
+          <div class="rnx-constel" id="constel"></div>
+          <div class="rnx-health" id="health"></div>
+        </div>
+      </div>
+
+      <!-- 02 ubicación -->
+      <div class="rnx-card hidden" id="locCard">
+        <div class="rnx-card-head">
+          <div class="rnx-card-title"><span class="rnx-card-num">02</span>Ubicación del punto</div>
+          <button class="rnx-btn" id="kmlBtn">Descargar KML</button>
+        </div>
+        <div class="rnx-card-body">
+          <p class="rnx-sub-text" style="margin-bottom:14px">Posición aproximada del header (solución puntual, exactitud de metros). Sirve para ubicar el punto, no como coordenada final.</p>
+          <div class="rnx-coordrow" id="coords"></div>
+          <div id="map"></div>
+          <p class="rnx-hint" id="mapHint" style="margin-top:8px"></p>
+        </div>
+      </div>
+
+      <!-- 03 efemérides -->
+      <div class="rnx-card hidden" id="ephCard">
+        <div class="rnx-card-head"><div class="rnx-card-title"><span class="rnx-card-num">03</span>Efemérides del día</div></div>
+        <div class="rnx-card-body">
+          <p class="rnx-sub-text" style="margin-bottom:14px">Broadcast de navegación multi-GNSS del día <b id="ephDay" style="color:var(--eg-coral)"></b>. Un clic te lo baja <b>ya descomprimido</b> (.rnx). Es el mismo para cualquier punto: te sirve para el post-proceso de este baseline.</p>
+          <div id="ephLinks"></div>
+          <div style="border-top:1px solid var(--eg-borde);margin-top:18px;padding-top:16px">
+            <div class="rnx-lab">Descompresión manual de .gz</div>
+            <div class="rnx-seg" style="margin-top:0">
+              <div><div class="rnx-seg-fn" id="gzName">Arrastrá o elegí el .gz</div><div class="rnx-seg-meta">Te lo devuelve como <b>.rnx</b>, sin subir nada.</div></div>
+              <button class="rnx-btn" id="gzPick">Elegir .gz</button>
+              <input type="file" id="gzFile" accept=".gz">
+            </div>
+            <div class="rnx-err" id="gzErr" style="margin-top:10px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 04 procesar -->
+      <div class="rnx-card hidden" id="procCard">
+        <div class="rnx-card-head"><div class="rnx-card-title"><span class="rnx-card-num">04</span>Procesar archivo</div></div>
+        <div class="rnx-card-body">
+          <div class="rnx-tabs">
+            <div class="rnx-tab" data-op="cut">Cortar por tiempo</div>
+            <div class="rnx-tab" data-op="dec">Decimar intervalo</div>
+            <div class="rnx-tab" data-op="fix">Reparar XXX</div>
+          </div>
+
+          <div class="rnx-op" id="op-cut">
+            <div class="rnx-modes" id="modes">
+              <div class="rnx-mode" data-mode="equal"><div class="rnx-mode-t">N partes iguales</div><div class="rnx-mode-d">Divide el tiempo total en tramos iguales.</div></div>
+              <div class="rnx-mode" data-mode="at"><div class="rnx-mode-t">En un instante</div><div class="rnx-mode-d">Corta en una hora exacta: 2 partes.</div></div>
+              <div class="rnx-mode" data-mode="window"><div class="rnx-mode-t">Recortar ventana</div><div class="rnx-mode-d">Un solo tramo entre inicio y fin.</div></div>
+              <div class="rnx-mode" data-mode="duration"><div class="rnx-mode-t">Por duración fija</div><div class="rnx-mode-d">Trocea cada N minutos.</div></div>
+            </div>
+            <div class="rnx-params" id="p-equal"><div class="rnx-field"><label>Cantidad de partes</label><input type="number" id="equalN" min="2" max="60" value="2"></div></div>
+            <div class="rnx-params" id="p-at"><div class="rnx-field"><label>Cortar en (HH:MM:SS)</label><input type="text" id="atTime" placeholder="HH:MM:SS"><span class="rnx-hint" id="atHint"></span></div></div>
+            <div class="rnx-params" id="p-window">
+              <div class="rnx-field"><label>Inicio (HH:MM:SS)</label><input type="text" id="winStart" placeholder="HH:MM:SS"></div>
+              <div class="rnx-field"><label>Fin (HH:MM:SS)</label><input type="text" id="winEnd" placeholder="HH:MM:SS"></div>
+            </div>
+            <div class="rnx-params" id="p-duration"><div class="rnx-field"><label>Duración por tramo (min)</label><input type="number" id="durMin" min="1" value="30"><span class="rnx-hint" id="durHint"></span></div></div>
+          </div>
+
+          <div class="rnx-op" id="op-dec">
+            <p class="rnx-sub-text" style="margin-bottom:12px">Quedate con 1 época cada N segundos. Para estático no necesitás 1 Hz: a 15 o 30 s el archivo pesa mucho menos y procesa igual.</p>
+            <div class="rnx-field"><label>Intervalo objetivo</label>
+              <select id="decTarget"></select>
+              <span class="rnx-hint" id="decHint"></span>
+            </div>
+          </div>
+
+          <div class="rnx-op" id="op-fix">
+            <p class="rnx-sub-text" id="fixInfo"></p>
+          </div>
+
+          <div class="rnx-actions">
+            <button class="rnx-btn primary" id="runBtn" disabled>Generar</button>
+            <button class="rnx-btn" id="resetBtn">Cargar otro archivo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 05 resultado -->
+      <div class="rnx-card hidden" id="resCard">
+        <div class="rnx-card-head">
+          <div class="rnx-card-title"><span class="rnx-card-num">05</span>Resultado</div>
+          <button class="rnx-btn" id="zipBtn">Descargar todo (.zip)</button>
+        </div>
+        <div class="rnx-card-body" id="resBody"></div>
+      </div>
+
+      <div class="rnx-notes">
+        <b>Notas.</b> Observación RINEX v3.0x. El corte y el decimado respetan las épocas enteras y reescriben <b>TIME OF FIRST/LAST OBS</b>, <b>INTERVAL</b> y el nombre largo RINEX 3. La posición es la del header (<b>APPROX POSITION XYZ</b>), proyectada a Gauss-Krüger POSGAR07 (GRS80, faja por longitud). Efemérides: archivo BRDC de BKG vía proxy propio.<br>
+        Límites: no procesa RINEX v2 ni Hatanaka comprimido; no toca archivos de navegación.
+      </div>
+    </section>
+  </main>
+
+  <footer class="eg-footer">
+    <div class="eg-footer-inner">
+      <div>&copy; EQUIPAR &middot; Herramienta gratuita</div>
+      <div><a href="https://equipargeo.com/">Ir al sitio principal</a></div>
+    </div>
+  </footer>
+
+<script>
+"use strict";
+let SESSION=null,currentMode=null,currentOp='cut',lastSegments=[],MAP=null,MARKER=null,GEO=null,GK=null;
+
+/* ---------- tiempo ---------- */
+function isLeap(y){return (y%4===0&&y%100!==0)||y%400===0;}
+function doyAbs(y,mo,d){const c=[0,31,59,90,120,151,181,212,243,273,304,334];let dd=c[mo-1]+d;if(mo>2&&isLeap(y))dd+=1;let a=0;for(let yy=2000;yy<y;yy++)a+=isLeap(yy)?366:365;return a+dd;}
+function dayOfYear(y,mo,d){const c=[0,31,59,90,120,151,181,212,243,273,304,334];let dd=c[mo-1]+d;if(mo>2&&isLeap(y))dd+=1;return dd;}
+function epochSeconds(t){return doyAbs(t.y,t.mo,t.d)*86400+t.h*3600+t.mi*60+t.s;}
+function hhmmss(t){return String(t.h).padStart(2,'0')+':'+String(t.mi).padStart(2,'0')+':'+String(Math.floor(t.s)).padStart(2,'0');}
+function parseHMS(str,ref){const m=String(str).trim().match(/^(\d{1,2}):(\d{1,2}):(\d{1,2}(?:\.\d+)?)$/);if(!m)return null;return {y:ref.y,mo:ref.mo,d:ref.d,h:+m[1],mi:+m[2],s:parseFloat(m[3])};}
+
+/* ---------- coordenadas: ECEF -> geo -> GK POSGAR07 (GRS80) ---------- */
+const ELL_A=6378137.0, ELL_F=1/298.257222101, ELL_E2=ELL_F*(2-ELL_F), D2R=Math.PI/180;
+function ecefToGeo(X,Y,Z){const p=Math.hypot(X,Y),lon=Math.atan2(Y,X);let lat=Math.atan2(Z,p*(1-ELL_E2)),h=0;
+  for(let i=0;i<8;i++){const N=ELL_A/Math.sqrt(1-ELL_E2*Math.sin(lat)**2);h=p/Math.cos(lat)-N;lat=Math.atan2(Z,p*(1-ELL_E2*N/(N+h)));}
+  return {lat:lat/D2R,lon:lon/D2R,h};}
+function meridianArc(latRad){const n=ELL_F/(2-ELL_F),n2=n*n,n3=n2*n,n4=n3*n;
+  return (ELL_A/(1+n))*((1+n2/4+n4/64)*latRad-(3/2)*(n-n3/8)*Math.sin(2*latRad)+(15/16)*(n2-n4/4)*Math.sin(4*latRad)-(35/48)*n3*Math.sin(6*latRad)+(315/512)*n4*Math.sin(8*latRad));}
+const M_POLE=meridianArc(-Math.PI/2);
+function gkFaja(lonDeg){return Math.round((lonDeg+75)/3);}
+function geoToGK(latDeg,lonDeg){
+  const faja=gkFaja(lonDeg),mc=-75+3*faja,k0=1,FE=faja*1e6+500000;
+  const lat=latDeg*D2R,lon=lonDeg*D2R,lon0=mc*D2R,ep2=ELL_E2/(1-ELL_E2);
+  const N=ELL_A/Math.sqrt(1-ELL_E2*Math.sin(lat)**2),T=Math.tan(lat)**2,C=ep2*Math.cos(lat)**2,a1=(lon-lon0)*Math.cos(lat),M=meridianArc(lat);
+  const easting=k0*N*(a1+(1-T+C)*a1**3/6+(5-18*T+T**2+72*C-58*ep2)*a1**5/120)+FE;
+  const northing=k0*((M-M_POLE)+N*Math.tan(lat)*(a1**2/2+(5-T+9*C+4*C**2)*a1**4/24+(61-58*T+T**2+600*C-330*ep2)*a1**6/720));
+  return {faja,mc,easting,northing};}
+
+/* ---------- parser RINEX 3 ---------- */
+const EPOCH_RE=/^>\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+([\d.]+)\s+(\d+)\s+(\d+)/;
+function detectEOL(t){return t.indexOf('\r\n')>=0?'\r\n':'\n';}
+function headerVal(header,key){const l=header.split(/\r?\n/).find(x=>x.includes(key));return l||null;}
+function parseRinex(text,fileName){
+  const idx=text.indexOf('END OF HEADER'); if(idx<0)throw new Error('No se encontró "END OF HEADER". ¿Es un RINEX de observación válido?');
+  const ver=parseFloat(text.slice(0,9)); if(isNaN(ver))throw new Error('No se pudo leer la versión RINEX.');
+  if(ver<3||ver>=4)throw new Error('Versión RINEX '+ver.toFixed(2)+' no soportada (esta herramienta procesa observación v3.0x).');
+  if(!/OBSERVATION DATA/.test(text.slice(0,80)))throw new Error('El archivo no es OBSERVATION DATA.');
+  const eol=detectEOL(text),headerEnd=text.indexOf('\n',idx)+1,header=text.slice(0,headerEnd),body=text.slice(headerEnd);
+  let timeSys='GPS'; const tof=headerVal(header,'TIME OF FIRST OBS'); if(tof){const ts=tof.slice(43,51).trim();if(ts)timeSys=ts;}
+  let interval=null; const il=headerVal(header,'INTERVAL'); if(il)interval=parseFloat(il.slice(0,10));
+  let marker=''; const mk=headerVal(header,'MARKER NAME'); if(mk)marker=mk.slice(0,60).trim();
+  let xyz=null; const ap=headerVal(header,'APPROX POSITION XYZ'); if(ap){const m=ap.trim().match(/(-?[\d.]+)\s+(-?[\d.]+)\s+(-?[\d.]+)/);if(m)xyz={X:+m[1],Y:+m[2],Z:+m[3]};}
+  const lines=body.split(/(?<=\n)/); const epochs=[]; let cur=null;
+  for(const ln of lines){
+    if(ln.startsWith('>')){ if(cur)epochs.push(cur); const m=EPOCH_RE.exec(ln);
+      if(!m){cur={t:null,raw:[ln]};continue;}
+      const t={y:+m[1],mo:+m[2],d:+m[3],h:+m[4],mi:+m[5],s:parseFloat(m[6]),flag:+m[7],n:+m[8]};
+      cur={t,sec:epochSeconds(t),raw:[ln]};
+    } else if(cur){ if(ln.length)cur.raw.push(ln); }
+  }
+  if(cur)epochs.push(cur);
+  const valid=epochs.filter(e=>e.t); if(!valid.length)throw new Error('No se encontraron épocas (líneas ">").');
+  const sysCount={}; let xxx=0,scan=0;
+  for(const e of valid){ for(let i=1;i<e.raw.length;i++){const c=e.raw[i][0]; if('GRECJSI'.includes(c))sysCount[c]=(sysCount[c]||0)+1; else if(e.raw[i].startsWith('XXX'))xxx++;} if(++scan>800)break; }
+  let xxxTotal=0; for(const e of valid)for(let i=1;i<e.raw.length;i++)if(e.raw[i].startsWith('XXX'))xxxTotal++;
+  return {version:ver,header,body,epochs:valid,eol,timeSys,interval,marker,xyz,name:fileName,sysCount,xxxTotal,first:valid[0].t,last:valid[valid.length-1].t};
+}
+
+/* ---------- header builders ---------- */
+function fmtObsTimeLine(t,sys,label){const f=(n,w)=>String(n).padStart(w);const sec=t.s.toFixed(7).padStart(13);
+  let s=f(t.y,6)+f(t.mo,6)+f(t.d,6)+f(t.h,6)+f(t.mi,6)+sec+'     '+sys.padEnd(3);return s.padEnd(60).slice(0,60)+label;}
+function buildHeader(sess,firstT,lastT,newInterval){
+  const out=[];
+  for(const ln of sess.header.split(/(?<=\n)/)){
+    const body=ln.replace(/\r?\n$/,''),eol=ln.slice(body.length);
+    if(body.includes('TIME OF FIRST OBS'))out.push(fmtObsTimeLine(firstT,sess.timeSys,'TIME OF FIRST OBS')+eol);
+    else if(body.includes('TIME OF LAST OBS'))out.push(fmtObsTimeLine(lastT,sess.timeSys,'TIME OF LAST OBS')+eol);
+    else if(newInterval!=null&&body.includes('INTERVAL'))out.push(newInterval.toFixed(3).padStart(10)+' '.repeat(50)+'INTERVAL'+eol);
+    else out.push(ln);
+  }
+  return out.join('');
+}
+function setEpochSatCount(line,newN){
+  const eol=(line.match(/\r?\n$/)||[''])[0]; const b=line.slice(0,line.length-eol.length);
+  const m=b.match(/^(>\s*\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+[\d.]+\s+\d+)(\s+)(\d+)(.*)$/);
+  if(!m)return line; const w=m[3].length; const ns=String(newN).padStart(w);
+  return m[1]+m[2]+ns+m[4]+eol;
+}
+
+/* ---------- nombres ---------- */
+function outName(sess,idx,total,firstT,durSec,tag2){
+  const orig=sess.name,dot=orig.lastIndexOf('.'),ext=dot>=0?orig.slice(dot):'.rnx',base=dot>=0?orig.slice(0,dot):orig;
+  const re=/^(.{9})_([A-Z])_(\d{11})_([0-9]+[A-Z])_([0-9]+[A-Z])_([A-Z]{2})$/, m=re.exec(base);
+  let per; const mins=Math.round(durSec/60);
+  if(durSec>0&&durSec%86400===0)per=String(durSec/86400).padStart(2,'0')+'D';
+  else if(durSec>=3600&&durSec%3600===0)per=String(durSec/3600).padStart(2,'0')+'H';
+  else per=String(Math.max(1,mins)).padStart(2,'0')+'M';
+  if(m){const doy=String(dayOfYear(firstT.y,firstT.mo,firstT.d)).padStart(3,'0');
+    const stamp=String(firstT.y).padStart(4,'0')+doy+String(firstT.h).padStart(2,'0')+String(firstT.mi).padStart(2,'0');
+    const freq=tag2||m[5]; return `${m[1]}_${m[2]}_${stamp}_${per}_${freq}_${m[6]}${ext}`;}
+  const tag=total>1?`_p${idx+1}de${total}`:(tag2||'_out'); return base+tag+ext;
+}
+
+/* ---------- ensamblar ---------- */
+function assemble(sess,epochs,newInterval,tag2,idx,total){
+  if(!epochs.length)return null;
+  const firstT=epochs[0].t,lastT=epochs[epochs.length-1].t;
+  const header=buildHeader(sess,firstT,lastT,newInterval);
+  const bodyTxt=epochs.map(e=>e.raw.join('')).join('');
+  const durSec=epochs[epochs.length-1].sec-epochs[0].sec;
+  const o={firstT,lastT,durSec,content:header+bodyTxt,nEpochs:epochs.length};
+  o.name=outName(sess,idx||0,total||1,firstT,durSec,tag2); return o;
+}
+
+/* ---------- operaciones ---------- */
+function doCut(){
+  const ep=SESSION.epochs,t0=ep[0].sec,t1=ep[ep.length-1].sec,span=t1-t0; let groups=[];
+  if(currentMode==='equal'){const n=Math.max(2,Math.min(60,parseInt(document.getElementById('equalN').value)||2));
+    for(let i=0;i<n;i++)groups.push([]); for(const e of ep){let k=Math.floor((e.sec-t0)/(span/n));if(k>=n)k=n-1;if(k<0)k=0;groups[k].push(e);}}
+  else if(currentMode==='at'){const cut=parseHMS(document.getElementById('atTime').value,SESSION.first);if(!cut)throw new Error('Hora inválida (HH:MM:SS).');
+    const cs=epochSeconds(cut); if(cs<=t0||cs>=t1)throw new Error('La hora de corte debe estar dentro de la sesión ('+hhmmss(SESSION.first)+'–'+hhmmss(SESSION.last)+').');
+    groups=[[],[]]; for(const e of ep)(e.sec<cs?groups[0]:groups[1]).push(e);}
+  else if(currentMode==='window'){const a=parseHMS(document.getElementById('winStart').value,SESSION.first),b=parseHMS(document.getElementById('winEnd').value,SESSION.first);
+    if(!a||!b)throw new Error('Inicio/fin inválidos (HH:MM:SS).'); const as=epochSeconds(a),bs=epochSeconds(b); if(bs<=as)throw new Error('El fin debe ser posterior al inicio.');
+    const g=ep.filter(e=>e.sec>=as&&e.sec<=bs); if(!g.length)throw new Error('No hay épocas en esa ventana.'); groups=[g];}
+  else if(currentMode==='duration'){const minutes=Math.max(1,parseInt(document.getElementById('durMin').value)||30),step=minutes*60,n=Math.ceil(span/step)||1;
+    for(let i=0;i<n;i++)groups.push([]); for(const e of ep){let k=Math.floor((e.sec-t0)/step);if(k>=n)k=n-1;groups[k].push(e);}}
+  else throw new Error('Elegí un modo de corte.');
+  groups=groups.filter(g=>g.length);
+  return groups.map((g,i)=>assemble(SESSION,g,null,null,i,groups.length));
+}
+function doDecimate(){
+  const target=parseInt(document.getElementById('decTarget').value);
+  const base=SESSION.epochs[0].sec;
+  const kept=SESSION.epochs.filter(e=>Math.round(e.sec-base)%target===0);
+  if(kept.length<2)throw new Error('El intervalo objetivo deja menos de 2 épocas.');
+  const freq=target>=60?(String(Math.round(target/60)).padStart(2,'0')+'M'):(String(target).padStart(2,'0')+'S');
+  const o=assemble(SESSION,kept,target,freq); return [o];
+}
+function doFixXXX(){
+  if(!SESSION.xxxTotal)throw new Error('Este archivo no tiene líneas XXX: no hay nada que reparar.');
+  const fixed=SESSION.epochs.map(e=>{
+    const sats=e.raw.slice(1).filter(l=>!l.startsWith('XXX'));
+    const removed=(e.raw.length-1)-sats.length;
+    let head=e.raw[0]; if(removed)head=setEpochSatCount(head,e.t.n-removed);
+    return {t:e.t,sec:e.sec,raw:[head,...sats]};
+  });
+  const tmp=Object.assign({},SESSION,{epochs:fixed});
+  const o=assemble(tmp,fixed,null,null,0,1);
+  o.name=(()=>{const d=SESSION.name.lastIndexOf('.');return (d>=0?SESSION.name.slice(0,d):SESSION.name)+'_FIX'+(d>=0?SESSION.name.slice(d):'.rnx');})();
+  o.note=SESSION.xxxTotal+' líneas XXX eliminadas'; return [o];
+}
+
+/* ---------- ZIP stored ---------- */
+const CRC_T=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(b){let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=CRC_T[(c^b[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function zip(files){const enc=new TextEncoder(),chunks=[],central=[];let off=0;
+  const u16=v=>[v&255,(v>>8)&255],u32=v=>[v&255,(v>>8)&255,(v>>16)&255,(v>>24)&255];
+  for(const f of files){const nm=enc.encode(f.name),dt=enc.encode(f.content),crc=crc32(dt);
+    const lh=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(dt.length),...u32(dt.length),...u16(nm.length),...u16(0)]);
+    chunks.push(lh,nm,dt);
+    central.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(dt.length),...u32(dt.length),...u16(nm.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(off)]),nm);
+    off+=lh.length+nm.length+dt.length;}
+  let cds=0;central.forEach(c=>cds+=c.length);
+  const end=new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(files.length),...u16(files.length),...u32(cds),...u32(off),...u16(0)]);
+  return new Blob([...chunks,...central,end],{type:'application/zip'});}
+
+/* ---------- descargas ---------- */
+function download(name,content){triggerDownload(new Blob([content],{type:'text/plain'}),name);}
+function triggerDownload(blob,name){const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);}
+
+/* ---------- UI helpers ---------- */
+const $=id=>document.getElementById(id);
+function showErr(m){const e=$('err');e.textContent=m;e.classList.add('show');}
+function clearErr(){$('err').classList.remove('show');}
+
+/* ---------- render sesión + salud ---------- */
+function renderSession(){
+  ['sessionCard','locCard','ephCard','procCard'].forEach(id=>$(id).classList.remove('hidden'));
+  const s=SESSION,span=s.epochs[s.epochs.length-1].sec-s.epochs[0].sec,mm=Math.floor(span/60),ss=Math.round(span%60);
+  const cells=[['Punto',s.marker||'\u2014','acc'],['Versión','RINEX '+s.version.toFixed(2),''],['Inicio',hhmmss(s.first),''],['Fin',hhmmss(s.last),''],
+    ['Duración',mm+' min '+ss+' s',''],['Intervalo',(s.interval?s.interval+' s':'\u2014'),''],['Épocas',s.epochs.length.toLocaleString('es-AR'),'acc'],
+    ['Fecha',String(s.first.d).padStart(2,'0')+'/'+String(s.first.mo).padStart(2,'0')+'/'+s.first.y,'']];
+  $('metaGrid').innerHTML=cells.map(c=>`<div class="rnx-cell"><div class="rnx-cell-lab">${c[0]}</div><div class="rnx-cell-val ${c[2]}">${c[1]}</div></div>`).join('');
+  const names={G:'GPS',R:'GLONASS',E:'Galileo',C:'BeiDou',J:'QZSS',S:'SBAS',I:'IRNSS'};
+  $('constel').innerHTML=Object.keys(s.sysCount).map(k=>`<span class="rnx-chip">${names[k]||k}</span>`).join('');
+  renderHealth();
+  renderLoc();
+  renderEph();
+  setupProc();
+}
+function renderHealth(){
+  const s=SESSION,ep=s.epochs,intv=s.interval||1;
+  let gaps=[],nmin=1e9,nmax=0,nsum=0;
+  for(let i=0;i<ep.length;i++){const n=ep[i].t.n;nmin=Math.min(nmin,n);nmax=Math.max(nmax,n);nsum+=n;
+    if(i>0){const dt=ep[i].sec-ep[i-1].sec; if(dt>intv*1.5)gaps.push({at:ep[i-1].t,missing:Math.round(dt/intv)-1});}}
+  const span=ep[ep.length-1].sec-ep[0].sec, expected=Math.round(span/intv)+1, comp=(ep.length/expected*100);
+  const navg=(nsum/ep.length).toFixed(1);
+  const xxxMsg=s.xxxTotal
+    ? `<span class="bad">${s.xxxTotal} líneas XXX</span> (conversor South \u2014 reparalas en la pestaña "Reparar XXX").`
+    : `<span class="ok">sin líneas XXX</span>`;
+  let g='';
+  if(gaps.length){const tot=gaps.reduce((a,b)=>a+b.missing,0);
+    g=`<span class="bad">${gaps.length} hueco(s)</span>, ~${tot} épocas faltantes. Mayor en ${hhmmss(gaps.sort((a,b)=>b.missing-a.missing)[0].at)}.`;}
+  else g=`<span class="ok">sin huecos</span>`;
+  $('health').innerHTML=`Salud · Satélites por época: <b style="color:var(--eg-text)">${nmin}\u2013${nmax}</b> (prom. ${navg}) · Completitud: <b style="color:${comp>99?'#16a34a':'#d97706'}">${comp.toFixed(1)}%</b><br>Continuidad: ${g}<br>Conversor: ${xxxMsg}`;
+}
+
+/* ---------- ubicación + mapa + KML ---------- */
+function renderLoc(){
+  const s=SESSION;
+  if(!s.xyz){$('locCard').classList.add('hidden');return;}
+  GEO=ecefToGeo(s.xyz.X,s.xyz.Y,s.xyz.Z); GK=geoToGK(GEO.lat,GEO.lon);
+  const rows=[
+    ['Latitud',GEO.lat.toFixed(8)+'\u00b0','acc'],['Longitud',GEO.lon.toFixed(8)+'\u00b0','acc'],
+    ['Altura elip.',GEO.h.toFixed(2)+' m',''],
+    ['POSGAR07 faja',String(GK.faja)+'  (MC '+GK.mc+'\u00b0)','acc'],
+    ['X (Este)',GK.easting.toFixed(3)+' m',''],['Y (Norte)',GK.northing.toFixed(3)+' m','']];
+  $('coords').innerHTML=rows.map(r=>`<div class="rnx-cr"><span class="rnx-cr-k">${r[0]}</span><span class="rnx-cr-v ${r[2]||''}">${r[1]}</span></div>`).join('');
+  if(typeof L!=='undefined'){
+    try{
+      if(MAP){MAP.remove();MAP=null;}
+      MAP=L.map('map',{attributionControl:true}).setView([GEO.lat,GEO.lon],15);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'\u00a9 OpenStreetMap'}).addTo(MAP);
+      MARKER=L.marker([GEO.lat,GEO.lon]).addTo(MAP).bindPopup(`<b>${s.marker||'Punto'}</b><br>${GEO.lat.toFixed(6)}, ${GEO.lon.toFixed(6)}<br>GK ${GK.faja}: ${GK.easting.toFixed(1)} / ${GK.northing.toFixed(1)}`).openPopup();
+      setTimeout(()=>MAP.invalidateSize(),200);
+      $('mapHint').textContent='Posición aproximada (solución puntual del header).';
+    }catch(e){fallbackMap();}
+  } else fallbackMap();
+}
+function fallbackMap(){
+  $('map').style.display='none';
+  $('mapHint').innerHTML=`No se pudo cargar el mapa (sin conexión). Ver en <a href="https://www.openstreetmap.org/?mlat=${GEO.lat}&mlon=${GEO.lon}#map=15/${GEO.lat}/${GEO.lon}" target="_blank" rel="noopener">OpenStreetMap</a> · <a href="https://www.google.com/maps?q=${GEO.lat},${GEO.lon}" target="_blank" rel="noopener">Google Maps</a>`;
+}
+function buildKML(){
+  const s=SESSION,nm=(s.marker||'Punto').replace(/[<&]/g,'');
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>${nm} \u2014 RINEX ${s.first.d}/${s.first.mo}/${s.first.y}</name>
+    <Placemark>
+      <name>${nm}</name>
+      <description><![CDATA[
+Posición aproximada (header RINEX, solución puntual).
+Lat: ${GEO.lat.toFixed(8)}\u00b0  Lon: ${GEO.lon.toFixed(8)}\u00b0  h: ${GEO.h.toFixed(2)} m
+POSGAR07 / Gauss-Krüger faja ${GK.faja} (MC ${GK.mc}\u00b0)
+X (Este):  ${GK.easting.toFixed(3)} m
+Y (Norte): ${GK.northing.toFixed(3)} m
+      ]]></description>
+      <Point><coordinates>${GEO.lon.toFixed(8)},${GEO.lat.toFixed(8)},${GEO.h.toFixed(2)}</coordinates></Point>
+    </Placemark>
+  </Document>
+</kml>`;
+}
+
+/* ---------- efemérides ---------- */
+function bkgUrl(prod,y,doy){const Y=String(y).padStart(4,'0'),D=String(doy).padStart(3,'0');return `https://igs.bkg.bund.de/root_ftp/IGS/BRDC/${Y}/${D}/${prod}_R_${Y}${D}0000_01D_MN.rnx.gz`;}
+function renderEph(){
+  const f=SESSION.first,l=SESSION.last,doy=dayOfYear(f.y,f.mo,f.d);
+  $('ephDay').textContent=`${String(f.d).padStart(2,'0')}/${String(f.mo).padStart(2,'0')}/${f.y}  \u00b7  DOY ${String(doy).padStart(3,'0')}`;
+  const days=[{y:f.y,doy}]; const doyL=dayOfYear(l.y,l.mo,l.d); if(doyL!==doy)days.push({y:l.y,doy:doyL});
+  const prods=[{id:'BRDC00IGS',t:'IGS final',d:'Consolidado IGS \u00b7 multi-GNSS \u00b7 máxima precisión, ~1\u20132 días después de medir. <b>Recomendado.</b>'},
+    {id:'BRDC00WRD',t:'Casi-real (BKG)',d:'Mismo día de la medición. Usalo si el IGS final aún no salió.'}];
+  let html='';
+  for(const dd of days){ if(days.length>1)html+=`<div class="rnx-lab" style="margin:14px 0 6px">Día ${String(dd.doy).padStart(3,'0')}/${dd.y}</div>`;
+    for(const p of prods){const fn=`${p.id}_R_${dd.y}${String(dd.doy).padStart(3,'0')}0000_01D_MN.rnx`;
+      html+=`<div class="rnx-seg"><div><div class="rnx-seg-fn">${fn}</div><div class="rnx-seg-meta">${p.t} \u2014 ${p.d}</div></div><button class="rnx-btn ephbtn" data-prod="${p.id}" data-y="${dd.y}" data-doy="${dd.doy}">Descargar .rnx</button></div>`;}}
+  if(days.length>1)html+=`<p class="rnx-hint" style="margin-top:8px">La sesión cruza medianoche UTC: están los dos días.</p>`;
+  $('ephLinks').innerHTML=html;
+  $('ephLinks').querySelectorAll('.ephbtn').forEach(b=>b.onclick=()=>oneClickEph(b.dataset.prod,+b.dataset.y,+b.dataset.doy,b));
+}
+async function oneClickEph(prod,y,doy,btn){
+  btn.textContent='Bajando\u2026';btn.disabled=true;
+  try{const r=await fetch(`/api/brdc?y=${y}&doy=${doy}&prod=${prod}`);
+    if(!r.ok){let m='proxy '+r.status;try{m=(await r.json()).error||m;}catch(_){}throw new Error(m);}
+    const blob=await r.blob(),name=`${prod}_R_${y}${String(doy).padStart(3,'0')}0000_01D_MN.rnx`;
+    triggerDownload(blob,name);btn.textContent='Descargado';btn.disabled=false;
+  }catch(e){const url=bkgUrl(prod,y,doy),a=document.createElement('a');a.href=url;a.rel='noopener';a.innerHTML='<button class="rnx-btn">Bajar .gz</button>';btn.replaceWith(a);
+    $('gzErr').textContent='El proxy de 1-clic no está disponible (uso local o sin desplegar). Bajá el .gz y descomprimilo abajo.';$('gzErr').classList.add('show');}
+}
+async function gunzipToText(file){if(typeof DecompressionStream==='undefined')throw new Error('Tu navegador no soporta descompresión nativa; usá 7-Zip.');
+  const ds=new DecompressionStream('gzip'),stream=file.stream().pipeThrough(ds),buf=await new Response(stream).arrayBuffer();return new TextDecoder('latin1').decode(buf);}
+async function handleGz(file){const e=$('gzErr');e.classList.remove('show');
+  try{$('gzName').textContent='Descomprimiendo '+file.name+' \u2026';const text=await gunzipToText(file);const outName=file.name.replace(/\.gz$/i,'');download(outName,text);$('gzName').textContent='Listo: '+outName;}
+  catch(err){$('gzName').textContent='Arrastrá o elegí el .gz';e.textContent=err.message;e.classList.add('show');}}
+
+/* ---------- procesar (tabs) ---------- */
+function setupProc(){
+  const intv=SESSION.interval||1, sel=$('decTarget'); sel.innerHTML='';
+  [5,10,15,30,60].filter(v=>v>intv&&v%intv===0).forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v+' s';sel.appendChild(o);});
+  if(!sel.options.length){const o=document.createElement('option');o.value=intv;o.textContent='(sin opciones: intervalo ya es '+intv+'s)';sel.appendChild(o);}
+  $('decHint').textContent='Original: '+intv+' s/época.';
+  $('fixInfo').innerHTML=SESSION.xxxTotal
+    ? `Se detectaron <b style="color:#d97706">${SESSION.xxxTotal}</b> líneas <b>XXX</b> (satélites que el conversor South no mapeó). "Generar" las elimina y corrige el conteo de cada época.`
+    : `Este archivo <b style="color:#16a34a">no tiene líneas XXX</b>. Nada que reparar.`;
+  selectOp('cut'); selectMode('equal');
+  $('atHint').textContent='Sesión: '+hhmmss(SESSION.first)+' \u2192 '+hhmmss(SESSION.last);
+  $('winStart').value=hhmmss(SESSION.first); $('winEnd').value=hhmmss(SESSION.last);
+  $('atTime').value=hhmmss({h:Math.floor((SESSION.first.h+SESSION.last.h)/2),mi:SESSION.first.mi,s:SESSION.first.s});
+}
+function selectOp(op){currentOp=op;document.querySelectorAll('.rnx-tab').forEach(t=>t.classList.toggle('sel',t.dataset.op===op));
+  document.querySelectorAll('.rnx-op').forEach(o=>o.classList.remove('show'));$('op-'+op).classList.add('show');$('runBtn').disabled=false;}
+function selectMode(mode){currentMode=mode;document.querySelectorAll('.rnx-mode').forEach(m=>m.classList.toggle('sel',m.dataset.mode===mode));
+  document.querySelectorAll('#op-cut .rnx-params').forEach(p=>p.classList.remove('show'));$('p-'+mode).classList.add('show');}
+
+function renderResults(segs){
+  lastSegments=segs.map(s=>({name:s.name,content:s.content}));
+  $('resCard').classList.remove('hidden');
+  $('resBody').innerHTML=segs.map((s,i)=>{const mm=Math.floor(s.durSec/60),ss=Math.round(s.durSec%60);
+    return `<div class="rnx-seg"><div><div class="rnx-seg-fn">${s.name}</div><div class="rnx-seg-meta"><b>${hhmmss(s.firstT)}</b> \u2192 <b>${hhmmss(s.lastT)}</b> \u00b7 ${mm}m ${ss}s \u00b7 ${s.nEpochs.toLocaleString('es-AR')} épocas${s.note?' \u00b7 '+s.note:''}</div></div><button class="rnx-btn" data-i="${i}">Descargar</button></div>`;}).join('');
+  $('resBody').querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;download(lastSegments[i].name,lastSegments[i].content);});
+  $('zipBtn').style.display=segs.length>1?'inline-block':'none';
+  $('resCard').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ---------- archivo ---------- */
+function handleFile(file){clearErr();const r=new FileReader();
+  r.onload=()=>{try{SESSION=parseRinex(r.result,file.name);lastSegments=[];$('resCard').classList.add('hidden');renderSession();$('sessionCard').scrollIntoView({behavior:'smooth',block:'start'});}
+    catch(err){showErr(err.message);SESSION=null;['sessionCard','locCard','ephCard','procCard'].forEach(id=>$(id).classList.add('hidden'));}};
+  r.onerror=()=>showErr('No se pudo leer el archivo.');r.readAsText(file);}
+
+/* ---------- eventos ---------- */
+$('drop').addEventListener('click',()=>$('file').click());
+$('file').addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0]);});
+['dragenter','dragover'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.add('hot');}));
+['dragleave','drop'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('hot');}));
+$('drop').addEventListener('drop',e=>{if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0]);});
+document.querySelectorAll('.rnx-tab').forEach(t=>t.addEventListener('click',()=>selectOp(t.dataset.op)));
+document.querySelectorAll('.rnx-mode').forEach(m=>m.addEventListener('click',()=>selectMode(m.dataset.mode)));
+$('runBtn').addEventListener('click',()=>{clearErr();try{if(!SESSION)throw new Error('Cargá un archivo primero.');
+  let segs; if(currentOp==='cut')segs=doCut();else if(currentOp==='dec')segs=doDecimate();else segs=doFixXXX();
+  if(!segs||!segs.length)throw new Error('No se generó salida.');renderResults(segs);}catch(err){showErr(err.message);}});
+$('resetBtn').addEventListener('click',()=>{SESSION=null;currentMode=null;lastSegments=[];$('file').value='';
+  ['sessionCard','locCard','ephCard','procCard','resCard'].forEach(id=>$(id).classList.add('hidden'));clearErr();$('runBtn').disabled=true;window.scrollTo({top:0,behavior:'smooth'});});
+$('zipBtn').addEventListener('click',()=>{if(lastSegments.length)triggerDownload(zip(lastSegments),(SESSION.marker||'rinex')+'_salida.zip');});
+$('kmlBtn').addEventListener('click',()=>{if(GEO)download((SESSION.marker||'punto')+'.kml',buildKML());});
+$('gzPick').addEventListener('click',()=>$('gzFile').click());
+$('gzFile').addEventListener('change',e=>{if(e.target.files[0])handleGz(e.target.files[0]);});
+</script>
+</body>
+</html>
