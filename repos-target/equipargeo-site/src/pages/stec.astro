@@ -1,0 +1,156 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Hero from '@components/Hero.astro';
+import Breadcrumb from '@components/Breadcrumb.astro';
+
+const datosCurso = [
+  { label: 'Equipo', valor: 'GNSS RTK STEC' },
+  { label: 'Modalidad', valor: 'Online o presencial' },
+  { label: 'Ubicación', valor: 'San Miguel, Buenos Aires' },
+  { label: 'Costo', valor: 'Incluido con tu equipo' },
+];
+
+const contenido = [
+  {
+    titulo: 'Configuración de hardware',
+    desc: 'Armado del equipo, conexión base-rover, configuración de radio y celular, firmware.',
+  },
+  {
+    titulo: 'Proyecto y coordenadas',
+    desc: 'Creación de proyecto, sistema de coordenadas POSGAR07, Gauss-Krüger, altura elipsoidal vs. ortométrica.',
+  },
+  {
+    titulo: 'Trabajo de campo',
+    desc: 'Levantamiento RTK, replanteo, configuración NTRIP, resolución de problemas frecuentes en obra.',
+  },
+  {
+    titulo: 'Gestión de datos',
+    desc: 'Exportación de puntos, descarga al controlador, conversión de formatos, post-proceso básico.',
+  },
+];
+
+const otrosServicios = [
+  {
+    titulo: 'Academia Equipargeo',
+    desc: 'Cursos avanzados de post-procesamiento, fotogrametría y topografía de obra.',
+    href: '/cursos/',
+  },
+  {
+    titulo: 'Herramientas web',
+    desc: 'Calculadoras geodésicas, conversores y utilidades gratuitas para gabinete.',
+    href: 'https://app.equipargeo.com/',
+  },
+  {
+    titulo: 'Asesoría técnica',
+    desc: 'Acompañamiento en planificación y ejecución de obras complejas.',
+    href: '/asesoria/',
+  },
+];
+---
+<BaseLayout
+  title="Capacitación STEC — Puesta en marcha de GNSS RTK"
+  description="Capacitación incluida con la compra de tu equipo STEC. Configuración de hardware, proyecto, trabajo de campo y gestión de datos. Modalidad online o presencial en San Miguel, Buenos Aires."
+>
+  <Hero
+    titulo="Capacitación Puesta en Marcha STEC"
+    subtitulo="Aprendé a configurar y operar tu sistema GNSS RTK. Modalidad online o presencial en nuestras oficinas de San Miguel."
+    ctaPrimario={{ href: '#calendario', label: 'Reservar turno' }}
+    ctaSecundario={{ href: '#otros-servicios', label: 'Otros servicios' }}
+    variante="default"
+  />
+
+  <div class="container-eg py-8">
+    <Breadcrumb items={[
+      { href: '/', label: 'Inicio' },
+      { href: '/cursos/', label: 'Cursos' },
+      { label: 'Capacitación STEC', current: true },
+    ]} />
+
+    <!-- Badge + datos del curso -->
+    <div class="mb-8">
+      <span class="badge-eg mb-4 inline-block">Beneficio para clientes STEC</span>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+        {datosCurso.map((d) => (
+          <div class="card-eg text-center py-4 px-3">
+            <div class="text-xs uppercase tracking-wide text-eg-gris font-semibold mb-1">{d.label}</div>
+            <div class="text-eg-azul font-bold text-sm">{d.valor}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <!-- Qué incluye + panel lateral -->
+  <section class="section-eg">
+    <div class="container-eg">
+      <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Columna principal -->
+        <div class="lg:col-span-2">
+          <h2 class="mb-4">Qué incluye el curso</h2>
+          <p class="text-eg-text-muted mb-6">Cubre el flujo de trabajo RTK completo, desde la configuración del equipo hasta el procesamiento en gabinete.</p>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            {contenido.map((c) => (
+              <div class="card-eg">
+                <h4 class="text-eg-azul mb-2">{c.titulo}</h4>
+                <p class="text-eg-text-muted text-sm leading-relaxed">{c.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <h3 class="mt-8 mb-4">Además te llevás</h3>
+          <ul class="space-y-3 text-eg-text-main">
+            <li class="flex gap-2"><span class="text-eg-coral font-bold">✓</span> Material de consulta con los pasos de configuración y resolución de problemas frecuentes.</li>
+            <li class="flex gap-2"><span class="text-eg-coral font-bold">✓</span> Acceso a la comunidad Equipar para consultas técnicas posteriores.</li>
+          </ul>
+        </div>
+
+        <!-- Panel lateral -->
+        <aside>
+          <div class="card-eg bg-eg-bg-soft border-eg-coral/30">
+            <span class="inline-block text-xs font-bold uppercase tracking-wide text-eg-coral bg-eg-coral/10 px-3 py-1 rounded-full mb-3">Incluido con tu equipo</span>
+            <p class="text-eg-text-main text-sm leading-relaxed mb-4">Este curso está incluido con la compra de tu equipo STEC. Aprovechá el espacio para despejar todas tus dudas técnicas.</p>
+            <p class="text-eg-text-muted text-sm mb-4">Modalidad presencial en nuestras oficinas en San Miguel, Provincia de Buenos Aires. También disponible online.</p>
+            <p class="text-eg-gris text-xs">Previa confirmación del instructor.</p>
+            <a href="#calendario" class="btn-eg-primary mt-4 w-full text-center">Reservar turno</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calendario -->
+  <section id="calendario" class="section-eg bg-eg-bg-soft">
+    <div class="container-eg max-w-4xl">
+      <h2 class="text-center mb-4">Reservá tu turno</h2>
+      <p class="text-eg-text-muted text-center mb-8 max-w-2xl mx-auto">Elegí el día y horario. Vas a recibir un correo con los datos de acceso (Meet) o la dirección de la oficina.</p>
+      <div class="card-eg p-0 overflow-hidden">
+        <iframe
+          src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0ldVvUjg3EsDBRpCWrHMKjATnVHWkNkntVEHTEGzHN8aA11C3No2AEl_s_WnV6AjkiC1NC8jmt?gv=true"
+          width="100%"
+          height="600"
+          style="border: 0;"
+          loading="lazy"
+          title="Calendario de reservas — Capacitación STEC"
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- Otros servicios -->
+  <section id="otros-servicios" class="section-eg">
+    <div class="container-eg">
+      <h2 class="text-center mb-4">Otros servicios</h2>
+      <p class="text-eg-text-muted text-center mb-8 max-w-2xl mx-auto">Continuá tu formación con la academia, usá las herramientas gratuitas, o sumá asesoría técnica para proyectos complejos.</p>
+      <div class="grid md:grid-cols-3 gap-6">
+        {otrosServicios.map((s) => (
+          <a href={s.href} class="card-eg card-eg-hover flex flex-col gap-2 no-underline hover:no-underline">
+            <h3 class="text-eg-azul text-lg">{s.titulo}</h3>
+            <p class="text-eg-text-muted text-sm">{s.desc}</p>
+            <span class="text-eg-coral font-bold text-sm mt-auto pt-2">Ver más →</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
