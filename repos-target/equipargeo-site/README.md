@@ -26,7 +26,7 @@ src/
 │   ├── cursos/      # markdown de cursos
 │   ├── noticias/    # markdown de notas del blog
 │   └── config.ts    # schemas de content collections
-├── pages/           # rutas del sitio
+├── pages/           # rutas del sitio (incluye /stec/ para capacitación STEC)
 ├── layouts/         # layouts compartidos
 ├── components/      # componentes Astro
 └── styles/          # CSS global
@@ -36,5 +36,5 @@ src/
 
 Cloudflare Pages → build command `npm run build` → publish directory `dist/`.
 
-URL final: https://equipargeo.com (con cutover desde el WP actual).
-URL staging: https://equipargeo-site.pages.dev (automático).
+En producción: https://equipargeo.com (cutover completado 02/06/2026).
+Staging: https://equipargeo-site.pages.dev (automático).

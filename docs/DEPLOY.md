@@ -11,7 +11,7 @@ Esta guía cubre el setup de los dos proyectos de Cloudflare Pages que sirven el
 
 ## Proyecto A — `app.equipargeo.com` (herramientas)
 
-Sirve archivos HTML+JS+CSS directos, sin build.
+Sirve 5 herramientas HTML+JS+CSS directas (POSGAR07, Faja, Puntos intermedios, Conversor DXF, Caja de herramientas RINEX) + 1 Cloudflare Pages Function (`functions/api/brdc.js` — proxy de efemérides BRDC).
 
 ### Setup en Cloudflare Pages
 
@@ -23,8 +23,10 @@ Sirve archivos HTML+JS+CSS directos, sin build.
    - Framework preset: `None`
    - **Build command:** (vacío — no requiere build)
    - **Build output directory:** `repos-target/equipargeo-tools`
-   - **Root directory (advanced):** dejar vacío
+   - **Root directory (advanced):** `repos-target/equipargeo-tools`
 6. **Save and Deploy**
+
+> **Nota sobre `Root directory` en mono-repos (D16):** el root directory debe apuntar a `repos-target/equipargeo-tools` para que Cloudflare Pages detecte la carpeta `functions/` y compile las Pages Functions. Si se deja vacío (raíz del repo), la ruta `/api/brdc` devuelve 404.
 
 ### Custom domain
 
@@ -38,7 +40,8 @@ Una vez que el primer deploy completó:
 
 Después del deploy, abrir `https://equipargeo-tools.pages.dev` (URL temporal de Cloudflare) y verificar:
 - Landing en `/`
-- Cada herramienta en `/posgar07/`, `/faja/`, `/puntos-intermedios/`, `/conversor-dxf/`
+- Cada herramienta en `/posgar07/`, `/faja/`, `/puntos-intermedios/`, `/conversor-dxf/`, `/rinex/`
+- Proxy de efemérides: `/api/brdc?y=2025&doy=100&prod=BRDC00IGS` → descarga `.rnx`
 
 ## Proyecto B — `equipargeo.com` (sitio Astro)
 

@@ -1,14 +1,20 @@
 # Cutover DNS de equipargeo.com
 
+> **Estado: COMPLETADO el 2026-06-02**
+> Cutover ejecutado el 2026-06-01. Apex resolvió durante la noche.
+> Email de confirmación de Cloudflare recibido a las 07:40 del 02/06.
+> Cert SSL emitido por Google Trust Services (WE1).
+> Custom Domains activos: equipargeo.com, www.equipargeo.com, app.equipargeo.com.
+
 Plan paso a paso para mover el dominio `equipargeo.com` desde el hosting actual (WordPress en Webnode / otro proveedor) al nuevo setup en Cloudflare Pages.
 
 ## Pre-requisitos
 
-- [ ] Ambos proyectos de Cloudflare Pages deployados y funcionando en sus URLs temporales (`*.pages.dev`)
-- [ ] Validación completa hecha en `equipargeo-site.pages.dev` y `equipargeo-tools.pages.dev`
-- [ ] Marcadores `<!-- COMPLETAR -->` revisados y editados a mano (precios, fechas, contenido de notas)
-- [ ] Backup del WordPress actual: export de contenido, base de datos, archivos uploadeados
-- [ ] Acceso al panel del proveedor DNS actual
+- [x] Ambos proyectos de Cloudflare Pages deployados y funcionando en sus URLs temporales (`*.pages.dev`)
+- [x] Validación completa hecha en `equipargeo-site.pages.dev` y `equipargeo-tools.pages.dev`
+- [x] Marcadores `<!-- COMPLETAR -->` revisados y editados a mano (precios, fechas, contenido de notas)
+- [x] Backup del WordPress actual: export de contenido, base de datos, archivos uploadeados
+- [x] Acceso al panel del proveedor DNS actual
 
 ## Estrategia
 
@@ -83,17 +89,17 @@ Debería mostrar los nameservers de Cloudflare. Si todavía muestra los viejos, 
 
 Una vez que el DNS propagó:
 
-- [ ] `https://equipargeo.com` carga el sitio nuevo Astro (no el WP viejo)
-- [ ] `https://www.equipargeo.com` redirige a `https://equipargeo.com`
-- [ ] `https://app.equipargeo.com` carga la landing de herramientas
-- [ ] `https://equipargeo.com/cursos/gnss/` carga el programa GNSS
-- [ ] `https://equipargeo.com/cursos/gnss-modulo-1/` carga el módulo 1
-- [ ] `https://equipargeo.com/programa-completo-curso-gnss/` redirige a `/cursos/gnss/` con 301
-- [ ] `https://equipargeo.com/conversor-coordenadas/` redirige a `app.equipargeo.com/posgar07/`
-- [ ] Certificate SSL válido en ambos dominios (Cloudflare lo emite automático)
-- [ ] No hay errores en la consola del browser
-- [ ] El botón de WhatsApp flotante funciona
-- [ ] Los Google Forms abren desde `/agenda/`
+- [x] `https://equipargeo.com` carga el sitio nuevo Astro (no el WP viejo)
+- [x] `https://www.equipargeo.com` redirige a `https://equipargeo.com`
+- [x] `https://app.equipargeo.com` carga la landing de herramientas
+- [x] `https://equipargeo.com/cursos/gnss/` carga el programa GNSS
+- [x] `https://equipargeo.com/cursos/gnss-modulo-1/` carga el módulo 1
+- [x] `https://equipargeo.com/programa-completo-curso-gnss/` redirige a `/cursos/gnss/` con 301
+- [x] `https://equipargeo.com/conversor-coordenadas/` redirige a `app.equipargeo.com/posgar07/`
+- [x] Certificate SSL válido en ambos dominios (Cloudflare lo emite automático)
+- [x] No hay errores en la consola del browser
+- [x] El botón de WhatsApp flotante funciona
+- [x] Los Google Forms abren desde `/agenda/`
 
 ## Paso 4 — Post-deploy
 
