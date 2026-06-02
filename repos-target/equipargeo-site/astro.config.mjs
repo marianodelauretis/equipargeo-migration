@@ -19,6 +19,7 @@ export default defineConfig({
         'https://app.equipargeo.com/faja/',
         'https://app.equipargeo.com/puntos-intermedios/',
         'https://app.equipargeo.com/conversor-dxf/',
+        'https://app.equipargeo.com/rinex/',
       ],
     }),
   ],
