@@ -128,6 +128,7 @@
     .lldxf-msg.ok { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
     .lldxf-msg.warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
     .lldxf-msg.err { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .lldxf-msg.info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
 
     /* resumen */
     .lldxf-summary {
@@ -403,6 +404,16 @@
     return lat < AR_LAT_MIN || lat > AR_LAT_MAX || lon < AR_LON_MIN || lon > AR_LON_MAX;
   }
 
+  /* ---------- distancia geodésica (Haversine) ---------- */
+  function haversineDist(lat1, lon1, lat2, lon2) {
+    const R = 6371008.8;
+    const toRad = d => d * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat/2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+
   /* ---------- parser ---------- */
   function parseInput(text) {
     const lines = text.split(/\r?\n/);
@@ -492,11 +503,11 @@
   /* ---------- ejemplo ---------- */
   const EXAMPLE_TEXT =
     '# Ejemplo: puntos conocidos en Argentina\n' +
-    '-34.6037, -58.3816    # Obelisco, CABA (faja 5)\n' +
-    '-34.5400, -58.7115    # San Miguel, BA (faja 5)\n' +
-    '-34.9211, -57.9544    # Catedral La Plata (faja 6)\n' +
-    '-32.8908, -68.8272    # Plaza Independencia, Mendoza (faja 3)\n' +
-    '-26.8241, -65.2226    # Plaza Independencia, Tucumán (faja 3)';
+    '-34.6037, -58.3816    # Obelisco, CABA\n' +
+    '-34.5400, -58.7115    # San Miguel, BA\n' +
+    '-34.9211, -57.9544    # Catedral La Plata\n' +
+    '-32.8908, -68.8272    # Plaza Independencia, Mendoza\n' +
+    '-26.8241, -65.2226    # Plaza Independencia, Tucum\u00e1n';
 
   /* ---------- UI ---------- */
   const $ = id => document.getElementById(id);
@@ -549,13 +560,17 @@
 
     // distances between consecutive valid points
     const showDist = rows.length >= 2;
+    const sameFaja = new Set(rows.map(r => r.faja)).size === 1;
+    const fajasUsadas = [...new Set(rows.map(r => r.faja))].sort((a,b) => a-b);
     let totalDist = 0;
     const dists = [];
     for (let i = 0; i < rows.length; i++) {
       if (i === 0) { dists.push(null); continue; }
       const prev = rows[i - 1];
       const cur = rows[i];
-      const d = Math.hypot(cur.X - prev.X, cur.Y - prev.Y);
+      const d = sameFaja
+        ? Math.hypot(cur.X - prev.X, cur.Y - prev.Y)
+        : haversineDist(prev.lat, prev.lon, cur.lat, cur.lon);
       totalDist += d;
       dists.push(d);
     }
@@ -568,7 +583,8 @@
       '<div><strong>Convertidos:</strong> ' + rows.length + '</div>' +
       (errors.length ? '<div><strong>Errores:</strong> ' + errors.length + '</div>' : '') +
       (warnings ? '<div><strong>Avisos MC:</strong> ' + warnings + '</div>' : '') +
-      (outsideAR ? '<div><strong>Fuera de AR:</strong> ' + outsideAR + '</div>' : '');
+      (outsideAR ? '<div><strong>Fuera de AR:</strong> ' + outsideAR + '</div>' : '') +
+      (!sameFaja ? '<div><strong>Fajas usadas:</strong> ' + fajasUsadas.join(', ') + '</div>' : '');
     $('lldxf-summary').innerHTML = summaryHTML;
 
     // message
@@ -581,9 +597,16 @@
       if (outsideAR) msgParts.push(outsideAR + ' punto(s) fuera del territorio argentino (conversi\u00f3n v\u00e1lida pero no representa POSGAR07).');
       if (msgParts.length) {
         showMsg('warn', msgParts.join(' '));
+      } else if (!sameFaja) {
+        showMsg('info', 'Los puntos est\u00e1n en distintas fajas Gauss-Kr\u00fcger. Las distancias mostradas son geod\u00e9sicas (sobre el elipsoide GRS80), no euclidianas en proyecci\u00f3n.');
       } else {
         showMsg('ok', rows.length + ' punto(s) convertidos correctamente.');
       }
+    }
+    // if there are warnings AND cross-faja, show the info as a second message
+    if (msgParts.length && !sameFaja) {
+      const el = $('lldxf-msg');
+      el.innerHTML = el.textContent + '<br><span style="color:#1e40af">Distancias geod\u00e9sicas (Haversine) porque los puntos cruzan fajas.</span>';
     }
 
     // table
@@ -618,6 +641,8 @@
     if (showDist) {
       tfoot.classList.remove('hidden');
       $('lldxf-totalDist').textContent = totalDist.toFixed(3);
+      const tfootLabel = $('lldxf-tfoot-row').querySelector('td');
+      tfootLabel.textContent = sameFaja ? 'Distancia acumulada' : 'Distancia geod\u00e9sica acumulada';
     } else {
       tfoot.classList.add('hidden');
     }
@@ -627,9 +652,11 @@
     const existingDistTh = thead.querySelector('[data-dist]');
     if (showDist && !existingDistTh) {
       const th = document.createElement('th');
-      th.textContent = 'Dist (m)';
+      th.textContent = sameFaja ? 'Dist (m)' : 'Dist geod\u00e9sica (m)';
       th.setAttribute('data-dist', '1');
       thead.insertBefore(th, thead.lastElementChild);
+    } else if (showDist && existingDistTh) {
+      existingDistTh.textContent = sameFaja ? 'Dist (m)' : 'Dist geod\u00e9sica (m)';
     } else if (!showDist && existingDistTh) {
       existingDistTh.remove();
     }
