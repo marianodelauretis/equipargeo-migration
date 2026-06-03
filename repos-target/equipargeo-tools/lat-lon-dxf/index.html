@@ -227,11 +227,45 @@
     }
     .lldxf-crosslink a { color: var(--eg-coral); font-weight: 700; }
 
+    /* canvas preview */
+    .lldxf-preview-wrap {
+      position: relative;
+    }
+    #lldxf-canvas {
+      display: block;
+      width: 100%;
+      height: 500px;
+      background: #0b2232;
+      border-radius: 6px;
+      cursor: grab;
+    }
+    #lldxf-canvas:active { cursor: grabbing; }
+    .lldxf-canvas-controls {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      display: flex;
+      gap: 4px;
+    }
+    .lldxf-canvas-controls button {
+      border: 1px solid rgba(255,255,255,.25);
+      background: rgba(11,34,50,.85);
+      color: #e8eef3;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .lldxf-canvas-controls button:hover { background: rgba(11,34,50,1); }
+
     .hidden { display: none !important; }
 
     @media (max-width: 720px) {
       .lldxf-opts { grid-template-columns: 1fr; }
       .lldxf-card { padding: 16px; }
+      #lldxf-canvas { height: 320px; }
     }
   </style>
 </head>
@@ -256,20 +290,34 @@
       <!-- Intro + input -->
       <div class="lldxf-card">
         <h2>Lat/Lon → POSGAR07 GK + DXF</h2>
-        <p class="lldxf-sub">Pegá coordenadas en grados decimales (una por línea) y exportá como DXF R12 con proyección Gauss-Krüger POSGAR07.</p>
+        <p class="lldxf-sub">Pegá coordenadas en grados decimales o sexagesimales (una por línea) y exportá como DXF R12 con proyección Gauss-Krüger POSGAR07.</p>
 
-        <p class="lldxf-crosslink">Solo un punto en formato sexagesimal (DMS)? <a href="/posgar07/">Usar el conversor POSGAR07</a></p>
+        <p class="lldxf-crosslink">Convertir un solo punto a POSGAR07? <a href="/posgar07/">Usar el conversor POSGAR07</a></p>
 
         <details class="lldxf-details">
           <summary>Formato del input</summary>
           <div>
-            <p>Una coordenada por línea. Primero latitud, después longitud. Separadores aceptados: coma, punto y coma, tabulador, o dos o más espacios.</p>
+            <p>Una coordenada por línea. Primero latitud, después longitud. Aceptados: decimales o sexagesimales (DMS).</p>
+            <p><strong>Decimal:</strong></p>
             <ul>
               <li><code>-34.603722, -58.381592</code></li>
               <li><code>-34.5478;-58.7068</code></li>
               <li><code>-34.603722  -58.381592</code></li>
             </ul>
-            <p>Líneas vacías y líneas que empiezan con <code>#</code> se ignoran. Latitud en [-90, 90], longitud en [-180, 180].</p>
+            <p><strong>Sexagesimal con símbolos y hemisferio:</strong></p>
+            <ul>
+              <li><code>34°36'13.4"S, 58°22'53.8"W</code></li>
+            </ul>
+            <p><strong>Sexagesimal con espacios y hemisferio:</strong></p>
+            <ul>
+              <li><code>34 36 13.4 S, 58 22 53.8 W</code></li>
+            </ul>
+            <p><strong>Sexagesimal con signo:</strong></p>
+            <ul>
+              <li><code>-34 36 13.4, -58 22 53.8</code></li>
+              <li><code>-34°36'13.4" -58°22'53.8"</code></li>
+            </ul>
+            <p>Separadores: coma, punto y coma, tabulador, o dos o más espacios. Líneas vacías y líneas que empiezan con <code>#</code> se ignoran.</p>
           </div>
         </details>
 
@@ -322,7 +370,19 @@
           <button class="lldxf-btn primary" id="lldxf-dxf" type="button">Descargar DXF</button>
           <button class="lldxf-btn" id="lldxf-csv" type="button">Copiar como CSV</button>
         </div>
-        <div class="lldxf-table-scroll">
+        <details class="lldxf-details" id="lldxf-preview-details" open>
+          <summary>Vista previa</summary>
+          <div class="lldxf-preview-wrap">
+            <canvas id="lldxf-canvas" width="800" height="500"></canvas>
+            <div class="lldxf-canvas-controls">
+              <button id="lldxf-cv-fit" type="button">Ajustar</button>
+              <button id="lldxf-cv-zoomin" type="button">+</button>
+              <button id="lldxf-cv-zoomout" type="button">−</button>
+              <button id="lldxf-cv-reset" type="button">Reset</button>
+            </div>
+          </div>
+        </details>
+        <div class="lldxf-table-scroll" style="margin-top:12px">
           <table class="lldxf-table" id="lldxf-table">
             <thead>
               <tr><th>#</th><th>Lat</th><th>Lon</th><th>Faja</th><th>X (Este)</th><th>Y (Norte)</th><th>Nota</th></tr>
@@ -414,17 +474,100 @@
     return 2 * R * Math.asin(Math.sqrt(a));
   }
 
+  /* ---------- DMS parser ---------- */
+  function isDMS(line) {
+    // symbols or hemisphere letters → DMS
+    if (/[°'"″′]/.test(line)) return true;
+    if (/[NSEWnsew]\s*$/.test(line) || /\s[NSEWnsew]\s/.test(line) || /\s[NSEWnsew],/.test(line)) return true;
+    // signed DMS without symbols: component has multiple space-separated numbers
+    // e.g. "-34 36 13.4, -58 22 53.8" — after split by delimiter, each part has 3 numbers
+    var parts = line.split(/[,;\t]/);
+    for (var i = 0; i < parts.length; i++) {
+      var nums = parts[i].trim().match(/-?\d+\.?\d*/g);
+      if (nums && nums.length >= 2) {
+        // check if there are spaces between numbers (not just a single decimal)
+        if (/\d\s+\d/.test(parts[i].trim())) return true;
+      }
+    }
+    return false;
+  }
+
+  function dmsComponentToDecimal(str) {
+    var s = str.trim();
+    // detect hemisphere letter
+    var hMatch = s.match(/[NSEWnsew]\s*$/);
+    var sign = 1;
+    if (hMatch) {
+      var h = hMatch[0].trim().toUpperCase();
+      if (h === 'S' || h === 'W') sign = -1;
+      s = s.replace(/[NSEWnsew]\s*$/, '');
+    }
+    // replace degree/minute/second symbols with spaces
+    s = s.replace(/[°'"″′]/g, ' ').trim();
+    // extract numbers
+    var nums = s.match(/-?\d+\.?\d*/g);
+    if (!nums || nums.length === 0) return NaN;
+    // if first number is negative, that determines sign (override hemisphere if both present)
+    if (parseFloat(nums[0]) < 0) {
+      sign = -1;
+      nums[0] = String(Math.abs(parseFloat(nums[0])));
+    }
+    var deg = parseFloat(nums[0]);
+    var min = nums.length >= 2 ? parseFloat(nums[1]) : 0;
+    var sec = nums.length >= 3 ? parseFloat(nums[2]) : 0;
+    return sign * (deg + min / 60 + sec / 3600);
+  }
+
+  function parseDMSLine(line) {
+    // try splitting by comma, semicolon, or tab first
+    var parts = line.split(/[,;\t]/);
+    if (parts.length >= 2 && parts[0].trim() && parts[1].trim()) {
+      var lat = dmsComponentToDecimal(parts[0]);
+      var lon = dmsComponentToDecimal(parts[1]);
+      if (!isNaN(lat) && !isNaN(lon)) return { lat: lat, lon: lon };
+    }
+    // no delimiter found — split by hemisphere letters or by sign
+    // try splitting on hemisphere boundary: e.g. "34...S 58...W" or "34...S58...W"
+    var hSplit = line.match(/^(.+?[NSns])\s*[,;]?\s*(.+?[EWew])\s*$/i);
+    if (hSplit) {
+      var lat2 = dmsComponentToDecimal(hSplit[1]);
+      var lon2 = dmsComponentToDecimal(hSplit[2]);
+      if (!isNaN(lat2) && !isNaN(lon2)) return { lat: lat2, lon: lon2 };
+    }
+    // try splitting by second minus sign for signed DMS without delimiters
+    // e.g. "-34 36 13.4 -58 22 53.8"
+    var signedMatch = line.match(/^(\s*-[\d\s°'"″′.]+?)\s+(-[\d\s°'"″′.]+)\s*$/);
+    if (signedMatch) {
+      var lat3 = dmsComponentToDecimal(signedMatch[1]);
+      var lon3 = dmsComponentToDecimal(signedMatch[2]);
+      if (!isNaN(lat3) && !isNaN(lon3)) return { lat: lat3, lon: lon3 };
+    }
+    return null;
+  }
+
   /* ---------- parser ---------- */
   function parseInput(text) {
     const lines = text.split(/\r?\n/);
     const parsed = [];
     for (let i = 0; i < lines.length; i++) {
-      const raw = lines[i].trim();
+      let raw = lines[i].trim();
       if (!raw || raw.startsWith('#')) continue;
-      const parts = raw.split(/[,;\t]+|\s{2,}/);
-      if (parts.length < 2) { parsed.push({ line: i+1, error: 'Se esperan al menos 2 valores (lat, lon)' }); continue; }
-      const lat = parseFloat(parts[0].replace(',', '.'));
-      const lon = parseFloat(parts[1].replace(',', '.'));
+      // strip inline comment
+      var commentIdx = raw.indexOf('#');
+      if (commentIdx > 0) raw = raw.substring(0, commentIdx).trim();
+
+      var lat, lon;
+      if (isDMS(raw)) {
+        var result = parseDMSLine(raw);
+        if (!result) { parsed.push({ line: i+1, error: 'No se pudo interpretar la línea DMS' }); continue; }
+        lat = result.lat;
+        lon = result.lon;
+      } else {
+        const parts = raw.split(/[,;\t]+|\s{2,}/);
+        if (parts.length < 2) { parsed.push({ line: i+1, error: 'Se esperan al menos 2 valores (lat, lon)' }); continue; }
+        lat = parseFloat(parts[0].replace(',', '.'));
+        lon = parseFloat(parts[1].replace(',', '.'));
+      }
       if (isNaN(lat) || isNaN(lon)) { parsed.push({ line: i+1, error: 'Valores no numéricos' }); continue; }
       if (lat < -90 || lat > 90) { parsed.push({ line: i+1, error: 'Latitud fuera de rango [-90, 90]' }); continue; }
       if (lon < -180 || lon > 180) { parsed.push({ line: i+1, error: 'Longitud fuera de rango [-180, 180]' }); continue; }
@@ -502,12 +645,133 @@
 
   /* ---------- ejemplo ---------- */
   const EXAMPLE_TEXT =
-    '# Ejemplo: puntos conocidos en Argentina\n' +
-    '-34.6037, -58.3816    # Obelisco, CABA\n' +
-    '-34.5400, -58.7115    # San Miguel, BA\n' +
-    '-34.9211, -57.9544    # Catedral La Plata\n' +
+    '# Ejemplo: puntos en distintos formatos\n' +
+    '-34.6037, -58.3816    # Obelisco, CABA (decimal)\n' +
+    '34°32\'24"S 58°42\'41"W    # San Miguel, BA (sexagesimal con símbolos)\n' +
+    '-34 55 16, -57 57 16    # Catedral La Plata (sexagesimal con signo)\n' +
     '-32.8908, -68.8272    # Plaza Independencia, Mendoza\n' +
-    '-26.8241, -65.2226    # Plaza Independencia, Tucum\u00e1n';
+    '26 49 27 S, 65 13 21 W    # Plaza Independencia, Tucumán (con hemisferio)';
+
+  /* ---------- canvas preview ---------- */
+  var cvView = null;   // { minLat, maxLat, minLon, maxLon }
+  var cvBase = null;    // base view for reset
+  var cvDragging = false;
+  var cvDragStart = null;
+  var cvViewStart = null;
+  const CV_PAD = 30;
+
+  function cvSetup(cv) {
+    var w = cv.clientWidth || 800;
+    var h = cv.clientHeight || 500;
+    cv.width = w * devicePixelRatio;
+    cv.height = h * devicePixelRatio;
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    return { ctx: ctx, w: w, h: h };
+  }
+
+  function cvComputeBounds(rows) {
+    if (!rows.length) return null;
+    var minLat = Infinity, maxLat = -Infinity, minLon = Infinity, maxLon = -Infinity;
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      if (r.lat < minLat) minLat = r.lat;
+      if (r.lat > maxLat) maxLat = r.lat;
+      if (r.lon < minLon) minLon = r.lon;
+      if (r.lon > maxLon) maxLon = r.lon;
+    }
+    if (minLat === maxLat) { minLat -= 0.01; maxLat += 0.01; }
+    if (minLon === maxLon) { minLon -= 0.01; maxLon += 0.01; }
+    return { minLat: minLat, maxLat: maxLat, minLon: minLon, maxLon: maxLon };
+  }
+
+  function cvFit(rows) {
+    var b = cvComputeBounds(rows);
+    if (!b) { cvView = null; cvBase = null; return; }
+    var dLat = b.maxLat - b.minLat;
+    var dLon = b.maxLon - b.minLon;
+    cvView = { minLat: b.minLat - dLat * 0.08, maxLat: b.maxLat + dLat * 0.08,
+               minLon: b.minLon - dLon * 0.08, maxLon: b.maxLon + dLon * 0.08 };
+    cvBase = { minLat: cvView.minLat, maxLat: cvView.maxLat, minLon: cvView.minLon, maxLon: cvView.maxLon };
+  }
+
+  function cvWorldToScreen(lat, lon, w, h) {
+    if (!cvView) return { x: 0, y: 0 };
+    var sx = (w - 2 * CV_PAD) / (cvView.maxLon - cvView.minLon);
+    var sy = (h - 2 * CV_PAD) / (cvView.maxLat - cvView.minLat);
+    var s = Math.min(sx, sy);
+    var ox = CV_PAD + (w - 2 * CV_PAD - s * (cvView.maxLon - cvView.minLon)) / 2;
+    var oy = CV_PAD + (h - 2 * CV_PAD - s * (cvView.maxLat - cvView.minLat)) / 2;
+    return {
+      x: ox + (lon - cvView.minLon) * s,
+      y: h - (oy + (lat - cvView.minLat) * s)
+    };
+  }
+
+  function cvScreenToWorld(px, py, w, h) {
+    if (!cvView) return { lat: 0, lon: 0 };
+    var sx = (w - 2 * CV_PAD) / (cvView.maxLon - cvView.minLon);
+    var sy = (h - 2 * CV_PAD) / (cvView.maxLat - cvView.minLat);
+    var s = Math.min(sx, sy);
+    var ox = CV_PAD + (w - 2 * CV_PAD - s * (cvView.maxLon - cvView.minLon)) / 2;
+    var oy = CV_PAD + (h - 2 * CV_PAD - s * (cvView.maxLat - cvView.minLat)) / 2;
+    return {
+      lon: cvView.minLon + (px - ox) / s,
+      lat: cvView.minLat + ((h - py) - oy) / s
+    };
+  }
+
+  function drawCanvas(rows) {
+    var cv = document.getElementById('lldxf-canvas');
+    if (!cv) return;
+    var info = cvSetup(cv);
+    var ctx = info.ctx, w = info.w, h = info.h;
+
+    // clear
+    ctx.clearRect(0, 0, w, h);
+
+    if (!rows || !rows.length) {
+      ctx.fillStyle = '#6b8ba4';
+      ctx.font = '14px system-ui,-apple-system,Segoe UI,Roboto,Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Convertí coordenadas para ver la vista previa', w / 2, h / 2);
+      ctx.textAlign = 'start';
+      return;
+    }
+
+    if (!cvView) return;
+
+    // connection lines
+    if (rows.length > 1) {
+      ctx.strokeStyle = '#4a6580';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (var i = 0; i < rows.length; i++) {
+        var p = cvWorldToScreen(rows[i].lat, rows[i].lon, w, h);
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke();
+    }
+
+    // points and labels
+    var r = rows.length === 1 ? 8 : 5;
+    for (var j = 0; j < rows.length; j++) {
+      var pt = cvWorldToScreen(rows[j].lat, rows[j].lon, w, h);
+      // filled circle
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff5555';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      // label
+      ctx.fillStyle = '#e8eef3';
+      ctx.font = '11px ui-monospace,SFMono-Regular,Consolas,monospace';
+      ctx.fillText(rows[j].label, pt.x + r + 4, pt.y - 6);
+    }
+  }
 
   /* ---------- UI ---------- */
   const $ = id => document.getElementById(id);
@@ -661,6 +925,10 @@
       existingDistTh.remove();
     }
 
+    // canvas preview
+    cvFit(rows);
+    drawCanvas(rows);
+
     $('lldxf-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -703,6 +971,8 @@
     hideMsg();
     lastRows = [];
     $('lldxf-table').querySelector('tbody').innerHTML = '';
+    cvView = null; cvBase = null;
+    drawCanvas([]);
     clearState();
   }
 
@@ -728,6 +998,79 @@
   $('lldxf-faja').addEventListener('change', saveState);
   $('lldxf-prefix').addEventListener('input', saveState);
   $('lldxf-start').addEventListener('input', saveState);
+
+  // canvas controls
+  $('lldxf-cv-fit').addEventListener('click', function() { cvFit(lastRows); drawCanvas(lastRows); });
+  $('lldxf-cv-zoomin').addEventListener('click', function() {
+    if (!cvView) return;
+    var cLat = (cvView.minLat + cvView.maxLat) / 2;
+    var cLon = (cvView.minLon + cvView.maxLon) / 2;
+    var dLat = (cvView.maxLat - cvView.minLat) / 2 / 1.3;
+    var dLon = (cvView.maxLon - cvView.minLon) / 2 / 1.3;
+    cvView = { minLat: cLat - dLat, maxLat: cLat + dLat, minLon: cLon - dLon, maxLon: cLon + dLon };
+    drawCanvas(lastRows);
+  });
+  $('lldxf-cv-zoomout').addEventListener('click', function() {
+    if (!cvView) return;
+    var cLat = (cvView.minLat + cvView.maxLat) / 2;
+    var cLon = (cvView.minLon + cvView.maxLon) / 2;
+    var dLat = (cvView.maxLat - cvView.minLat) / 2 * 1.3;
+    var dLon = (cvView.maxLon - cvView.minLon) / 2 * 1.3;
+    cvView = { minLat: cLat - dLat, maxLat: cLat + dLat, minLon: cLon - dLon, maxLon: cLon + dLon };
+    drawCanvas(lastRows);
+  });
+  $('lldxf-cv-reset').addEventListener('click', function() {
+    if (cvBase) cvView = { minLat: cvBase.minLat, maxLat: cvBase.maxLat, minLon: cvBase.minLon, maxLon: cvBase.maxLon };
+    drawCanvas(lastRows);
+  });
+
+  // canvas mouse wheel zoom
+  var cvEl = $('lldxf-canvas');
+  cvEl.addEventListener('wheel', function(e) {
+    if (!cvView || !lastRows.length) return;
+    e.preventDefault();
+    var rect = cvEl.getBoundingClientRect();
+    var w = cvEl.clientWidth, h = cvEl.clientHeight;
+    var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    var wc = cvScreenToWorld(mx, my, w, h);
+    var factor = e.deltaY > 0 ? 1.15 : 1 / 1.15;
+    var dLon = (cvView.maxLon - cvView.minLon) * factor;
+    var dLat = (cvView.maxLat - cvView.minLat) * factor;
+    var rLon = (wc.lon - cvView.minLon) / (cvView.maxLon - cvView.minLon);
+    var rLat = (wc.lat - cvView.minLat) / (cvView.maxLat - cvView.minLat);
+    cvView.minLon = wc.lon - rLon * dLon;
+    cvView.maxLon = cvView.minLon + dLon;
+    cvView.minLat = wc.lat - rLat * dLat;
+    cvView.maxLat = cvView.minLat + dLat;
+    drawCanvas(lastRows);
+  }, { passive: false });
+
+  // canvas drag pan
+  cvEl.addEventListener('mousedown', function(e) {
+    if (e.button !== 0 || !cvView) return;
+    cvDragging = true;
+    var w = cvEl.clientWidth, h = cvEl.clientHeight;
+    var rect = cvEl.getBoundingClientRect();
+    cvDragStart = cvScreenToWorld(e.clientX - rect.left, e.clientY - rect.top, w, h);
+    cvViewStart = { minLat: cvView.minLat, maxLat: cvView.maxLat, minLon: cvView.minLon, maxLon: cvView.maxLon };
+  });
+  window.addEventListener('mouseup', function() { cvDragging = false; });
+  cvEl.addEventListener('mousemove', function(e) {
+    if (!cvDragging || !cvView || !cvViewStart) return;
+    var w = cvEl.clientWidth, h = cvEl.clientHeight;
+    var rect = cvEl.getBoundingClientRect();
+    var cur = cvScreenToWorld(e.clientX - rect.left, e.clientY - rect.top, w, h);
+    var dLon = cur.lon - cvDragStart.lon;
+    var dLat = cur.lat - cvDragStart.lat;
+    cvView.minLon = cvViewStart.minLon - dLon;
+    cvView.maxLon = cvViewStart.maxLon - dLon;
+    cvView.minLat = cvViewStart.minLat - dLat;
+    cvView.maxLat = cvViewStart.maxLat - dLat;
+    drawCanvas(lastRows);
+  });
+
+  // redraw on resize
+  window.addEventListener('resize', function() { if (lastRows.length) drawCanvas(lastRows); });
 })();
 </script>
 </body>
