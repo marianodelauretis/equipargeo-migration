@@ -175,7 +175,13 @@
     .lldxf-table tbody tr:hover { background: var(--eg-bg-soft); }
     .lldxf-table tbody tr.row-err { background: #fef2f2; }
     .lldxf-table tbody tr.row-err td { color: #991b1b; }
-    .lldxf-table tbody tr.row-warn td:last-child { color: #92400e; font-weight: 600; }
+    .lldxf-table tbody tr.row-warn td:nth-last-child(1) { color: #92400e; font-weight: 600; }
+    .lldxf-table tfoot td {
+      padding: 10px;
+      border-top: 2px solid var(--eg-borde);
+      background: #f2f6fa;
+      font-size: 0.85rem;
+    }
 
     /* details */
     .lldxf-details {
@@ -266,12 +272,15 @@
           </div>
         </details>
 
-        <label for="lldxf-input" class="lldxf-field" style="margin-top:14px">
-          <span style="font-size:0.9rem;color:var(--eg-text-muted);font-weight:600">Coordenadas</span>
+        <div class="lldxf-field" style="margin-top:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+            <label for="lldxf-input" style="font-size:0.9rem;color:var(--eg-text-muted);font-weight:600">Coordenadas</label>
+            <button class="lldxf-btn" id="lldxf-example" type="button" style="padding:5px 12px;font-size:0.82rem" aria-label="Cargar coordenadas de ejemplo">Cargar ejemplo</button>
+          </div>
           <textarea id="lldxf-input" class="lldxf-textarea" placeholder="# Ejemplo: Obelisco y San Miguel
 -34.603722, -58.381592
 -34.5478, -58.7068"></textarea>
-        </label>
+        </div>
 
         <div class="lldxf-opts">
           <div class="lldxf-field">
@@ -318,6 +327,9 @@
               <tr><th>#</th><th>Lat</th><th>Lon</th><th>Faja</th><th>X (Este)</th><th>Y (Norte)</th><th>Nota</th></tr>
             </thead>
             <tbody></tbody>
+            <tfoot class="hidden" id="lldxf-tfoot">
+              <tr id="lldxf-tfoot-row"><td colspan="6" style="text-align:right;font-weight:700;color:var(--eg-azul);font-family:inherit">Distancia acumulada</td><td id="lldxf-totalDist" style="font-weight:700;font-family:var(--eg-mono)"></td><td></td></tr>
+            </tfoot>
           </table>
         </div>
       </div>
@@ -385,6 +397,12 @@
     return { X: x + falsoEste(faja), Y: y + FN_SUR };
   }
 
+  /* ---------- bounding box Argentina ---------- */
+  const AR_LAT_MIN = -55, AR_LAT_MAX = -22, AR_LON_MIN = -74, AR_LON_MAX = -53;
+  function isOutsideAR(lat, lon) {
+    return lat < AR_LAT_MIN || lat > AR_LAT_MAX || lon < AR_LON_MIN || lon > AR_LON_MAX;
+  }
+
   /* ---------- parser ---------- */
   function parseInput(text) {
     const lines = text.split(/\r?\n/);
@@ -415,9 +433,7 @@
     const textH = (offset * 1.5).toFixed(2);
 
     const L = [];
-    // header
     L.push('0','SECTION','2','HEADER','9','$ACADVER','1','AC1009','0','ENDSEC');
-    // tables
     L.push('0','SECTION','2','TABLES');
     L.push('0','TABLE','2','LTYPE','70','1');
     L.push('0','LTYPE','2','CONTINUOUS','70','0','3','Continuous','72','65','73','0','40','0');
@@ -431,9 +447,7 @@
     L.push('0','LAYER','2','TEXTOS','70','0','62','3','6','CONTINUOUS');
     L.push('0','ENDTAB');
     L.push('0','ENDSEC');
-    // blocks
     L.push('0','SECTION','2','BLOCKS','0','ENDSEC');
-    // entities
     L.push('0','SECTION','2','ENTITIES');
     for (const r of rows) {
       L.push('0','POINT','8','PUNTOS','10',r.X.toFixed(4),'20',r.Y.toFixed(4));
@@ -442,6 +456,47 @@
     L.push('0','ENDSEC','0','EOF');
     return L.join('\r\n') + '\r\n';
   }
+
+  /* ---------- localStorage ---------- */
+  const LS_KEYS = { input: 'lldxf:input', faja: 'lldxf:faja', prefix: 'lldxf:prefix', startN: 'lldxf:startN' };
+  let saveTimer = null;
+  function saveState() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function() {
+      try {
+        localStorage.setItem(LS_KEYS.input, $('lldxf-input').value);
+        localStorage.setItem(LS_KEYS.faja, $('lldxf-faja').value);
+        localStorage.setItem(LS_KEYS.prefix, $('lldxf-prefix').value);
+        localStorage.setItem(LS_KEYS.startN, $('lldxf-start').value);
+      } catch(e) {}
+    }, 500);
+  }
+  function loadState() {
+    try {
+      const inp = localStorage.getItem(LS_KEYS.input);
+      const faja = localStorage.getItem(LS_KEYS.faja);
+      const prefix = localStorage.getItem(LS_KEYS.prefix);
+      const startN = localStorage.getItem(LS_KEYS.startN);
+      if (inp !== null) $('lldxf-input').value = inp;
+      if (faja !== null) $('lldxf-faja').value = faja;
+      if (prefix !== null) $('lldxf-prefix').value = prefix;
+      if (startN !== null) $('lldxf-start').value = startN;
+    } catch(e) {}
+  }
+  function clearState() {
+    try {
+      Object.values(LS_KEYS).forEach(function(k) { localStorage.removeItem(k); });
+    } catch(e) {}
+  }
+
+  /* ---------- ejemplo ---------- */
+  const EXAMPLE_TEXT =
+    '# Ejemplo: puntos conocidos en Argentina\n' +
+    '-34.6037, -58.3816    # Obelisco, CABA (faja 5)\n' +
+    '-34.5400, -58.7115    # San Miguel, BA (faja 5)\n' +
+    '-34.9211, -57.9544    # Catedral La Plata (faja 6)\n' +
+    '-32.8908, -68.8272    # Plaza Independencia, Mendoza (faja 3)\n' +
+    '-26.8241, -65.2226    # Plaza Independencia, Tucumán (faja 3)';
 
   /* ---------- UI ---------- */
   const $ = id => document.getElementById(id);
@@ -473,6 +528,7 @@
     const rows = [];
     const errors = [];
     let warnings = 0;
+    let outsideAR = 0;
     let idx = startN;
 
     for (const p of parsed) {
@@ -482,40 +538,62 @@
       const diffMC = Math.abs(p.lon - mc);
       const gk = llToGK(p.lat, p.lon, faja);
       const label = prefix + idx;
-      let nota = '';
-      if (diffMC > 1.5) { nota = 'A ' + diffMC.toFixed(1) + '° del MC. Precisión degradada.'; warnings++; }
-      rows.push({ line: p.line, lat: p.lat, lon: p.lon, faja, X: gk.X, Y: gk.Y, label, nota });
+      const notas = [];
+      if (diffMC > 1.5) { notas.push('A ' + diffMC.toFixed(1) + '\u00b0 del MC'); warnings++; }
+      if (isOutsideAR(p.lat, p.lon)) { notas.push('Fuera de Argentina'); outsideAR++; }
+      rows.push({ line: p.line, lat: p.lat, lon: p.lon, faja, X: gk.X, Y: gk.Y, label, nota: notas.join('. ') });
       idx++;
     }
 
     lastRows = rows;
 
+    // distances between consecutive valid points
+    const showDist = rows.length >= 2;
+    let totalDist = 0;
+    const dists = [];
+    for (let i = 0; i < rows.length; i++) {
+      if (i === 0) { dists.push(null); continue; }
+      const prev = rows[i - 1];
+      const cur = rows[i];
+      const d = Math.hypot(cur.X - prev.X, cur.Y - prev.Y);
+      totalDist += d;
+      dists.push(d);
+    }
+
     // render
     $('lldxf-results').classList.remove('hidden');
 
     // summary
-    $('lldxf-summary').innerHTML =
+    let summaryHTML =
       '<div><strong>Convertidos:</strong> ' + rows.length + '</div>' +
       (errors.length ? '<div><strong>Errores:</strong> ' + errors.length + '</div>' : '') +
-      (warnings ? '<div><strong>Avisos:</strong> ' + warnings + '</div>' : '');
+      (warnings ? '<div><strong>Avisos MC:</strong> ' + warnings + '</div>' : '') +
+      (outsideAR ? '<div><strong>Fuera de AR:</strong> ' + outsideAR + '</div>' : '');
+    $('lldxf-summary').innerHTML = summaryHTML;
 
     // message
+    const msgParts = [];
     if (errors.length && !rows.length) {
-      showMsg('err', 'Todas las líneas tienen errores. Revisá el formato.');
-    } else if (errors.length) {
-      showMsg('warn', errors.length + ' línea(s) con errores (marcadas en rojo). El resto se convirtió correctamente.');
-    } else if (warnings) {
-      showMsg('warn', warnings + ' punto(s) a más de 1.5° del meridiano central. Considerar faja local.');
+      showMsg('err', 'Todas las l\u00edneas tienen errores. Revis\u00e1 el formato.');
     } else {
-      showMsg('ok', rows.length + ' punto(s) convertidos correctamente.');
+      if (errors.length) msgParts.push(errors.length + ' l\u00ednea(s) con errores.');
+      if (warnings) msgParts.push(warnings + ' punto(s) a m\u00e1s de 1.5\u00b0 del meridiano central.');
+      if (outsideAR) msgParts.push(outsideAR + ' punto(s) fuera del territorio argentino (conversi\u00f3n v\u00e1lida pero no representa POSGAR07).');
+      if (msgParts.length) {
+        showMsg('warn', msgParts.join(' '));
+      } else {
+        showMsg('ok', rows.length + ' punto(s) convertidos correctamente.');
+      }
     }
 
     // table
     const tbody = $('lldxf-table').querySelector('tbody');
     tbody.innerHTML = '';
-    for (const r of rows) {
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
       const tr = document.createElement('tr');
       if (r.nota) tr.className = 'row-warn';
+      const distCell = showDist ? '<td>' + (dists[i] !== null ? dists[i].toFixed(3) : '\u2014') + '</td>' : '';
       tr.innerHTML =
         '<td>' + r.label + '</td>' +
         '<td>' + r.lat.toFixed(8) + '</td>' +
@@ -523,14 +601,37 @@
         '<td>' + r.faja + '</td>' +
         '<td>' + r.X.toFixed(4) + '</td>' +
         '<td>' + r.Y.toFixed(4) + '</td>' +
+        distCell +
         '<td>' + (r.nota || '') + '</td>';
       tbody.appendChild(tr);
     }
     for (const e of errors) {
       const tr = document.createElement('tr');
       tr.className = 'row-err';
-      tr.innerHTML = '<td>L' + e.line + '</td><td colspan="6">' + e.error + '</td>';
+      const colSpan = showDist ? 7 : 6;
+      tr.innerHTML = '<td>L' + e.line + '</td><td colspan="' + colSpan + '">' + e.error + '</td>';
       tbody.appendChild(tr);
+    }
+
+    // tfoot
+    const tfoot = $('lldxf-tfoot');
+    if (showDist) {
+      tfoot.classList.remove('hidden');
+      $('lldxf-totalDist').textContent = totalDist.toFixed(3);
+    } else {
+      tfoot.classList.add('hidden');
+    }
+
+    // update thead (show/hide dist column)
+    const thead = $('lldxf-table').querySelector('thead tr');
+    const existingDistTh = thead.querySelector('[data-dist]');
+    if (showDist && !existingDistTh) {
+      const th = document.createElement('th');
+      th.textContent = 'Dist (m)';
+      th.setAttribute('data-dist', '1');
+      thead.insertBefore(th, thead.lastElementChild);
+    } else if (!showDist && existingDistTh) {
+      existingDistTh.remove();
     }
 
     $('lldxf-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -564,17 +665,42 @@
   }
 
   function clear() {
-    $('lldxf-input').value = '';
+    const input = $('lldxf-input');
+    if (input.value.trim() && !confirm('Limpiar el contenido actual y las opciones?')) return;
+    input.value = '';
+    $('lldxf-faja').value = 'auto';
+    $('lldxf-prefix').value = 'P';
+    $('lldxf-start').value = '1';
     $('lldxf-results').classList.add('hidden');
+    $('lldxf-tfoot').classList.add('hidden');
     hideMsg();
     lastRows = [];
     $('lldxf-table').querySelector('tbody').innerHTML = '';
+    clearState();
   }
 
+  function loadExample() {
+    const input = $('lldxf-input');
+    if (input.value.trim() && !confirm('Reemplazar el contenido actual con el ejemplo?')) return;
+    input.value = EXAMPLE_TEXT;
+    saveState();
+  }
+
+  // init
+  loadState();
+
+  // event listeners
   $('lldxf-convert').addEventListener('click', convert);
   $('lldxf-dxf').addEventListener('click', downloadDXF);
   $('lldxf-csv').addEventListener('click', copyCSV);
   $('lldxf-clear').addEventListener('click', clear);
+  $('lldxf-example').addEventListener('click', loadExample);
+
+  // persist on change (debounced)
+  $('lldxf-input').addEventListener('input', saveState);
+  $('lldxf-faja').addEventListener('change', saveState);
+  $('lldxf-prefix').addEventListener('input', saveState);
+  $('lldxf-start').addEventListener('input', saveState);
 })();
 </script>
 </body>
