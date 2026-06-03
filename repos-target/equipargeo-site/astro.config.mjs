@@ -20,6 +20,7 @@ export default defineConfig({
         'https://app.equipargeo.com/puntos-intermedios/',
         'https://app.equipargeo.com/conversor-dxf/',
         'https://app.equipargeo.com/rinex/',
+        'https://app.equipargeo.com/lat-lon-dxf/',
       ],
     }),
   ],

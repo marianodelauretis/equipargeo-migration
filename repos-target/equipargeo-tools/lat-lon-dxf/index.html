@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lat/Lon → POSGAR07 GK + DXF — EQUIPAR Tools</title>
+  <meta name="description" content="Convertí coordenadas lat/lon en grados decimales a Gauss-Krüger POSGAR07 y exportá como DXF R12. Detección automática de faja, falso norte y falso este.">
+  <meta name="theme-color" content="#18354a">
+  <link rel="canonical" href="https://app.equipargeo.com/lat-lon-dxf/">
+  <link rel="icon" type="image/svg+xml" href="/shared/favicon.svg">
+  <link rel="manifest" href="/shared/manifest.json">
+  <link rel="stylesheet" href="/shared/base.css">
+  <style>
+    /* ===== Lat/Lon → DXF — estilos locales ===== */
+    .lldxf-wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+
+    .lldxf-card {
+      background: var(--eg-bg);
+      border: 1px solid var(--eg-borde);
+      border-radius: 16px;
+      box-shadow: var(--eg-shadow);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .lldxf-card h2 {
+      margin: 0 0 8px;
+      color: var(--eg-azul);
+      font-size: 1.6rem;
+      line-height: 1.15;
+    }
+    .lldxf-sub {
+      margin: 0 0 16px;
+      color: var(--eg-text-muted);
+      font-size: 0.96rem;
+      line-height: 1.55;
+    }
+
+    /* textarea */
+    .lldxf-textarea {
+      width: 100%;
+      min-height: 180px;
+      padding: 12px 14px;
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      background: #fff;
+      font-family: var(--eg-mono);
+      font-size: 0.9rem;
+      color: var(--eg-text);
+      resize: vertical;
+      line-height: 1.6;
+    }
+    .lldxf-textarea:focus {
+      outline: 2px solid #d8e8f7;
+      border-color: #90caf9;
+    }
+    .lldxf-textarea::placeholder { color: var(--eg-gris); }
+
+    /* opciones grid */
+    .lldxf-opts {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .lldxf-field { display: flex; flex-direction: column; gap: 6px; }
+    .lldxf-field label {
+      font-size: 0.9rem;
+      color: var(--eg-text-muted);
+      font-weight: 600;
+    }
+    .lldxf-wrap select,
+    .lldxf-wrap input[type="text"],
+    .lldxf-wrap input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--eg-text);
+    }
+    .lldxf-wrap select:focus,
+    .lldxf-wrap input:focus {
+      outline: 2px solid #d8e8f7;
+      border-color: #90caf9;
+    }
+
+    /* botones */
+    .lldxf-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .lldxf-btn {
+      display: inline-block;
+      border: 1px solid var(--eg-borde);
+      background: #eef3f9;
+      color: var(--eg-azul);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: filter 0.15s ease;
+    }
+    .lldxf-btn:hover { filter: brightness(0.97); }
+    .lldxf-btn.primary {
+      background: var(--eg-coral);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: var(--eg-shadow-coral);
+    }
+    .lldxf-btn.primary:hover { background: var(--eg-coral-hover); }
+
+    /* mensajes */
+    .lldxf-msg {
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin-top: 12px;
+      display: none;
+    }
+    .lldxf-msg.show { display: block; }
+    .lldxf-msg.ok { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    .lldxf-msg.warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    .lldxf-msg.err { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+
+    /* resumen */
+    .lldxf-summary {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--eg-bg-soft);
+      border: 1px solid var(--eg-borde);
+      font-size: 0.95rem;
+      color: var(--eg-text);
+      margin-bottom: 12px;
+    }
+
+    /* tabla */
+    .lldxf-table-scroll {
+      overflow: auto;
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      max-height: 420px;
+    }
+    .lldxf-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      background: #fff;
+    }
+    .lldxf-table thead th {
+      text-align: left;
+      background: #f2f6fa;
+      padding: 10px;
+      border-bottom: 1px solid var(--eg-borde);
+      color: var(--eg-azul);
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+    }
+    .lldxf-table tbody td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eef2f7;
+      font-family: var(--eg-mono);
+      font-size: 0.85rem;
+    }
+    .lldxf-table tbody tr:hover { background: var(--eg-bg-soft); }
+    .lldxf-table tbody tr.row-err { background: #fef2f2; }
+    .lldxf-table tbody tr.row-err td { color: #991b1b; }
+    .lldxf-table tbody tr.row-warn td:last-child { color: #92400e; font-weight: 600; }
+
+    /* details */
+    .lldxf-details {
+      border: 1px solid var(--eg-borde);
+      border-radius: 10px;
+      background: #fff;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+    .lldxf-details summary {
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--eg-azul);
+      font-size: 0.95rem;
+    }
+    .lldxf-details[open] summary {
+      border-bottom: 1px solid var(--eg-borde);
+      background: var(--eg-bg-soft);
+    }
+    .lldxf-details > div {
+      padding: 12px 16px;
+      color: var(--eg-text-muted);
+      line-height: 1.55;
+      font-size: 0.9rem;
+    }
+    .lldxf-details ul { margin: 6px 0; padding-left: 20px; }
+    .lldxf-details li { margin-bottom: 4px; }
+    .lldxf-details code {
+      background: var(--eg-bg-soft);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: var(--eg-mono);
+      font-size: 0.85em;
+    }
+
+    /* cross-link */
+    .lldxf-crosslink {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: var(--eg-text-muted);
+    }
+    .lldxf-crosslink a { color: var(--eg-coral); font-weight: 700; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 720px) {
+      .lldxf-opts { grid-template-columns: 1fr; }
+      .lldxf-card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="eg-topbar">
+    <div class="eg-topbar-inner">
+      <a class="eg-brand" href="/"><span class="eg-brand-dot"></span> EQUIPAR Tools</a>
+      <nav class="eg-nav" aria-label="Principal">
+        <a href="/">Inicio</a>
+        <a href="https://equipargeo.com/cursos/">Cursos</a>
+        <a href="https://equipargeo.com/contacto/">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="eg-main">
+    <div class="eg-page-header">
+      <nav class="eg-breadcrumb" aria-label="Migas"><a href="/">EQUIPAR Tools</a> · Lat/Lon a DXF</nav>
+    </div>
+
+    <section class="lldxf-wrap">
+      <!-- Intro + input -->
+      <div class="lldxf-card">
+        <h2>Lat/Lon → POSGAR07 GK + DXF</h2>
+        <p class="lldxf-sub">Pegá coordenadas en grados decimales (una por línea) y exportá como DXF R12 con proyección Gauss-Krüger POSGAR07.</p>
+
+        <p class="lldxf-crosslink">Solo un punto en formato sexagesimal (DMS)? <a href="/posgar07/">Usar el conversor POSGAR07</a></p>
+
+        <details class="lldxf-details">
+          <summary>Formato del input</summary>
+          <div>
+            <p>Una coordenada por línea. Primero latitud, después longitud. Separadores aceptados: coma, punto y coma, tabulador, o dos o más espacios.</p>
+            <ul>
+              <li><code>-34.603722, -58.381592</code></li>
+              <li><code>-34.5478;-58.7068</code></li>
+              <li><code>-34.603722  -58.381592</code></li>
+            </ul>
+            <p>Líneas vacías y líneas que empiezan con <code>#</code> se ignoran. Latitud en [-90, 90], longitud en [-180, 180].</p>
+          </div>
+        </details>
+
+        <label for="lldxf-input" class="lldxf-field" style="margin-top:14px">
+          <span style="font-size:0.9rem;color:var(--eg-text-muted);font-weight:600">Coordenadas</span>
+          <textarea id="lldxf-input" class="lldxf-textarea" placeholder="# Ejemplo: Obelisco y San Miguel
+-34.603722, -58.381592
+-34.5478, -58.7068"></textarea>
+        </label>
+
+        <div class="lldxf-opts">
+          <div class="lldxf-field">
+            <label for="lldxf-faja">Faja</label>
+            <select id="lldxf-faja">
+              <option value="auto" selected>Autodetectar por longitud</option>
+              <option value="1">Faja 1 (-72°)</option>
+              <option value="2">Faja 2 (-69°)</option>
+              <option value="3">Faja 3 (-66°)</option>
+              <option value="4">Faja 4 (-63°)</option>
+              <option value="5">Faja 5 (-60°)</option>
+              <option value="6">Faja 6 (-57°)</option>
+              <option value="7">Faja 7 (-54°)</option>
+            </select>
+          </div>
+          <div class="lldxf-field">
+            <label for="lldxf-prefix">Prefijo de etiquetas</label>
+            <input id="lldxf-prefix" type="text" value="P" maxlength="10">
+          </div>
+          <div class="lldxf-field">
+            <label for="lldxf-start">Numeración desde</label>
+            <input id="lldxf-start" type="number" value="1" min="0" step="1">
+          </div>
+        </div>
+
+        <div class="lldxf-actions">
+          <button class="lldxf-btn primary" id="lldxf-convert" type="button">Convertir</button>
+          <button class="lldxf-btn" id="lldxf-clear" type="button">Limpiar</button>
+        </div>
+      </div>
+
+      <!-- Resultados -->
+      <div class="lldxf-card hidden" id="lldxf-results">
+        <h2>Resultados</h2>
+        <div class="lldxf-msg" id="lldxf-msg" role="alert"></div>
+        <div class="lldxf-summary" id="lldxf-summary" aria-live="polite"></div>
+        <div class="lldxf-actions" style="margin-top:0;margin-bottom:12px">
+          <button class="lldxf-btn primary" id="lldxf-dxf" type="button">Descargar DXF</button>
+          <button class="lldxf-btn" id="lldxf-csv" type="button">Copiar como CSV</button>
+        </div>
+        <div class="lldxf-table-scroll">
+          <table class="lldxf-table" id="lldxf-table">
+            <thead>
+              <tr><th>#</th><th>Lat</th><th>Lon</th><th>Faja</th><th>X (Este)</th><th>Y (Norte)</th><th>Nota</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Notas técnicas -->
+      <details class="lldxf-details" style="margin-top:20px">
+        <summary>Notas técnicas</summary>
+        <div>
+          <ul>
+            <li><strong>Datum/marco:</strong> POSGAR 07 / SIRGAS, elipsoide <strong>GRS80</strong> (a=6378137.0 m; 1/f=298.257222101).</li>
+            <li><strong>Proyección:</strong> Transverse Mercator (Gauss-Krüger) de 3°, <strong>k₀=1</strong>.</li>
+            <li><strong>Fajas:</strong> 1 a 7, meridianos centrales -72° a -54° (cada 3°). La faja se detecta por longitud.</li>
+            <li><strong>Falso Norte:</strong> +10.000.000 m (hemisferio sur). <strong>Falso Este:</strong> 500.000 + faja × 1.000.000.</li>
+            <li><strong>Precisión:</strong> sub-milimétrica a menos de 1.5° del meridiano central. Se degrada a mayor distancia angular.</li>
+            <li><strong>DXF:</strong> formato R12 (AC1009). Dos capas: PUNTOS (ACI 1 / rojo) y TEXTOS (ACI 3 / verde). Coordenadas con 4 decimales.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer class="eg-footer">
+    <div class="eg-footer-inner">
+      <div>&copy; EQUIPAR &middot; Herramienta gratuita</div>
+      <div><a href="https://equipargeo.com/">Ir al sitio principal</a></div>
+    </div>
+  </footer>
+
+<script>
+"use strict";
+(function(){
+  /* ---------- POSGAR07 GK (GRS80, k0=1) ---------- */
+  const A_GRS80 = 6378137.0;
+  const F_GRS80 = 1 / 298.257222101;
+  const E2 = 2 * F_GRS80 - F_GRS80 * F_GRS80;
+  const EP2 = E2 / (1 - E2);
+  const FN_SUR = 10000000;
+  const K0 = 1.0;
+
+  function meridianoCentral(faja) { return 3 * faja - 75; }
+  function falsoEste(faja) { return 500000 + faja * 1000000; }
+  function detectarFaja(lon) {
+    const faja = Math.round((lon + 75) / 3);
+    return Math.max(1, Math.min(7, faja));
+  }
+
+  function llToGK(lat, lon, faja) {
+    const phi = lat * Math.PI / 180;
+    const lambda = lon * Math.PI / 180;
+    const lambda0 = meridianoCentral(faja) * Math.PI / 180;
+    const A0 = 1 - E2/4 - 3*E2*E2/64 - 5*E2*E2*E2/256;
+    const A2 = (3/8) * (E2 + E2*E2/4 + 15*E2*E2*E2/128);
+    const A4 = (15/256) * (E2*E2 + 3*E2*E2*E2/4);
+    const A6 = (35/3072) * (E2*E2*E2);
+    const M = A_GRS80 * (A0*phi - A2*Math.sin(2*phi) + A4*Math.sin(4*phi) - A6*Math.sin(6*phi));
+    const sinPhi = Math.sin(phi);
+    const cosPhi = Math.cos(phi);
+    const tanPhi = Math.tan(phi);
+    const N = A_GRS80 / Math.sqrt(1 - E2*sinPhi*sinPhi);
+    const T = tanPhi*tanPhi;
+    const C = EP2*cosPhi*cosPhi;
+    const A = (lambda - lambda0)*cosPhi;
+    const x = K0 * N * (A + (1-T+C)*Math.pow(A,3)/6 + (5-18*T+T*T+72*C-58*EP2)*Math.pow(A,5)/120);
+    const y = K0 * (M + N*tanPhi*(A*A/2 + (5-T+9*C+4*C*C)*Math.pow(A,4)/24 + (61-58*T+T*T+600*C-330*EP2)*Math.pow(A,6)/720));
+    return { X: x + falsoEste(faja), Y: y + FN_SUR };
+  }
+
+  /* ---------- parser ---------- */
+  function parseInput(text) {
+    const lines = text.split(/\r?\n/);
+    const parsed = [];
+    for (let i = 0; i < lines.length; i++) {
+      const raw = lines[i].trim();
+      if (!raw || raw.startsWith('#')) continue;
+      const parts = raw.split(/[,;\t]+|\s{2,}/);
+      if (parts.length < 2) { parsed.push({ line: i+1, error: 'Se esperan al menos 2 valores (lat, lon)' }); continue; }
+      const lat = parseFloat(parts[0].replace(',', '.'));
+      const lon = parseFloat(parts[1].replace(',', '.'));
+      if (isNaN(lat) || isNaN(lon)) { parsed.push({ line: i+1, error: 'Valores no numéricos' }); continue; }
+      if (lat < -90 || lat > 90) { parsed.push({ line: i+1, error: 'Latitud fuera de rango [-90, 90]' }); continue; }
+      if (lon < -180 || lon > 180) { parsed.push({ line: i+1, error: 'Longitud fuera de rango [-180, 180]' }); continue; }
+      parsed.push({ line: i+1, lat, lon });
+    }
+    return parsed;
+  }
+
+  /* ---------- DXF R12 ---------- */
+  function buildDXF(rows) {
+    const xs = rows.map(r => r.X);
+    const ys = rows.map(r => r.Y);
+    const rangeX = Math.max(...xs) - Math.min(...xs);
+    const rangeY = Math.max(...ys) - Math.min(...ys);
+    const rangeMax = Math.max(rangeX, rangeY, 1);
+    const offset = Math.min(10, Math.max(rangeMax / 300, 0.5));
+    const textH = (offset * 1.5).toFixed(2);
+
+    const L = [];
+    // header
+    L.push('0','SECTION','2','HEADER','9','$ACADVER','1','AC1009','0','ENDSEC');
+    // tables
+    L.push('0','SECTION','2','TABLES');
+    L.push('0','TABLE','2','LTYPE','70','1');
+    L.push('0','LTYPE','2','CONTINUOUS','70','0','3','Continuous','72','65','73','0','40','0');
+    L.push('0','ENDTAB');
+    L.push('0','TABLE','2','STYLE','70','1');
+    L.push('0','STYLE','2','STANDARD','70','0','40','0','41','1','50','0','71','0','42','0','3','txt','4','');
+    L.push('0','ENDTAB');
+    L.push('0','TABLE','2','LAYER','70','3');
+    L.push('0','LAYER','2','0','70','0','62','7','6','CONTINUOUS');
+    L.push('0','LAYER','2','PUNTOS','70','0','62','1','6','CONTINUOUS');
+    L.push('0','LAYER','2','TEXTOS','70','0','62','3','6','CONTINUOUS');
+    L.push('0','ENDTAB');
+    L.push('0','ENDSEC');
+    // blocks
+    L.push('0','SECTION','2','BLOCKS','0','ENDSEC');
+    // entities
+    L.push('0','SECTION','2','ENTITIES');
+    for (const r of rows) {
+      L.push('0','POINT','8','PUNTOS','10',r.X.toFixed(4),'20',r.Y.toFixed(4));
+      L.push('0','TEXT','8','TEXTOS','10',(r.X + offset).toFixed(4),'20',(r.Y + offset).toFixed(4),'40',textH,'1',r.label,'7','STANDARD','50','0');
+    }
+    L.push('0','ENDSEC','0','EOF');
+    return L.join('\r\n') + '\r\n';
+  }
+
+  /* ---------- UI ---------- */
+  const $ = id => document.getElementById(id);
+  let lastRows = [];
+
+  function showMsg(type, text) {
+    const el = $('lldxf-msg');
+    el.className = 'lldxf-msg show ' + type;
+    el.textContent = text;
+  }
+  function hideMsg() {
+    const el = $('lldxf-msg');
+    el.className = 'lldxf-msg';
+    el.textContent = '';
+  }
+
+  function convert() {
+    hideMsg();
+    const text = $('lldxf-input').value;
+    if (!text.trim()) { showMsg('err', 'Pegá al menos una coordenada.'); return; }
+
+    const fajaOpt = $('lldxf-faja').value;
+    const prefix = $('lldxf-prefix').value || 'P';
+    const startN = parseInt($('lldxf-start').value) || 1;
+
+    const parsed = parseInput(text);
+    if (!parsed.length) { showMsg('err', 'No se encontraron líneas con datos.'); return; }
+
+    const rows = [];
+    const errors = [];
+    let warnings = 0;
+    let idx = startN;
+
+    for (const p of parsed) {
+      if (p.error) { errors.push(p); continue; }
+      const faja = fajaOpt === 'auto' ? detectarFaja(p.lon) : parseInt(fajaOpt);
+      const mc = meridianoCentral(faja);
+      const diffMC = Math.abs(p.lon - mc);
+      const gk = llToGK(p.lat, p.lon, faja);
+      const label = prefix + idx;
+      let nota = '';
+      if (diffMC > 1.5) { nota = 'A ' + diffMC.toFixed(1) + '° del MC. Precisión degradada.'; warnings++; }
+      rows.push({ line: p.line, lat: p.lat, lon: p.lon, faja, X: gk.X, Y: gk.Y, label, nota });
+      idx++;
+    }
+
+    lastRows = rows;
+
+    // render
+    $('lldxf-results').classList.remove('hidden');
+
+    // summary
+    $('lldxf-summary').innerHTML =
+      '<div><strong>Convertidos:</strong> ' + rows.length + '</div>' +
+      (errors.length ? '<div><strong>Errores:</strong> ' + errors.length + '</div>' : '') +
+      (warnings ? '<div><strong>Avisos:</strong> ' + warnings + '</div>' : '');
+
+    // message
+    if (errors.length && !rows.length) {
+      showMsg('err', 'Todas las líneas tienen errores. Revisá el formato.');
+    } else if (errors.length) {
+      showMsg('warn', errors.length + ' línea(s) con errores (marcadas en rojo). El resto se convirtió correctamente.');
+    } else if (warnings) {
+      showMsg('warn', warnings + ' punto(s) a más de 1.5° del meridiano central. Considerar faja local.');
+    } else {
+      showMsg('ok', rows.length + ' punto(s) convertidos correctamente.');
+    }
+
+    // table
+    const tbody = $('lldxf-table').querySelector('tbody');
+    tbody.innerHTML = '';
+    for (const r of rows) {
+      const tr = document.createElement('tr');
+      if (r.nota) tr.className = 'row-warn';
+      tr.innerHTML =
+        '<td>' + r.label + '</td>' +
+        '<td>' + r.lat.toFixed(8) + '</td>' +
+        '<td>' + r.lon.toFixed(8) + '</td>' +
+        '<td>' + r.faja + '</td>' +
+        '<td>' + r.X.toFixed(4) + '</td>' +
+        '<td>' + r.Y.toFixed(4) + '</td>' +
+        '<td>' + (r.nota || '') + '</td>';
+      tbody.appendChild(tr);
+    }
+    for (const e of errors) {
+      const tr = document.createElement('tr');
+      tr.className = 'row-err';
+      tr.innerHTML = '<td>L' + e.line + '</td><td colspan="6">' + e.error + '</td>';
+      tbody.appendChild(tr);
+    }
+
+    $('lldxf-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function downloadDXF() {
+    if (!lastRows.length) return;
+    const dxf = buildDXF(lastRows);
+    const blob = new Blob([dxf], { type: 'application/dxf' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'posgar07_export.dxf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+  }
+
+  function copyCSV() {
+    if (!lastRows.length) return;
+    const header = '#\tLat\tLon\tFaja\tX\tY';
+    const lines = lastRows.map(r => r.label + '\t' + r.lat.toFixed(8) + '\t' + r.lon.toFixed(8) + '\t' + r.faja + '\t' + r.X.toFixed(4) + '\t' + r.Y.toFixed(4));
+    const text = [header, ...lines].join('\n');
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = $('lldxf-csv');
+      const prev = btn.textContent;
+      btn.textContent = 'Copiado';
+      btn.disabled = true;
+      setTimeout(() => { btn.textContent = prev; btn.disabled = false; }, 1200);
+    });
+  }
+
+  function clear() {
+    $('lldxf-input').value = '';
+    $('lldxf-results').classList.add('hidden');
+    hideMsg();
+    lastRows = [];
+    $('lldxf-table').querySelector('tbody').innerHTML = '';
+  }
+
+  $('lldxf-convert').addEventListener('click', convert);
+  $('lldxf-dxf').addEventListener('click', downloadDXF);
+  $('lldxf-csv').addEventListener('click', copyCSV);
+  $('lldxf-clear').addEventListener('click', clear);
+})();
+</script>
+</body>
+</html>
