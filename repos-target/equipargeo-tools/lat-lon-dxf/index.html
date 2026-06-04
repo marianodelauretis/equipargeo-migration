@@ -868,7 +868,7 @@
     new L.Control.LldxfButtons().addTo(lmap);
 
     lmapInitDone = true;
-    setTimeout(function() { lmap.invalidateSize(); }, 200);
+    setTimeout(function() { lmap.invalidateSize(); }, 500);
   }
 
   function updateMap(rows) {
@@ -1231,9 +1231,23 @@
   initMap();
   $('lldxf-map-details').addEventListener('toggle', function() {
     if (this.open && lmap) {
-      setTimeout(function() { lmap.invalidateSize(); }, 100);
+      setTimeout(function() { lmap.invalidateSize(); }, 200);
     }
   });
+
+  // fix: invalidate after full page load (fonts, images, layout)
+  window.addEventListener('load', function() {
+    if (lmap) setTimeout(function() { lmap.invalidateSize(); }, 100);
+  });
+
+  // fix: invalidate on container resize (layout shifts, window resize)
+  if (window.ResizeObserver) {
+    var mapResizeObserver = new ResizeObserver(function() {
+      if (lmap) lmap.invalidateSize();
+    });
+    var mapEl = document.getElementById('lldxf-map');
+    if (mapEl) mapResizeObserver.observe(mapEl);
+  }
 })();
 </script>
 </body>
