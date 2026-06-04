@@ -6,7 +6,7 @@ Herramientas técnicas de EQUIPAR como apps estáticas HTML+JS vanilla.
 
 ## Herramientas
 
-- `/posgar07/` — Conversor coordenadas Lat/Lon → POSGAR07 Gauss-Krüger
+- `/lat-lon-dxf/` — Lat/Lon → POSGAR07 GK + DXF (decimal y DMS, batch, canvas preview, mapa Leaflet)
 - `/faja/` — Consulta de faja GNSS
 - `/puntos-intermedios/` — Generador de puntos intermedios entre dos coordenadas
 - `/conversor-dxf/` — Conversor CSV/TXT a DXF R12

@@ -179,6 +179,12 @@
     .lldxf-table tbody tr.row-err { background: #fef2f2; }
     .lldxf-table tbody tr.row-err td { color: #991b1b; }
     .lldxf-table tbody tr.row-warn td:nth-last-child(1) { color: #92400e; font-weight: 600; }
+    .lldxf-table .lldxf-dms {
+      display: block;
+      font-size: 0.78em;
+      color: var(--eg-text-muted);
+      margin-top: 1px;
+    }
     .lldxf-table tfoot td {
       padding: 10px;
       border-top: 2px solid var(--eg-borde);
@@ -220,14 +226,6 @@
       font-family: var(--eg-mono);
       font-size: 0.85em;
     }
-
-    /* cross-link */
-    .lldxf-crosslink {
-      margin-top: 12px;
-      font-size: 0.9rem;
-      color: var(--eg-text-muted);
-    }
-    .lldxf-crosslink a { color: var(--eg-coral); font-weight: 700; }
 
     /* canvas preview */
     .lldxf-preview-wrap {
@@ -308,8 +306,6 @@
       <div class="lldxf-card">
         <h2>Lat/Lon → POSGAR07 GK + DXF</h2>
         <p class="lldxf-sub">Pegá coordenadas en grados decimales o sexagesimales (una por línea) y exportá como DXF R12 con proyección Gauss-Krüger POSGAR07.</p>
-
-        <p class="lldxf-crosslink">Convertir un solo punto a POSGAR07? <a href="/posgar07/">Usar el conversor POSGAR07</a></p>
 
         <details class="lldxf-details">
           <summary>Formato del input</summary>
@@ -496,6 +492,17 @@
     const dLon = toRad(lon2 - lon1);
     const a = Math.sin(dLat/2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2) ** 2;
     return 2 * R * Math.asin(Math.sqrt(a));
+  }
+
+  /* ---------- decimal → DMS display ---------- */
+  function decimalToDMS(decimal, isLat) {
+    var abs = Math.abs(decimal);
+    var deg = Math.floor(abs);
+    var minFloat = (abs - deg) * 60;
+    var min = Math.floor(minFloat);
+    var sec = (minFloat - min) * 60;
+    var hemi = isLat ? (decimal < 0 ? 'S' : 'N') : (decimal < 0 ? 'O' : 'E');
+    return deg + '\u00b0' + String(min).padStart(2, '0') + "'" + sec.toFixed(4).padStart(7, '0') + '"' + hemi;
   }
 
   /* ---------- DMS parser ---------- */
@@ -1029,8 +1036,8 @@
       const distCell = showDist ? '<td>' + (dists[i] !== null ? dists[i].toFixed(3) : '\u2014') + '</td>' : '';
       tr.innerHTML =
         '<td>' + r.label + '</td>' +
-        '<td>' + r.lat.toFixed(8) + '</td>' +
-        '<td>' + r.lon.toFixed(8) + '</td>' +
+        '<td>' + r.lat.toFixed(8) + '<span class="lldxf-dms">' + decimalToDMS(r.lat, true) + '</span></td>' +
+        '<td>' + r.lon.toFixed(8) + '<span class="lldxf-dms">' + decimalToDMS(r.lon, false) + '</span></td>' +
         '<td>' + r.faja + '</td>' +
         '<td>' + r.X.toFixed(4) + '</td>' +
         '<td>' + r.Y.toFixed(4) + '</td>' +
