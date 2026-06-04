@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lat/Lon → POSGAR07 GK + DXF — EQUIPAR Tools</title>
-  <meta name="description" content="Convertí coordenadas lat/lon en grados decimales a Gauss-Krüger POSGAR07 y exportá como DXF R12. Detección automática de faja, falso norte y falso este.">
+  <title>Conversor POSGAR07 — EQUIPAR Tools</title>
+  <meta name="description" content="Convertí coordenadas lat/lon (decimales o sexagesimales) a Gauss-Krüger POSGAR07 y exportá como DXF R12. Detección automática de faja, mapa interactivo, vista previa.">
   <meta name="theme-color" content="#18354a">
   <link rel="canonical" href="https://app.equipargeo.com/lat-lon-dxf/">
   <link rel="icon" type="image/svg+xml" href="/shared/favicon.svg">
@@ -298,17 +298,17 @@
 
   <main class="eg-main">
     <div class="eg-page-header">
-      <nav class="eg-breadcrumb" aria-label="Migas"><a href="/">EQUIPAR Tools</a> · Lat/Lon a DXF</nav>
+      <nav class="eg-breadcrumb" aria-label="Migas"><a href="/">EQUIPAR Tools</a> · Conversor POSGAR07</nav>
     </div>
 
     <section class="lldxf-wrap">
       <!-- Intro + input -->
       <div class="lldxf-card">
-        <h2>Lat/Lon → POSGAR07 GK + DXF</h2>
-        <p class="lldxf-sub">Pegá coordenadas en grados decimales o sexagesimales (una por línea) y exportá como DXF R12 con proyección Gauss-Krüger POSGAR07.</p>
+        <h2>Conversor POSGAR07</h2>
+        <p class="lldxf-sub">Convertí coordenadas geográficas (decimal o sexagesimal) a Gauss-Krüger argentino. Exportá como DXF con mapa y vista previa.</p>
 
         <details class="lldxf-details">
-          <summary>Formato del input</summary>
+          <summary>Formato de entrada</summary>
           <div>
             <p>Una coordenada por línea. Primero latitud, después longitud. Aceptados: decimales o sexagesimales (DMS).</p>
             <p><strong>Decimal:</strong></p>
@@ -319,11 +319,11 @@
             </ul>
             <p><strong>Sexagesimal con símbolos y hemisferio:</strong></p>
             <ul>
-              <li><code>34°36'13.4"S, 58°22'53.8"W</code></li>
+              <li><code>34°36'13.4"S, 58°22'53.8"O</code></li>
             </ul>
             <p><strong>Sexagesimal con espacios y hemisferio:</strong></p>
             <ul>
-              <li><code>34 36 13.4 S, 58 22 53.8 W</code></li>
+              <li><code>34 36 13.4 S, 58 22 53.8 O</code></li>
             </ul>
             <p><strong>Sexagesimal con signo:</strong></p>
             <ul>
@@ -391,7 +391,7 @@
               <button id="lldxf-cv-fit" type="button">Ajustar</button>
               <button id="lldxf-cv-zoomin" type="button">+</button>
               <button id="lldxf-cv-zoomout" type="button">−</button>
-              <button id="lldxf-cv-reset" type="button">Reset</button>
+              <button id="lldxf-cv-reset" type="button">Restablecer</button>
             </div>
           </div>
         </details>
@@ -399,7 +399,7 @@
           <summary>Mapa interactivo</summary>
           <div class="lldxf-map-wrap">
             <div id="lldxf-map"></div>
-            <p class="lldxf-map-hint">Click sobre los puntos para ver coordenadas. Zoom con scroll, pan con drag.</p>
+            <p class="lldxf-map-hint">Hacé clic en los puntos para ver coordenadas. Zoom con la rueda, desplazá arrastrando.</p>
           </div>
         </details>
         <div class="lldxf-table-scroll" style="margin-top:12px">
@@ -421,9 +421,9 @@
         <div>
           <ul>
             <li><strong>Datum/marco:</strong> POSGAR 07 / SIRGAS, elipsoide <strong>GRS80</strong> (a=6378137.0 m; 1/f=298.257222101).</li>
-            <li><strong>Proyección:</strong> Transverse Mercator (Gauss-Krüger) de 3°, <strong>k₀=1</strong>.</li>
+            <li><strong>Proyección:</strong> Gauss-Krüger de 3°, <strong>k₀=1</strong>.</li>
             <li><strong>Fajas:</strong> 1 a 7, meridianos centrales -72° a -54° (cada 3°). La faja se detecta por longitud.</li>
-            <li><strong>Falso Norte:</strong> +10.000.000 m (hemisferio sur). <strong>Falso Este:</strong> 500.000 + faja × 1.000.000.</li>
+            <li><strong>Origen de coordenadas:</strong> polo sur (lat₀ = −90°). El Norte resultante es positivo en todo el territorio argentino. <strong>Falso Este:</strong> 500.000 + faja × 1.000.000.</li>
             <li><strong>Precisión:</strong> sub-milimétrica a menos de 1.5° del meridiano central. Se degrada a mayor distancia angular.</li>
             <li><strong>DXF:</strong> formato R12 (AC1009). Dos capas: PUNTOS (ACI 1 / rojo) y TEXTOS (ACI 3 / verde). Coordenadas con 4 decimales.</li>
           </ul>
@@ -678,10 +678,10 @@
   const EXAMPLE_TEXT =
     '# Ejemplo: puntos en distintos formatos\n' +
     '-34.6037, -58.3816    # Obelisco, CABA (decimal)\n' +
-    '34°32\'24"S 58°42\'41"W    # San Miguel, BA (sexagesimal con símbolos)\n' +
+    '34°32\'24"S 58°42\'41"O    # San Miguel, BA (sexagesimal con símbolos)\n' +
     '-34 55 16, -57 57 16    # Catedral La Plata (sexagesimal con signo)\n' +
     '-32.8908, -68.8272    # Plaza Independencia, Mendoza\n' +
-    '26 49 27 S, 65 13 21 W    # Plaza Independencia, Tucumán (con hemisferio)';
+    '26 49 27 S, 65 13 21 O    # Plaza Independencia, Tucumán (con hemisferio)';
 
   /* ---------- canvas preview ---------- */
   var cvView = null;   // { minLat, maxLat, minLon, maxLon }
