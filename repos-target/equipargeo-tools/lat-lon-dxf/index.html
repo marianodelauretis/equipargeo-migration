@@ -10,6 +10,8 @@
   <link rel="icon" type="image/svg+xml" href="/shared/favicon.svg">
   <link rel="manifest" href="/shared/manifest.json">
   <link rel="stylesheet" href="/shared/base.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <style>
     /* ===== Lat/Lon → DXF — estilos locales ===== */
     .lldxf-wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
@@ -260,12 +262,27 @@
     }
     .lldxf-canvas-controls button:hover { background: rgba(11,34,50,1); }
 
+    /* leaflet map */
+    #lldxf-map {
+      height: 500px;
+      width: 100%;
+      border-radius: 6px;
+      background: var(--eg-bg-soft);
+      z-index: 0;
+    }
+    .lldxf-map-hint {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: var(--eg-text-muted);
+    }
+
     .hidden { display: none !important; }
 
     @media (max-width: 720px) {
       .lldxf-opts { grid-template-columns: 1fr; }
       .lldxf-card { padding: 16px; }
       #lldxf-canvas { height: 320px; }
+      #lldxf-map { height: 360px; }
     }
   </style>
 </head>
@@ -380,6 +397,13 @@
               <button id="lldxf-cv-zoomout" type="button">−</button>
               <button id="lldxf-cv-reset" type="button">Reset</button>
             </div>
+          </div>
+        </details>
+        <details class="lldxf-details" id="lldxf-map-details" open>
+          <summary>Mapa interactivo</summary>
+          <div class="lldxf-map-wrap">
+            <div id="lldxf-map"></div>
+            <p class="lldxf-map-hint">Click sobre los puntos para ver coordenadas. Zoom con scroll, pan con drag.</p>
           </div>
         </details>
         <div class="lldxf-table-scroll" style="margin-top:12px">
@@ -773,6 +797,71 @@
     }
   }
 
+  /* ---------- leaflet map ---------- */
+  var lmap = null;
+  var lmapMarkers = [];
+  var lmapPolyline = null;
+  var lmapInitDone = false;
+
+  function initMap() {
+    if (typeof L === 'undefined') return;
+    lmap = L.map('lldxf-map', { attributionControl: true }).setView([-38, -63], 4);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(lmap);
+    lmapInitDone = true;
+    setTimeout(function() { lmap.invalidateSize(); }, 200);
+  }
+
+  function updateMap(rows) {
+    if (!rows || !rows.length) {
+      if (lmap) {
+        lmapMarkers.forEach(function(m) { m.remove(); });
+        lmapMarkers = [];
+        if (lmapPolyline) { lmapPolyline.remove(); lmapPolyline = null; }
+      }
+      return;
+    }
+    if (!lmapInitDone) initMap();
+    if (!lmap) return;
+
+    lmapMarkers.forEach(function(m) { m.remove(); });
+    lmapMarkers = [];
+    if (lmapPolyline) { lmapPolyline.remove(); lmapPolyline = null; }
+
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      var m = L.circleMarker([r.lat, r.lon], {
+        radius: 7, color: '#ffffff', weight: 2,
+        fillColor: '#e54b4b', fillOpacity: 0.9
+      }).addTo(lmap);
+      m.bindPopup(
+        '<strong>' + r.label + '</strong><br>' +
+        'Lat: ' + r.lat.toFixed(7) + '<br>' +
+        'Lon: ' + r.lon.toFixed(7) + '<br>' +
+        'Faja: ' + r.faja + '<br>' +
+        'X (Este): ' + r.X.toFixed(3) + ' m<br>' +
+        'Y (Norte): ' + r.Y.toFixed(3) + ' m'
+      );
+      lmapMarkers.push(m);
+    }
+
+    if (rows.length >= 2) {
+      lmapPolyline = L.polyline(rows.map(function(r) { return [r.lat, r.lon]; }), {
+        color: '#e54b4b', weight: 2, opacity: 0.7, dashArray: '6,4'
+      }).addTo(lmap);
+    }
+
+    if (rows.length === 1) {
+      lmap.setView([rows[0].lat, rows[0].lon], 13);
+    } else {
+      lmap.fitBounds(L.latLngBounds(rows.map(function(r) { return [r.lat, r.lon]; })), {
+        padding: [40, 40], maxZoom: 14
+      });
+    }
+  }
+
   /* ---------- UI ---------- */
   const $ = id => document.getElementById(id);
   let lastRows = [];
@@ -929,6 +1018,9 @@
     cvFit(rows);
     drawCanvas(rows);
 
+    // leaflet map
+    updateMap(rows);
+
     $('lldxf-results').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
@@ -973,6 +1065,12 @@
     $('lldxf-table').querySelector('tbody').innerHTML = '';
     cvView = null; cvBase = null;
     drawCanvas([]);
+    if (lmap) {
+      lmapMarkers.forEach(function(m) { m.remove(); });
+      lmapMarkers = [];
+      if (lmapPolyline) { lmapPolyline.remove(); lmapPolyline = null; }
+      lmap.setView([-38, -63], 4);
+    }
     clearState();
   }
 
@@ -1071,6 +1169,14 @@
 
   // redraw on resize
   window.addEventListener('resize', function() { if (lastRows.length) drawCanvas(lastRows); });
+
+  // leaflet: init map on load, invalidate on details toggle
+  initMap();
+  $('lldxf-map-details').addEventListener('toggle', function() {
+    if (this.open && lmap) {
+      setTimeout(function() { lmap.invalidateSize(); }, 100);
+    }
+  });
 })();
 </script>
 </body>
