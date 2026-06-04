@@ -806,10 +806,67 @@
   function initMap() {
     if (typeof L === 'undefined') return;
     lmap = L.map('lldxf-map', { attributionControl: true }).setView([-38, -63], 4);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+    var osmLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; OpenStreetMap'
-    }).addTo(lmap);
+    });
+    var satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Tiles &copy; Esri'
+    });
+    osmLayer.addTo(lmap);
+
+    L.control.layers(
+      { 'Mapa': osmLayer, 'Satélite': satLayer },
+      {},
+      { position: 'topright', collapsed: false }
+    ).addTo(lmap);
+
+    // custom fit/reset buttons
+    L.Control.LldxfButtons = L.Control.extend({
+      options: { position: 'topleft' },
+      onAdd: function() {
+        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+        var fitBtn = L.DomUtil.create('a', '', container);
+        fitBtn.href = '#';
+        fitBtn.title = 'Ajustar a los puntos';
+        fitBtn.innerHTML = '&#8853;';
+        fitBtn.style.fontSize = '18px';
+        fitBtn.style.fontWeight = 'bold';
+        fitBtn.style.lineHeight = '26px';
+        fitBtn.setAttribute('role', 'button');
+        fitBtn.setAttribute('aria-label', 'Ajustar mapa a los puntos convertidos');
+        var resetBtn = L.DomUtil.create('a', '', container);
+        resetBtn.href = '#';
+        resetBtn.title = 'Volver a vista de Argentina';
+        resetBtn.innerHTML = '&#8962;';
+        resetBtn.style.fontSize = '18px';
+        resetBtn.style.lineHeight = '26px';
+        resetBtn.setAttribute('role', 'button');
+        resetBtn.setAttribute('aria-label', 'Resetear vista del mapa a Argentina');
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.on(fitBtn, 'click', function(e) {
+          L.DomEvent.preventDefault(e);
+          if (lastRows && lastRows.length >= 2) {
+            lmap.fitBounds(L.latLngBounds(lastRows.map(function(r) { return [r.lat, r.lon]; })), {
+              padding: [40, 40], maxZoom: 14
+            });
+          } else if (lastRows && lastRows.length === 1) {
+            lmap.setView([lastRows[0].lat, lastRows[0].lon], 13);
+          } else {
+            lmap.setView([-38, -63], 4);
+          }
+        });
+        L.DomEvent.on(resetBtn, 'click', function(e) {
+          L.DomEvent.preventDefault(e);
+          lmap.setView([-38, -63], 4);
+        });
+        return container;
+      }
+    });
+    new L.Control.LldxfButtons().addTo(lmap);
+
     lmapInitDone = true;
     setTimeout(function() { lmap.invalidateSize(); }, 200);
   }
