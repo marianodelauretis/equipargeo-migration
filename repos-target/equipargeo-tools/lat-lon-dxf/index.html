@@ -451,7 +451,7 @@
   const F_GRS80 = 1 / 298.257222101;
   const E2 = 2 * F_GRS80 - F_GRS80 * F_GRS80;
   const EP2 = E2 / (1 - E2);
-  const FN_SUR = 10000000;
+  const FN_SUR = A_GRS80 * (1 - E2/4 - 3*E2*E2/64 - 5*E2*E2*E2/256) * Math.PI / 2;
   const K0 = 1.0;
 
   function meridianoCentral(faja) { return 3 * faja - 75; }
