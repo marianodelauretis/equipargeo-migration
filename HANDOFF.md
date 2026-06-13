@@ -20,7 +20,7 @@
 2. **Herramientas fantasma.** Decidir si activar `tin-curvas-nivel` y `verificador-angulos` (ya tienen código, faltan en el index de tools). Ver `decisiones/2026-05-14_herramientas_fantasma_activar.md`.
 3. **Plan editorial — Notas técnicas.** Las 3 notas placeholder están en `repos-target/equipargeo-site/src/content/noticias/` con `publicada: false`. Calendario: 1 nota por semana, alternando argumentativas y educativas neutrales.
 4. **Imágenes.** Foto-banco propio del rubro (salir a sacar 30-50 fotos de campo/gabinete/instrumental). Integración con `astro:assets`.
-5. **Refactor URLs hardcodeadas de tools.** 14 ocurrencias de `equipargeo-tools.pages.dev` a reemplazar por env var `PUBLIC_TOOLS_URL`.
+5. ~~**Refactor URLs hardcodeadas de tools.**~~ **Resuelto** (verificado 12/06/2026): no quedan ocurrencias de `equipargeo-tools.pages.dev` en `repos-target/`.
 
 ### Mejoras futuras para la Caja de herramientas RINEX
 
