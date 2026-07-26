@@ -44,7 +44,8 @@ body{background:#f3f6fb;min-height:100vh;display:flex;flex-direction:column}
 .eg-nav a{color:rgba(255,255,255,.85);padding:4px 8px;border-radius:6px;text-decoration:none;transition:background .15s}
 .eg-nav a:hover{color:#fff;background:rgba(255,255,255,.08);text-decoration:none}
 .eg-main{flex:1 0 auto;padding:24px 0 40px}
-.eg-page-header{max-width:1080px;margin:0 auto 8px;padding:0 26px}
+.eg-content{max-width:1080px;margin:0 auto;padding:0 26px}
+.eg-page-header{margin:0 0 8px}
 .eg-breadcrumb{font-size:.88rem;color:var(--eg-gris);margin-bottom:10px}
 .eg-breadcrumb a{color:var(--eg-gris);text-decoration:none}
 .eg-breadcrumb a:hover{color:var(--eg-azul)}
@@ -57,7 +58,7 @@ body{background:#f3f6fb;min-height:100vh;display:flex;flex-direction:column}
 .eg-footer a{color:rgba(255,255,255,.85);text-decoration:none}
 .eg-footer a:hover{color:#fff}
 /* el contenido del validador vive en una caja centrada, igual ancho que el page-header */
-#drop,.bar,#out{max-width:1080px;margin-left:auto;margin-right:auto;padding-left:26px;padding-right:26px}
+#drop,.bar,#out{width:100%}
 #drop{border:2px dashed var(--hair);border-radius:3px;padding:44px 26px;text-align:center;
   background:var(--paper-alt);cursor:pointer;transition:.15s}
 #drop.hot{border-color:var(--accent);background:var(--ok-tint)}
@@ -132,6 +133,7 @@ button.pri:hover{background:var(--eg-coral-hover);color:#fff;filter:none}
   </div>
 </header>
 <main class="eg-main">
+ <div class="eg-content">
   <div class="eg-page-header">
     <nav class="eg-breadcrumb" aria-label="Migas"><a href="https://app.equipargeo.com/">EQUIPAR Tools</a> · Validador de Estados Parcelarios</nav>
     <h1 class="tool-title">Validador de Estados Parcelarios <span>ARBA · Provincia de Buenos Aires</span></h1>
@@ -152,6 +154,7 @@ button.pri:hover{background:var(--eg-coral-hover);color:#fff;filter:none}
     <input type="file" id="inp2" accept=".dxf" class="hide">
   </div>
   <div id="out"></div>
+ </div>
 </main>
 <footer class="eg-footer">
   <div class="eg-footer-inner">
