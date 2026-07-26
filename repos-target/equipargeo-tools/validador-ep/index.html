@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/shared/favicon.svg" type="image/svg+xml">
+<title>Validador de Estados Parcelarios ARBA — EQUIPAR Tools</title>
+<style>
+:root{
+  --paper:#fff; --paper-alt:#F7F7F6; --card:#fff;
+  --ink:#1C1C1A; --ink-2:#54544F; --ink-3:#8A8A83; --ink-inv:#fff;
+  --rule:#000; --hair:#DEDEDA;
+  --accent:#18354a;
+  --danger:#9B3A2E; --danger-tint:#FBF0EE;
+  --warn:#8A6A1F;   --warn-tint:#FBF6E9;
+  --ok:#18354a;     --ok-tint:#EAF0F4;
+  --pend:#6E6E68;   --pend-tint:#F2F2F0;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+  --disp:"Hanken Grotesk","IBM Plex Sans",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5}
+header{padding:22px 26px 0;border-bottom:3px solid var(--rule)}
+.brand{font-family:var(--disp);font-weight:800;letter-spacing:.02em;font-size:21px;color:var(--accent)}
+.topnav{display:flex;gap:18px;flex-wrap:wrap;margin-top:2px}
+.topnav a{color:var(--ink-2);font-size:12.5px;text-decoration:none;font-weight:500}
+.topnav a:hover{color:var(--accent);text-decoration:underline}
+.brand span{font-weight:400;color:var(--ink-3);letter-spacing:.04em;margin-left:10px;font-size:13px}
+.sub{color:var(--ink-2);margin:5px 0 16px;font-size:13px}
+main{max-width:1080px;margin:0 auto;padding:26px}
+#drop{border:2px dashed var(--hair);border-radius:3px;padding:44px 24px;text-align:center;
+  background:var(--paper-alt);cursor:pointer;transition:.15s}
+#drop.hot{border-color:var(--accent);background:var(--ok-tint)}
+#drop h2{font-family:var(--disp);margin:0 0 6px;font-size:17px}
+#drop p{margin:4px 0;color:var(--ink-2);font-size:13px}
+.note{font-size:12px;color:var(--ink-3);margin-top:14px;padding-top:12px;border-top:1px solid var(--hair)}
+.verdict{margin:26px 0 6px;padding:16px 20px;border-left:5px solid;border-radius:2px}
+.verdict h2{margin:0;font-family:var(--disp);font-size:20px;letter-spacing:.04em}
+.verdict p{margin:5px 0 0;font-size:13px;color:var(--ink-2)}
+.v-BLOQUEADO{background:var(--danger-tint);border-color:var(--danger)} .v-BLOQUEADO h2{color:var(--danger)}
+.v-OBSERVADO{background:var(--warn-tint);border-color:var(--warn)} .v-OBSERVADO h2{color:var(--warn)}
+.v-VERIFICADO{background:var(--ok-tint);border-color:var(--ok)} .v-VERIFICADO h2{color:var(--ok)}
+h3{font-family:var(--disp);font-size:14px;letter-spacing:.1em;text-transform:uppercase;
+  margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--hair);color:var(--ink-2)}
+.f{border:1px solid var(--hair);border-left:4px solid;border-radius:2px;padding:11px 14px;margin-bottom:9px;background:var(--card)}
+.f.critical{border-left-color:var(--danger)} .f.warn{border-left-color:var(--warn)}
+.f.info{border-left-color:var(--pend)} .f.ok{border-left-color:var(--ok)}
+.f b{display:block;font-size:13.5px} .f small{color:var(--ink-2);display:block;margin-top:4px;font-size:12.5px}
+.tag{display:inline-block;font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:2px;
+  margin-right:7px;vertical-align:1px;letter-spacing:.06em}
+.t-critical{background:var(--danger);color:var(--ink-inv)} .t-warn{background:var(--warn);color:var(--ink-inv)}
+.t-ok{background:var(--ok);color:var(--ink-inv)} .t-info{background:var(--pend);color:var(--ink-inv)}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px}
+th{text-align:left;font-family:var(--disp);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-3);border-bottom:1px solid var(--rule);padding:6px 8px}
+td{padding:6px 8px;border-bottom:1px solid var(--hair);vertical-align:top}
+td.m{font-family:var(--mono);font-size:12px;white-space:nowrap}
+tr.critical td:first-child{border-left:3px solid var(--danger)}
+tr.warn td:first-child{border-left:3px solid var(--warn)}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:11px}
+.k{border:1px solid var(--hair);border-radius:2px;padding:10px 12px;background:var(--card)}
+.k b{display:block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+  font-family:var(--disp);margin-bottom:4px}
+.k span{font-family:var(--mono);font-size:14px}
+/* icono de ayuda + tooltip (hover o tap) */
+.hlp{position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:14px;height:14px;color:var(--ink-3);cursor:help;margin-left:5px;vertical-align:middle;
+  transition:color .12s}
+.hlp:hover,.hlp:focus{color:var(--accent);outline:none}
+.hlp svg{width:14px;height:14px;display:block}
+.hlp .tipbox{visibility:hidden;opacity:0;position:absolute;z-index:50;left:50%;bottom:130%;
+  transform:translateX(-50%);width:230px;background:var(--ink);color:var(--ink-inv);
+  padding:8px 10px;border-radius:5px;font-size:11.5px;line-height:1.45;font-weight:400;
+  text-align:left;text-transform:none;letter-spacing:normal;box-shadow:0 4px 14px rgba(0,0,0,.25);
+  transition:opacity .12s;pointer-events:none}
+.hlp .tipbox::after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:var(--ink)}
+.hlp:hover .tipbox,.hlp:focus .tipbox,.hlp:focus-within .tipbox{visibility:visible;opacity:1}
+.bar{display:flex;gap:8px;align-items:center;margin:20px 0 0;flex-wrap:wrap}
+button{font-family:var(--sans);font-size:12.5px;padding:7px 14px;border:1px solid var(--rule);
+  background:var(--paper);color:var(--ink);border-radius:2px;cursor:pointer}
+button:hover{background:var(--ink);color:var(--ink-inv)}
+button.pri{background:var(--accent);border-color:var(--accent);color:var(--ink-inv)}
+button.pri:hover{filter:brightness(.9)}
+.hide{display:none}
+.file{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-top:8px}
+.cmp{border:1px solid var(--hair);border-radius:2px;padding:14px;margin-top:12px;background:var(--paper-alt)}
+.cmp h4{margin:0 0 8px;font-family:var(--disp);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.cmp ul{margin:0;padding-left:19px} .cmp li{margin-bottom:3px;font-size:12.5px}
+footer{max-width:1080px;margin:0 auto;padding:16px 26px 40px;color:var(--ink-3);font-size:11.5px;
+  border-top:1px solid var(--hair)}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">EQUIPAR<span>Tools</span></div>
+  <p class="sub">Validador de Estados Parcelarios · ARBA · Provincia de Buenos Aires · funciona offline, sin instalación</p>
+  <nav class="topnav">
+    <a href="https://equipargeo.com/" target="_blank" rel="noopener">Sitio principal</a>
+    <a href="https://app.equipargeo.com/" target="_blank" rel="noopener">Herramientas</a>
+    <a href="https://equipargeo.com/cursos/" target="_blank" rel="noopener">Cursos</a>
+    <a href="https://equipargeo.com/contacto/" target="_blank" rel="noopener">Contacto</a>
+  </nav>
+</header>
+<main>
+  <div id="drop">
+    <h2>Arrastrá el archivo DXF acá</h2>
+    <p>o hacé clic para elegirlo</p>
+    <p class="note">El archivo <b>no se sube a ningún servidor</b>. Se lee dentro de tu navegador,
+       en tu propia computadora. Funciona sin conexión a internet.</p>
+    <input type="file" id="inp" accept=".dxf" class="hide">
+  </div>
+  <div class="bar hide" id="bar">
+    <button class="pri" onclick="document.getElementById('inp').click()">Validar otro</button>
+    <button onclick="document.getElementById('inp2').click()">Comparar con versión anterior</button>
+    <button onclick="window.print()">Imprimir / PDF</button>
+    <button onclick="bajarJSON()">Descargar JSON</button>
+    <input type="file" id="inp2" accept=".dxf" class="hide">
+  </div>
+  <div id="out"></div>
+</main>
+<footer>
+  © EQUIPAR · Herramientas gratuitas para el territorio · Validador de Estados Parcelarios v0.1<br>
+  Reglas basadas en expedientes aprobados por ARBA. Herramienta de apoyo: no reemplaza el control profesional del legajo.<br>
+  Consultas y sugerencias: <a href="https://wa.me/5491155722266?text=Hola%2C%20tengo%20una%20consulta%20sobre%20el%20Validador%20de%20Estados%20Parcelarios%20de%20EQUIPAR" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;text-decoration:none">WhatsApp EQUIPAR</a>
+  · <a href="https://equipargeo.com/contacto/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;text-decoration:none">Formulario de contacto</a>
+</footer>
+<script>
+/* ============================ PARSER DXF ============================ */
+function parseDXF(txt){
+  const L=txt.split(/\r\n|\r|\n/), P=[];
+  for(let i=0;i+1<L.length;i+=2){
+    const c=parseInt(L[i].trim(),10);
+    if(!isNaN(c)) P.push([c,L[i+1]!==undefined?L[i+1].trim():""]);
+  }
+  const layers=[],ents=[];
+  let sec=null,tbl=null,cur=null,curLayer=null,poly=null;
+  const push=()=>{ if(cur){ if(cur.type==="VERTEX"&&poly){poly.verts.push([cur.x||0,cur.y||0]);}
+                            else if(cur.type==="SEQEND"){poly=null;}
+                            else {
+                              // cierre geometrico: si falta la bandera pero el primer y
+                              // ultimo vertice coinciden, tratarla como cerrada igual
+                              if((cur.type==="LWPOLYLINE"||cur.type==="POLYLINE")&&!cur.closed&&cur.verts.length>=4){
+                                const a=cur.verts[0],b=cur.verts[cur.verts.length-1];
+                                if(Math.hypot(a[0]-b[0],a[1]-b[1])<0.02){ cur.closed=true; cur.cierreGeom=true; }
+                              }
+                              ents.push(cur);
+                            }} cur=null; };
+  for(let i=0;i<P.length;i++){
+    const [c,v]=P[i];
+    if(c===0){
+      if(sec==="TABLES"&&tbl==="LAYER"&&curLayer){layers.push(curLayer);curLayer=null;}
+      push();
+      if(v==="SECTION"){ sec=(P[i+1]&&P[i+1][0]===2)?P[i+1][1]:null; continue; }
+      if(v==="ENDSEC"){ sec=null;tbl=null; continue; }
+      if(v==="TABLE"){ tbl=(P[i+1]&&P[i+1][0]===2)?P[i+1][1]:null; continue; }
+      if(v==="ENDTAB"){ tbl=null; continue; }
+      if(sec==="TABLES"&&tbl==="LAYER"&&v==="LAYER"){ curLayer={name:"",color:0}; continue; }
+      if(sec==="ENTITIES"||sec==="BLOCKS"){
+        cur={type:v,layer:"",x:0,y:0,verts:[],closed:false,text:"",flags:0,
+             d2:null,d3:null,r:0,x2:0,y2:0,inSec:sec,paper:0};
+        if(v==="POLYLINE") poly=cur;
+        continue;
+      }
+      continue;
+    }
+    if(sec==="TABLES"&&tbl==="LAYER"&&curLayer){
+      if(c===2) curLayer.name=v;
+      else if(c===62) curLayer.color=parseInt(v,10)||0;
+      continue;
+    }
+    if(!cur) continue;
+    const n=parseFloat(v);
+    switch(c){
+      case 8: cur.layer=v; break;
+      case 1: cur.text=(cur.text||"")+v; break;
+      case 3: cur.text=(cur.text||"")+v; break;
+      case 10: if(cur.type==="LWPOLYLINE"){cur.verts.push([n,0]);} else cur.x=n; break;
+      case 20: if(cur.type==="LWPOLYLINE"&&cur.verts.length){cur.verts[cur.verts.length-1][1]=n;} else cur.y=n; break;
+      case 11: cur.x2=n; break;
+      case 21: cur.y2=n; break;
+      case 13: cur.d2=[n,0]; break;
+      case 23: if(cur.d2) cur.d2[1]=n; break;
+      case 14: cur.d3=[n,0]; break;
+      case 24: if(cur.d3) cur.d3[1]=n; break;
+      case 40: cur.r=n; break;
+      case 67: cur.paper=parseInt(v,10)||0; break;
+      case 70: cur.flags=parseInt(v,10)||0; if((cur.flags&1)===1) cur.closed=true; break;
+    }
+  }
+  if(sec==="TABLES"&&tbl==="LAYER"&&curLayer) layers.push(curLayer);
+  push();
+  // VIEWPORT y las entidades con flag 67=1 viven en paperspace, no en modelspace
+  return {layers,ents:ents.filter(e=>e.inSec==="ENTITIES"&&e.paper!==1&&e.type!=="VIEWPORT")};
+}
+/* ============================ CANON ============================ */
+const norm=s=>(s||"").trim().toLowerCase().replace(/_+/g," ").replace(/\s+/g," ");
+const FAM=[["macizo",["macizo","m-macizo"],"Contorno del macizo"],
+           ["parcelas",["parcelas","m-parcela"],"Parcelas del macizo"],
+           ["linderos",["macizoslinderos","m-linderos"],"Linderos del macizo"],
+           ["cotas",["cotas"],"Cotas de plancheta"]];
+const BASE={}; FAM.forEach(([,al,d])=>al.forEach(a=>BASE[a]=d));
+const VACIAS={"0":"Capa 0 de sistema","defpoints":"Puntos de definición de AutoCAD",
+  "notas mensura":"Reservada, sin uso","acces. complementarias":"Reservada, sin uso"};
+const SUP_MIN=0.50, TOL_SUP=0.01;
+function clasif(c){
+  const n=norm(c);
+  const R=[[/^notas\s+acc\.?\s*(?:esiones)?\s*0*(\d+)?$/,"notas_acc"],
+           [/^notas\s+inst\.?\s*comp\.?\s*0*(\d+)?$/,"notas_inst"],
+           [/^accesiones\s*0*(\d+)?$/,"accesiones"],
+           [/^inst\.?\s*comp\.?\s*0*(\d+)?$/,"inst_comp"]];
+  for(const [re,f] of R){const m=n.match(re); if(m) return [f,m[1]?parseInt(m[1],10):null];}
+  return null;
+}
+const planta=n=>n===null?"?":(n===0?"PB":n+"P");
+function puntoEnPoligono(x,y,poly){ // ray casting
+  let dentro=false,j=poly.length-1;
+  for(let i=0;i<poly.length;i++){
+    const [xi,yi]=poly[i],[xj,yj]=poly[j];
+    if(((yi>y)!==(yj>y)) && (x<(xj-xi)*(y-yi)/(yj-yi+1e-30)+xi)) dentro=!dentro;
+    j=i;
+  }
+  return dentro;
+}
+function centroide(p){ return [p.reduce((a,v)=>a+v[0],0)/p.length, p.reduce((a,v)=>a+v[1],0)/p.length]; }
+const _DIRS=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSO","SO","OSO","O","ONO","NO","NNO"];
+const _DIRS8=["N","NE","E","SE","S","SO","O","NO"];
+// Convencion de deslinde: 8 rumbos principales; intermedio de 16 solo si el
+// acimut esta muy cerca del punto intermedio exacto (a <= _UMBRAL_INTERMEDIO).
+const _UMBRAL_INTERMEDIO=4.0;
+function azACardinal(az){
+  az=((az%360)+360)%360;
+  const s8=Math.round(az/45)%8;
+  const dp=Math.abs(((az-s8*45+180)%360)-180);
+  if(dp<=22.5-_UMBRAL_INTERMEDIO) return _DIRS8[s8];
+  return _DIRS[Math.round(az/22.5)%16];
+}
+function rumboCardinal(dE,dN){ const az=((Math.atan2(dE,dN)*180/Math.PI)%360+360)%360;
+  return [azACardinal(az), +az.toFixed(1)]; }
+function rumboDesdeRosa(nx,ny,angNorte){ const ang=Math.atan2(ny,nx)*180/Math.PI;
+  const az=((angNorte-ang)%360+360)%360; return [azACardinal(az), +az.toFixed(1)]; }
+// detecta la rosa de los vientos (circulo grande + apice de flecha) -> angulo del norte
+function detectarRosa(ents,capa){
+  const circs=ents.filter(e=>e.type==="CIRCLE"&&e.layer===capa);
+  if(!circs.length) return null;
+  const rosa=circs.reduce((a,c)=>c.r>a.r?c:a);
+  const otros=circs.filter(c=>c!==rosa).map(c=>c.r);
+  if(otros.length && rosa.r < Math.max(...otros)*1.3) return null;
+  const cx=rosa.x, cy=rosa.y, R=rosa.r*2.5;
+  const conv={};
+  ents.filter(e=>e.type==="LINE"&&e.layer===capa).forEach(e=>{
+    [[e.x,e.y],[e.x2,e.y2]].forEach(([x,y])=>{
+      if(Math.hypot(x-cx,y-cy)<=R){ const k=x.toFixed(1)+","+y.toFixed(1);
+        conv[k]=conv[k]||{x,y,c:0}; conv[k].c++; } }); });
+  const arr=Object.values(conv);
+  if(!arr.length) return null;
+  arr.sort((a,b)=> b.c-a.c || (Math.hypot(b.x-cx,b.y-cy)-Math.hypot(a.x-cx,a.y-cy)));
+  const p=arr[0];
+  if(p.c<2 || Math.hypot(p.x-cx,p.y-cy)<rosa.r*0.5) return null;
+  return Math.atan2(p.y-cy,p.x-cx)*180/Math.PI;
+}
+function anguloInterno(a,b,c){ const v1=[a[0]-b[0],a[1]-b[1]],v2=[c[0]-b[0],c[1]-b[1]];
+  return Math.abs(Math.atan2(v1[0]*v2[1]-v1[1]*v2[0], v1[0]*v2[0]+v1[1]*v2[1])*180/Math.PI); }
+function shoelace(p){ // traslada al origen: sin esto, en Gauss-Krüger el error es ~0,06 m²
+  if(p.length<3)return 0; const [ox,oy]=p[0]; let s=0;
+  for(let i=0;i<p.length;i++){const a=p[i],b=p[(i+1)%p.length];
+    s+=(a[0]-ox)*(b[1]-oy)-(b[0]-ox)*(a[1]-oy);}
+  return Math.abs(s)/2;
+}
+const dedup=p=>{const o=[];for(const q of p){if(!o.length||Math.abs(q[0]-o[o.length-1][0])>1e-6||Math.abs(q[1]-o[o.length-1][1])>1e-6)o.push(q);}
+  if(o.length>1&&Math.abs(o[0][0]-o[o.length-1][0])<1e-6&&Math.abs(o[0][1]-o[o.length-1][1])<1e-6)o.pop(); return o;};
+const limpiaTxt=t=>{
+  if(!t) return "";
+  // AutoCAD guarda tildes/ñ como \U+00F3 (ó), \U+00F1 (ñ), etc. Decodificar:
+  t=t.replace(/\\U\+([0-9A-Fa-f]{4})/g,(_,h)=>String.fromCharCode(parseInt(h,16)));
+  return t.replace(/\\[A-Za-z][^;\\]*;/g,"").replace(/\\P/g," ").replace(/[{}]/g,"").trim();
+};
+const dist=(a,b)=>Math.hypot(b[0]-a[0],b[1]-a[1]);
+/* ============================ CONTROLES ============================ */
+function ciclo(dims){
+  const ar=[];
+  dims.forEach(e=>{ if(e.d2&&e.d3){
+    const a=[+e.d2[0].toFixed(4),+e.d2[1].toFixed(4)], b=[+e.d3[0].toFixed(4),+e.d3[1].toFixed(4)];
+    if(a[0]!==b[0]||a[1]!==b[1]) ar.push([a,b]); }});
+  if(ar.length<3) return null;
+  const key=p=>p[0]+"|"+p[1], gr={},ady={};
+  ar.forEach(([a,b])=>{const ka=key(a),kb=key(b);
+    gr[ka]=(gr[ka]||0)+1; gr[kb]=(gr[kb]||0)+1;
+    (ady[ka]=ady[ka]||[]).push(b); (ady[kb]=ady[kb]||[]).push(a);});
+  const ks=Object.keys(gr);
+  if(ks.length!==ar.length||ks.some(k=>gr[k]!==2)) return null;
+  const ini=ar[0][0]; let prev=null,act=ini; const ord=[ini];
+  for(let g=0;g<=ar.length;g++){
+    const sig=(ady[key(act)]||[]).filter(v=>!prev||key(v)!==key(prev));
+    if(!sig.length) return null;
+    prev=act; act=sig[0];
+    if(key(act)===key(ini)) return ord.length===ar.length?ord:null;
+    ord.push(act);
+  }
+  return null;
+}
+function validar(dxf,nombre){
+  const {layers,ents}=dxf, H=[], add=(s,r,t,d)=>H.push({sev:s,regla:r,txt:t,det:d||""});
+  const porCapa={}; ents.forEach(e=>{(porCapa[e.layer]=porCapa[e.layer]||[]).push(e);});
+  const todas=[...new Set([...Object.keys(porCapa),...layers.map(l=>l.name)])].sort();
+  const capaMensura=todas.find(c=>norm(c)==="mensura")||"Mensura";
+  const M=porCapa[capaMensura]||[];
+  /* --- capas --- */
+  const firmas={};
+  todas.forEach(c=>{const cl=clasif(c); if(cl){const k=cl[0]+"|"+cl[1]; (firmas[k]=firmas[k]||[]).push(c);}});
+  const dup=new Set();
+  Object.values(firmas).forEach(g=>{ if(g.length>1){
+    const con=g.filter(c=>(porCapa[c]||[]).length);
+    (con.length>1?g:g.filter(c=>!(porCapa[c]||[]).length)).forEach(c=>dup.add(c)); }});
+  const filas=[];
+  const fueraCanon=[];
+  todas.forEach(capa=>{
+    const es=porCapa[capa]||[], vacia=!es.length, n=norm(capa), cl=clasif(capa);
+    const cerradas=es.filter(e=>e.closed&&(e.type==="LWPOLYLINE"||e.type==="POLYLINE")).length;
+    const cnt={}; es.forEach(e=>cnt[e.type]=(cnt[e.type]||0)+1);
+    const cont=Object.keys(cnt).sort().map(k=>k+" "+cnt[k]).join(" · ")||"(vacía)";
+    let ver,debe;
+    if(n==="mensura"){ debe="Parcela + superficie + calles + S/C + S/M + Norte";
+      if(vacia)ver="critical"; else if(cerradas)ver="ok";
+      else{ver="warn"; debe+=" — sin polígono cerrado";
+        add("warn","CAP-1","La parcela no está dibujada como una polilínea cerrada",
+          "Dibujá el contorno de la parcela con una polilínea cerrada (comando PLINE, cerrando el contorno). Sin eso no se puede controlar la superficie a partir del dibujo.");}
+    } else if(cl&&cl[0]==="accesiones"){ debe="Polígonos edificados planta "+planta(cl[1]);
+      if(vacia)ver="critical"; else if(cerradas)ver="ok";
+      else{ver="warn"; debe+=" — dibujados con LINE";
+        add("warn","CAP-2","Las accesiones de la capa «"+capa+"» no están cerradas",
+          "Están dibujadas con líneas sueltas (LINE) en vez de una polilínea cerrada, así que no se puede calcular su superficie. Cerralas con PLINE.");}
+    } else if(cl&&cl[0]==="inst_comp"){ debe="Instalación complementaria";
+      ver=(vacia||!cerradas)?"warn":"ok";
+    } else if(cl&&(cl[0]==="notas_acc"||cl[0]==="notas_inst")){ debe="Rótulos ID + superficie + F.903";
+      ver=vacia?(cl[0]==="notas_acc"?"critical":"warn"):"ok";
+    } else if(VACIAS[n]){ debe=VACIAS[n]+". Debe estar VACÍA"; ver=vacia?"ok":"critical";
+      if(!vacia) add("critical","CAP-3","La capa «"+capa+"» del archivo tiene objetos y debería estar vacía",
+        "La capa «"+capa+"» es del sistema y no debe tener nada dibujado. Pasá lo que tiene a la capa que corresponde. Tiene: "+cont);
+    } else if(BASE[n]){ debe=BASE[n]; ver=vacia?"warn":"ok"; if(vacia) debe+=" — VACÍA";
+    } else { // CANON ARBA ESTRICTO: no debe existir capa fuera del canon
+      const reconoc=new Set();
+      (porCapa[capa]||[]).forEach(e=>{ if(e.type==="TEXT"||e.type==="MTEXT"){
+        const tt=limpiaTxt(e.text).toUpperCase();
+        if(/^S\/C|^S\/M/.test(tt)) reconoc.add("cotas S/C-S/M");
+        else if(/^CALLE|^AV/.test(tt)) reconoc.add("calles"); }});
+      if(vacia){ debe="(capa que no es de las que usa ARBA)"; ver="info"; }
+      else{ ver="critical";
+        const ex=reconoc.size? " — tiene "+[...reconoc].join(", ")+" que van en la capa Mensura":"";
+        debe="No es una de las capas que usa ARBA (esta capa no debería existir)"+ex;
+        fueraCanon.push({capa,cotas:reconoc.has("cotas S/C-S/M"),calles:reconoc.has("calles")});
+        add("critical","CAP-4","La capa «"+capa+"» no es una de las capas de ARBA"+
+          (reconoc.size?": tiene "+[...reconoc].join(", "):""),
+          "El archivo solo puede tener las capas que pide ARBA. Pasá lo que hay en «"+capa+"» a la capa que corresponde"+
+          (reconoc.has("cotas S/C-S/M")?" (las cotas van en la capa Mensura)":"")+" y después borrá la capa «"+capa+"»."); }
+    }
+    if(dup.has(capa)){ ver="critical"; debe+=" ‖ capa repetida";
+      add("critical","CAP-5","La capa «"+capa+"» está repetida (hay otra capa que hace lo mismo)",
+        "Hay dos capas para lo mismo, casi seguro por un error de tipeo en el nombre. Dejá una sola y borrá la otra."); }
+    filas.push({capa,debe,cont,ver});
+  });
+  const pres=new Set(todas.map(norm));
+  FAM.forEach(([et,al,d])=>{ if(!al.some(a=>pres.has(a))){
+    filas.push({capa:"("+al.join("|")+")",debe:d+" — AUSENTE",cont:"(no existe)",ver:"critical"});
+    add("critical","CAP-6","Falta la capa de ARBA: "+et,
+      "El dibujo no tiene la capa «"+et+"» de la plancheta de ARBA. Descargá la plancheta de ARBA y sumala al archivo."); }});
+  /* --- rótulos --- */
+  const rotConPos=M.filter(e=>e.type==="TEXT"||e.type==="MTEXT")
+    .map(e=>({t:limpiaTxt(e.text),x:e.x,y:e.y})).filter(o=>o.t);
+  const rot=rotConPos.map(o=>o.t);
+  const calles=rot.filter(t=>/^(calle|av)/i.test(t));
+  const sc=rot.filter(t=>/^s\/c/i.test(t)), sm=rot.filter(t=>/^s\/m/i.test(t));
+  const nom=rot.find(t=>/^(circ|secc|pdo|qt|manz)/i.test(t))||"";
+  // parcela para medir proximidad (poligono cerrado o ciclo de dimensiones)
+  let parClas=null;
+  { const cM=M.filter(e=>e.closed&&(e.type==="LWPOLYLINE"||e.type==="POLYLINE"))
+             .map(e=>dedup(e.verts)).filter(p=>p.length>=3);
+    if(cM.length) parClas=cM[0];
+    else { const c=ciclo(M.filter(e=>e.type==="DIMENSION")); if(c)parClas=c; } }
+  function distSeg(px,py,ax,ay,bx,by){ const dx=bx-ax,dy=by-ay;
+    if(dx===0&&dy===0)return Math.hypot(px-ax,py-ay);
+    const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy)));
+    return Math.hypot(px-(ax+t*dx),py-(ay+t*dy)); }
+  function distBorde(x,y,poly){ let m=Infinity; const n=poly.length;
+    for(let i=0;i<n;i++) m=Math.min(m,distSeg(x,y,poly[i][0],poly[i][1],poly[(i+1)%n][0],poly[(i+1)%n][1]));
+    return m; }
+  const DIST_LADO=8.0, LARGO_MIN=3.0;
+  const ladosParcela=[], macizoSinPref=[], espurios=[];
+  rotConPos.forEach(o=>{
+    if(/^(s\/[cm]|calle|av|sup|circ|secc|pdo|qt|manz)/i.test(o.t))return;
+    const l=o.t.replace(",",".").replace(/\s/g,"");
+    if(!/^\d+\.\d+$/.test(l))return;
+    const v=parseFloat(l);
+    if(v<LARGO_MIN){ espurios.push(o.t); return; }
+    if(parClas===null) ladosParcela.push(o.t);            // sin parcela no se afirma macizo
+    else if(distBorde(o.x,o.y,parClas)<=DIST_LADO) ladosParcela.push(o.t);
+    else macizoSinPref.push(o.t);
+  });
+  const cotasEnOtraCapa=fueraCanon.filter(fc=>fc.cotas).map(fc=>fc.capa);
+  if(sc.length<3){
+    if(cotasEnOtraCapa.length) add("critical","ROT-2",
+      "Las cotas S/C están en la capa equivocada («"+cotasEnOtraCapa.join(", ")+"»), no en Mensura",
+      "Las cotas no faltan: están dibujadas en una capa que no es de ARBA. Movelas a la capa Mensura.");
+    else add("critical","ROT-2","Faltan las cotas S/C (según catastro): hay "+sc.length+", tiene que haber 3 o más");
+  }
+  if(sm.length<2){
+    if(cotasEnOtraCapa.length) add("critical","ROT-3",
+      "Las cotas S/M están en la capa equivocada («"+cotasEnOtraCapa.join(", ")+"»), no en Mensura",
+      "Las cotas no faltan: están dibujadas en una capa que no es de ARBA. Movelas a la capa Mensura.");
+    else add("critical","ROT-3","Faltan las cotas S/M (según mensura): hay "+sm.length+", tiene que haber 2 o más");
+  }
+  if(macizoSinPref.length) add("critical","ROT-4",
+    "Hay "+macizoSinPref.length+" medida(s) del macizo o ancho de calle sin S/C ni S/M: "+macizoSinPref.join(", "),
+    "Toda medida del macizo o de ancho de calle tiene que llevar adelante S/C (según catastro) o S/M (según mensura). "+
+    "Los únicos valores que van sin prefijo son los lados de la parcela que estás mensurando.");
+  if(espurios.length) add("info","ROT-6",
+    "Hay "+espurios.length+" número(s) menor(es) a 3 m sin prefijo: "+espurios.join(", "),
+    "Pueden ser líneas o textos muy chicos que sobraron del dibujo. Revisalos y borralos si no van.");
+  if(calles.length<3) add("warn","ROT-1","Solo hay "+calles.length+" nombre(s) de calle en la capa Mensura (una esquina debería tener al menos 3)");
+  if(!nom) add("warn","ROT-5","No se encontró la nomenclatura catastral (Pdo/Circ/Secc/Qta/Parc)");
+  /* --- superficie --- */
+  const tSup=rot.find(t=>/^sup/i.test(t))||"";
+  let rotu=null; const mm=tSup.match(/(\d+(?:[.,]\d+)?)/); if(mm) rotu=parseFloat(mm[1].replace(",","."));
+  let pts=null,met=null,notaCotas=null;
+  // aviso: parcela cerrada a mano (sin la opcion Close de AutoCAD)
+  const parcCierreGeom=M.some(e=>e.cierreGeom&&(e.type==="LWPOLYLINE"||e.type==="POLYLINE"));
+  if(parcCierreGeom) add("warn","CAP-7","Hay una polilínea que se ve cerrada pero no está cerrada con la opción «Cerrar»",
+    "El contorno se cerró llevando el último punto sobre el primero a mano, no con el comando Cerrar (Close). Se ve igual, pero conviene cerrarla bien: seleccioná la polilínea, PEDIT, opción Cerrar.");
+  const cerr=M.filter(e=>e.closed&&(e.type==="LWPOLYLINE"||e.type==="POLYLINE"))
+              .map(e=>dedup(e.type==="LWPOLYLINE"?e.verts:e.verts)).filter(p=>p.length>=3);
+  if(cerr.length){pts=cerr[0];met="polilínea";}
+  else{ const c=ciclo(M.filter(e=>e.type==="DIMENSION")); if(c){pts=c;met="dimensiones";} }
+  let calc=pts?shoelace(pts):null;
+  let lados=pts?pts.map((p,i)=>+dist(p,pts[(i+1)%pts.length]).toFixed(3)):[];
+  if(calc===null){
+    // 3er escalon: reconstruir el area desde las cotas rotuladas sin prefijo
+    const cot=[];
+    rot.forEach(t=>{ const up=t.toUpperCase().replace(/\s/g,"");
+      if(/^(S\/C|S\/M|SUP)/.test(up))return;
+      const m=t.replace(",",".").replace(/\s/g,"").match(/^(\d+\.\d{2})$/);
+      if(m){const v=parseFloat(m[1]); if(v>=3)cot.push(v);} });
+    if(cot.length>=3){
+      const c={}; cot.forEach(v=>c[v]=(c[v]||0)+1);
+      const ks=Object.keys(c).map(Number).sort((a,b)=>a-b);
+      const pares=ks.filter(v=>c[v]>=2);
+      if(ks.length===2 && ks.every(v=>c[v]>=2) && pares.length===2){
+        calc=pares[0]*pares[1]; met="cotas"; lados=cot;
+        notaCotas="rectángulo ("+pares[0].toFixed(2)+" x "+pares[1].toFixed(2)+") por cotas sin prefijo";
+      } else if(ks.length===1 && c[ks[0]]>=4){
+        calc=ks[0]*ks[0]; met="cotas"; lados=cot;
+        notaCotas="cuadrado ("+ks[0].toFixed(2)+") por cotas sin prefijo";
+      } else {
+        notaCotas="cotas no forman rectángulo (valores: "+ks.map(v=>v.toFixed(2)).join(",")+
+                  "): área no derivable de longitudes, requiere rumbos/ángulos";
+      }
+    }
+  }
+  let vSup,delta=null;
+  if(rotu===null){vSup="pend"; add("warn","SUP-0","No se encontró el texto de la superficie (Sup.: ...) en la capa Mensura");}
+  else if(calc===null){vSup="pend";
+    add("warn","SUP-2","No se puede controlar la superficie declarada («"+tSup+"») a partir del dibujo",
+      (notaCotas||"La parcela no está dibujada como polilínea cerrada y las cotas no cierran un contorno.")+
+      " Se puede controlar si los lados forman un rectángulo, o si dibujás la parcela con una polilínea cerrada.");}
+  else{ delta=+(rotu-calc).toFixed(4); vSup=Math.abs(delta)<=TOL_SUP?"ok":"critical";
+    if(vSup==="critical") add("critical","SUP-1","La superficie que dice el cartel no coincide con la del dibujo",
+      "DICE "+rotu.toFixed(2)+" m² / TENDRÍA QUE DECIR "+calc.toFixed(2)+" m² (diferencia "+
+      (delta>0?"+":"")+delta.toFixed(2)+" m²)."+(notaCotas?" Calculado como "+notaCotas+".":" Lados: "+lados.join(" · ")+"."));}
+  /* --- accesiones --- */
+  const acc=[];
+  todas.forEach(capa=>{ const cl=clasif(capa);
+    if(!cl||(cl[0]!=="accesiones"&&cl[0]!=="inst_comp"))return;
+    (porCapa[capa]||[]).forEach(e=>{ if(!e.closed||(e.type!=="LWPOLYLINE"&&e.type!=="POLYLINE"))return;
+      const p=dedup(e.verts); if(p.length<3)return; const a=shoelace(p);
+      acc.push({capa,planta:planta(cl[1]),sup:+a.toFixed(2),esp:a<SUP_MIN});
+      if(a<SUP_MIN) add("warn","ACC-1","Hay un dibujo muy chico de "+a.toFixed(2)+" m² en la capa «"+capa+"» que parece de sobra",
+        "Es más chico de "+SUP_MIN.toFixed(2)+" m²: casi seguro es basura de dibujo. Revisalo y borralo si no va."); });});
+  /* --- CTRL: accesiones dentro de la parcela --- */
+  let parPts=null;
+  { const cerrM=M.filter(e=>e.closed&&(e.type==="LWPOLYLINE"||e.type==="POLYLINE"))
+                 .map(e=>dedup(e.verts)).filter(p=>p.length>=3);
+    if(cerrM.length) parPts=cerrM[0];
+    else if(pts&&met==="dimensiones") parPts=pts; }
+  const accFuera=[];
+  if(parPts){
+    todas.forEach(capa=>{ const cl=clasif(capa);
+      if(!cl||(cl[0]!=="accesiones"&&cl[0]!=="inst_comp"))return;
+      (porCapa[capa]||[]).forEach(e=>{ if(!e.closed||(e.type!=="LWPOLYLINE"&&e.type!=="POLYLINE"))return;
+        const p=dedup(e.verts); if(p.length<3||shoelace(p)<SUP_MIN)return;
+        const nd=p.filter(([vx,vy])=>puntoEnPoligono(vx,vy,parPts)).length;
+        const cen=centroide(p), cd=puntoEnPoligono(cen[0],cen[1],parPts);
+        if(!cd||nd/p.length<0.5){
+          const px=parPts[0][0];
+          let causa=(cen[0]<0)!==(px<0) ? "tiene la coordenada X con el signo cambiado (quedó espejada, dibujada muy lejos del plano)"
+                                        : "está dibujada afuera del contorno de la parcela";
+          accFuera.push({capa,area:+shoelace(p).toFixed(2)});
+          add("critical","ACC-2","Hay una accesión de "+shoelace(p).toFixed(2)+" m² (capa «"+capa+"») que cae afuera de la parcela",
+            "Esta accesión "+causa+" ("+nd+" de "+p.length+" vértices caen dentro de la parcela). Buscala en el dibujo (hacé Zoom Extents) y corregila o borrala.");
+        }});});
+  }
+  /* --- CTRL: override de texto en DIMENSION --- */
+  let nOver=0;
+  ents.filter(e=>e.type==="DIMENSION").forEach(e=>{
+    const t=(e.text||"").trim();
+    if(t!==""&&t!=="<>"){ nOver++; } });
+  if(nOver) add("warn","DIM-1","Hay "+nOver+" cota(s) con el número cambiado a mano",
+    "En esas cotas el número que se ve no es la medida real que calculó AutoCAD, sino un texto que se escribió encima. Revisá que el número mostrado sea el correcto.");
+  /* --- CTRL: balance polígono ↔ nota de accesión --- */
+  { const cuentaPol=cap=>{let n=0;(porCapa[cap]||[]).forEach(e=>{
+      if(e.closed&&(e.type==="LWPOLYLINE"||e.type==="POLYLINE")){const p=dedup(e.verts);if(p.length>=3&&shoelace(p)>=SUP_MIN)n++;}});return n;};
+    // buscar la capa de notas por CLASIFICADOR (no por nombre construido): tolera
+    // "Notas Inst.Comp 0" vs "Notas Inst. Comp 0" y el planta N que coincida
+    const notaDe=(fam,planta)=>{ for(const c of todas){ const cc=clasif(c);
+      if(cc&&cc[0]===(fam==="accesiones"?"notas_acc":"notas_inst")&&cc[1]===planta) return c; } return null; };
+    const cuentaNotas=cap=>cap?(porCapa[cap]||[]).filter(e=>e.type==="TEXT"||e.type==="MTEXT").length:0;
+    todas.forEach(capa=>{ const cl=clasif(capa);
+      if(!cl||(cl[0]!=="accesiones"&&cl[0]!=="inst_comp"))return;
+      const capaNota=notaDe(cl[0],cl[1]);
+      const np=cuentaPol(capa), nn=cuentaNotas(capaNota);
+      if(np>0&&nn===0) add("warn","BAL-1","La capa «"+capa+"» tiene "+np+" accesión(es) dibujada(s) pero ninguna nota F.903",
+        "Cada accesión edificada debería tener su nota con la superficie y el formulario 903. Revisá que no falte la nota.");
+    });}
+  /* --- deslinde: rumbo + ochava por lado --- */
+  let deslinde={lados:[],geo:false,ochavas:0,nota:null};
+  { let dp=null;
+    const cerrD=M.filter(e=>e.closed&&(e.type==="LWPOLYLINE"||e.type==="POLYLINE"))
+                 .map(e=>dedup(e.verts)).filter(p=>p.length>=3);
+    if(cerrD.length) dp=cerrD[0];
+    else { const c=ciclo(M.filter(e=>e.type==="DIMENSION")); if(c)dp=c; }
+    if(dp&&dp.length>=3){
+      const nn=dp.length;
+      const xm2=dp.reduce((a,v)=>a+v[0],0)/nn;
+      const geo=xm2>4.4e6&&xm2<6.6e6;
+      const angNorte = geo ? null : detectarRosa(M,"Mensura");
+      const largos=dp.map((p,i)=>Math.hypot(dp[(i+1)%nn][0]-p[0],dp[(i+1)%nn][1]-p[1]));
+      const medL=[...largos].sort((a,b)=>a-b)[Math.floor(nn/2)];
+      // nombre de la parcela propia (para no confundirla con vecina)
+      const propia=(M.filter(e=>(e.type==="TEXT"||e.type==="MTEXT"))
+        .map(e=>limpiaTxt(e.text).replace(/\s/g,"")).find(t=>/^\d{1,3}[A-Za-z]?$/.test(t)))||"";
+      // vecinos: numeros en M-PARCELA/PARCELAS y en Mensura, separando los de Mensura
+      const vecinos=[], vecinosMensura=[];
+      todas.forEach(cp=>{ const esMensura=norm(cp)===norm("Mensura");
+        if(!/parcela/i.test(cp)&&!esMensura)return;
+        (porCapa[cp]||[]).forEach(e=>{ if(e.type!=="TEXT"&&e.type!=="MTEXT")return;
+          const t=limpiaTxt(e.text).replace(/\s/g,"");
+          if(/^\d{1,3}[A-Za-z]?$/.test(t)&&t!==propia){ vecinos.push({t,x:e.x,y:e.y});
+            if(esMensura) vecinosMensura.push({t,x:e.x,y:e.y}); } }); });
+      // helpers de geometria
+      function areaPoly(p){ let s=0; for(let k=0;k<p.length;k++){const q=p[(k+1)%p.length]; s+=p[k][0]*q[1]-q[0]*p[k][1];} return Math.abs(s)/2; }
+      function centroidePoly(p){ return [p.reduce((a,v)=>a+v[0],0)/p.length,p.reduce((a,v)=>a+v[1],0)/p.length]; }
+      function ptEnPoly(x,y,poly){ let dd=false,j=poly.length-1;
+        for(let k=0;k<poly.length;k++){const [xi,yi]=poly[k],[xj,yj]=poly[j];
+          if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi+1e-30)+xi))dd=!dd; j=k;} return dd; }
+      function distPtSeg(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay,L2=dx*dx+dy*dy;
+        if(L2===0)return Math.hypot(px-ax,py-ay);
+        const t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/L2));
+        return Math.hypot(px-(ax+t*dx),py-(ay+t*dy)); }
+      function distPtPolyBorde(px,py,poly){ let m=Infinity;
+        for(let k=0;k<poly.length;k++){const a=poly[k],b=poly[(k+1)%poly.length];
+          m=Math.min(m,distPtSeg(px,py,a[0],a[1],b[0],b[1]));} return m; }
+      // solape aproximado de un rectangulo-buffer de arista con un poligono, por muestreo
+      function solapeBufferArista(a,b,poly){
+        const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy); if(L===0)return 0;
+        const nx=-dy/L,ny=dx/L; let dentro=0,tot=0;
+        for(let s=0;s<=20;s++){ for(let w=-0.9;w<=0.9;w+=0.3){
+          const px=a[0]+dx*s/20+nx*w, py=a[1]+dy*s/20+ny*w; tot++;
+          if(ptEnPoly(px,py,poly)) dentro++; } }
+        return tot?dentro/tot:0;
+      }
+      // poligonos vecinos de la plancheta (excluye la propia), numero por centroide
+      const planosVec=[];
+      todas.forEach(cp=>{ if(!/parcela/i.test(cp))return;
+        (porCapa[cp]||[]).forEach(e=>{ if(!e.closed||(e.type!=="LWPOLYLINE"&&e.type!=="POLYLINE"))return;
+          const q=dedup(e.verts); if(q.length<3||areaPoly(q)<5)return;
+          const c=centroidePoly(q);
+          if(ptEnPoly(c[0],c[1],dp))return;
+          let num="",md=1e9;
+          for(const v of vecinos){ if(ptEnPoly(v.x,v.y,q)){ const dc=Math.hypot(v.x-c[0],v.y-c[1]); if(dc<md){md=dc;num=v.t;} } }
+          planosVec.push({num,poly:q}); }); });
+      // calles
+      const _calles=[];
+      M.filter(e=>e.type==="TEXT"||e.type==="MTEXT").forEach(e=>{
+        const t=limpiaTxt(e.text);
+        if(/^(calle|av)/i.test(t)) _calles.push({n:t.replace(/^calle\s+/i,""),x:e.x,y:e.y}); });
+      deslinde.geo = geo || (angNorte!==null);
+      deslinde.rumbo_por_rosa = (!geo) && (angNorte!==null);
+      deslinde.nota = geo ? null
+        : (angNorte!==null
+           ? "Rumbos calculados desde la rosa de los vientos del plano (el dibujo no está georreferenciado). Verificar contra el plano."
+           : "El dibujo no está georreferenciado y no se detectó rosa de los vientos, así que no se pueden mostrar los rumbos.");
+      // primera pasada: ochavas -> los lados adyacentes son frentes a calle (R5)
+      const esOch=new Array(nn).fill(false), frenteOch=new Array(nn).fill(false);
+      for(let i=0;i<nn;i++){ const a=dp[i],b=dp[(i+1)%nn];
+        const ai=anguloInterno(dp[(i-1+nn)%nn],a,b), af=anguloInterno(a,b,dp[(i+2)%nn]);
+        if(largos[i]<medL*0.6&&ai>100&&af>100) esOch[i]=true; }
+      for(let i=0;i<nn;i++){ if(esOch[i]){ frenteOch[(i-1+nn)%nn]=true; frenteOch[(i+1)%nn]=true; } }
+      for(let i=0;i<nn;i++){
+        const a=dp[i],b=dp[(i+1)%nn], L=largos[i], d={n:i+1,largo:+L.toFixed(3)};
+        if(geo || angNorte!==null){
+          // rumbo = HACIA DONDE DA el lado (normal exterior), no direccion del segmento
+          const dx=b[0]-a[0],dy=b[1]-a[1],Ln=Math.hypot(dx,dy)||1;
+          let nx=-dy/Ln,ny=dx/Ln;
+          const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;
+          if(ptEnPoly(mx+nx*0.5,my+ny*0.5,dp)){ nx=-nx; ny=-ny; }
+          const [c,az]= geo ? rumboCardinal(nx,ny) : rumboDesdeRosa(nx,ny,angNorte);
+          d.rumbo=c; d.acimut=az;
+        }
+        if(esOch[i]){ d.ochava=true; deslinde.ochavas++; d.lindero="ochava"; deslinde.lados.push(d); continue; }
+        // lado adyacente a ochava = FRENTE a calle: la calle manda, sin parcela
+        if(frenteOch[i]){
+          let mc=null,mdc=200;
+          for(const c of _calles){ const dd=distPtSeg(c.x,c.y,a[0],a[1],b[0],b[1]); if(dd<mdc){mdc=dd;mc=c.n;} }
+          d.lindero = mc ? ("Calle "+mc) : "calle (sin identificar)";
+          d.fuente_lindero="calle";
+          deslinde.lados.push(d); continue;
+        }
+        {
+          let lind="",fuente="";
+          // 1) MENSURA: numero inequivoco para este lado
+          let mejorM=null,mdM=5;
+          for(const v of vecinosMensura){ const dseg=distPtSeg(v.x,v.y,a[0],a[1],b[0],b[1]);
+            if(dseg>=mdM)continue;
+            let esMasCercano=true;
+            for(let j=0;j<nn;j++){ if(j===i)continue;
+              if(distPtSeg(v.x,v.y,dp[j][0],dp[j][1],dp[(j+1)%nn][0],dp[(j+1)%nn][1])<dseg+1.5){esMasCercano=false;break;} }
+            if(esMasCercano){ mdM=dseg; mejorM=v.t; } }
+          if(mejorM){ lind="parcela "+mejorM; fuente="mensura"; }
+          // 2) PLANCHETA ARBA: buffer de arista + interseccion (metodo controlador)
+          if(!lind){ let mejorp=null,mejorSol=0;
+            for(const pv of planosVec){ if(!pv.num)continue;
+              const s=solapeBufferArista(a,b,pv.poly); if(s>mejorSol){mejorSol=s;mejorp=pv.num;} }
+            if(mejorp&&mejorSol>0.15){ lind="parcela "+mejorp; fuente="arba"; } }
+          // 3) CALLE: solo el lado sobre el que el rotulo PROYECTA DENTRO y esta cerca
+          if(!lind){ let mc=null,mdc=12;
+            for(const c of _calles){ const dd=distPtSeg(c.x,c.y,a[0],a[1],b[0],b[1]);
+              if(dd>=mdc)continue;
+              const dx=b[0]-a[0],dy=b[1]-a[1],L2=(dx*dx+dy*dy)||1;
+              const tt=((c.x-a[0])*dx+(c.y-a[1])*dy)/L2;
+              if(tt>=-0.1&&tt<=1.1){ mdc=dd; mc=c.n; } }
+            if(mc){ lind="Calle "+mc; fuente="calle"; } }
+          // 4) RESPALDO por plancheta (buffer dejo gap): vecino mas cercano, tentativo
+          if(!lind){ let mejorp=null,mdp=15;
+            for(const pv of planosVec){ if(!pv.num)continue;
+              const dd=distPtPolyBorde((a[0]+b[0])/2,(a[1]+b[1])/2,pv.poly); if(dd<mdp){mdp=dd;mejorp=pv.num;} }
+            if(mejorp){ lind="parcela "+mejorp; fuente="arba"; d.tentativo=true; } }
+          // 5) RESPALDO por numero de Mensura (sin plancheta ARBA), tentativo
+          if(!lind){ let mejorm=null,mdm=15;
+            for(const v of vecinosMensura){ const dd=distPtSeg(v.x,v.y,a[0],a[1],b[0],b[1]); if(dd<mdm){mdm=dd;mejorm=v.t;} }
+            if(mejorm){ lind="parcela "+mejorm; fuente="mensura"; d.tentativo=true; } }
+          d.lindero=lind; d.fuente_lindero=fuente;
+          if(fuente==="arba") d.falta_en_mensura=true;
+        }
+        deslinde.lados.push(d);
+      }
+    } else deslinde.nota="parcela no reconstruible como polígono: sin deslinde geométrico";
+  }
+  /* --- datos para cargar en ARBA: distancias a esquina y anchos de calle --- */
+  const datosArba={ sc:sc.slice(), sm:sm.slice(), calles:calles.slice() };
+  /* --- sistema --- */
+  const xs=M.filter(e=>e.type==="LINE").map(e=>e.x);
+  const xm=xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:null;
+  let sis="indeterminado";
+  if(xm!==null){ if(xm>4.4e6&&xm<6.6e6) sis="Coordenadas reales POSGAR/Gauss-Krüger (georreferenciado)";
+    else{ sis="Coordenadas locales / plancheta (sin georreferenciar)";
+      add("warn","SIS-1","El dibujo no está en coordenadas reales (POSGAR/Gauss-Krüger)",
+        "Parece estar en coordenadas locales. Verificá el sistema de coordenadas. Sin georreferenciar no se pueden calcular los rumbos de los lados."); }}
+  const ORD={critical:0,warn:1,info:2};
+  H.sort((a,b)=>(ORD[a.sev]??9)-(ORD[b.sev]??9));
+  const nc=H.filter(h=>h.sev==="critical").length, nw=H.filter(h=>h.sev==="warn").length;
+  return {archivo:nombre,veredicto:nc?"BLOQUEADO":(nw?"OBSERVADO":"VERIFICADO"),
+    resumen:{critical:nc,warn:nw},hallazgos:H,capas:filas,
+    superficie:{rotulada:rotu,rotulo:tSup,calculada:calc?+calc.toFixed(4):null,delta,metodo:met,lados,ver:vSup},
+    rotulos:{calles,sc,sm,nom,macizoSinPref,ladosParcela,espurios},accesiones:acc,sistema:sis,deslinde:deslinde,datosArba:datosArba,
+    medidas:ents.filter(e=>e.type==="DIMENSION"&&e.d2&&e.d3).map(e=>+dist(e.d2,e.d3).toFixed(2)).sort((a,b)=>a-b)};
+}
+/* ============================ RENDER ============================ */
+let ULT=null,PREV=null;
+const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function render(r){
+  ULT=r;
+  const S=r.superficie;
+  const _sub={BLOQUEADO:"Archivo con errores — hay que corregir antes de presentar",
+              OBSERVADO:"Archivo con observaciones — revisar antes de presentar",
+              VERIFICADO:"Archivo sin errores"};
+  let h=`<div class="verdict v-${r.veredicto}"><h2>${r.veredicto}</h2>
+    <p style="font-weight:600;margin:2px 0 0">${_sub[r.veredicto]||""}</p>
+    <p>${r.resumen.critical} error(es) · ${r.resumen.warn} observación(es) — <b>${esc(r.archivo)}</b></p></div>`;
+  const _svgInfo='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+  const hlp=(t)=>`<span class="hlp" tabindex="0">${_svgInfo}<span class="tipbox">${t}</span></span>`;
+  h+=`<div class="kv">
+    <div class="k"><b>Nomenclatura${hlp("La designación catastral de la parcela: partido (Pdo), circunscripción (Circ), sección (Sec) y manzana/quinta/chacra o parcela. Es el «domicilio» catastral del inmueble, lo que lo identifica ante ARBA.")}</b><span>${esc(r.rotulos.nom||"—")}</span></div>
+    <div class="k"><b>Superficie declarada${hlp("La superficie que figura escrita (rotulada) en el plano, en el cartel de la parcela. Es la que declara el agrimensor.")}</b><span>${S.rotulada!==null?S.rotulada.toFixed(2)+" m²":"—"}</span></div>
+    <div class="k"><b>Superficie calculada${hlp("La superficie que mide el validador a partir del contorno dibujado (fórmula de Gauss / Shoelace sobre los vértices). Debería coincidir con la declarada.")}</b><span>${S.calculada!==null?S.calculada.toFixed(2)+" m²":"no verificable"}</span></div>
+    <div class="k"><b>Diferencia${hlp("Diferencia entre la superficie declarada y la calculada. Idealmente cero. Una diferencia mayor a lo que justifica el redondeo indica que el número escrito no coincide con el dibujo.")}</b><span>${S.delta!==null?(S.delta>0?"+":"")+S.delta.toFixed(3)+" m²":"—"}</span></div>
+    <div class="k"><b>Sistema${hlp("El sistema de coordenadas del dibujo. POSGAR/Gauss-Krüger = georreferenciado (coordenadas reales del terreno, permite calcular rumbos). Local/plancheta = coordenadas locales, sin norte cierto salvo que haya rosa de los vientos.")}</b><span style="font-size:11.5px">${esc(r.sistema)}</span></div>
+    <div class="k"><b>Cotas${hlp("Cantidad de medidas rotuladas con prefijo S/C (Según Catastro: el dato viene del registro de ARBA) y S/M (Según Mensura: el dato viene de la medición en campo).")}</b><span>S/C ${r.rotulos.sc.length} · S/M ${r.rotulos.sm.length}</span></div></div>`;
+  if(S.lados.length) h+=`<p class="file">Lados: ${S.lados.join(" · ")} m — método: ${S.metodo} ${hlp("Las longitudes de los lados y cómo se reconstruyó el polígono: «polilínea» (contorno dibujado como polilínea cerrada), «dimensiones» (a partir de las cotas acotadas del plano) o «cotas» (medidas rotuladas de un rectángulo).")}</p>`;
+  h+="<h3>Hallazgos"+hlp("Los problemas detectados en el archivo. Cada uno tiene un código (CAP, DIM, SUP, ROT, ACC...) y un color: rojo = error que hay que corregir antes de presentar; ocre = observación a revisar.")+"</h3>";
+  h+= r.hallazgos.length? r.hallazgos.map(f=>`<div class="f ${f.sev}">
+        <b><span class="tag t-${f.sev}">${f.regla}</span>${esc(f.txt)}</b>
+        ${f.det?`<small>${esc(f.det)}</small>`:""}</div>`).join("")
+     : `<div class="f ok"><b><span class="tag t-ok">OK</span>Sin hallazgos.</b></div>`;
+  // DESLINDE (arriba: sirve para cargar en ARBA)
+  if(r.deslinde&&r.deslinde.lados.length){
+    const D=r.deslinde;
+    h+="<h3>Deslinde"+(D.ochavas?" · "+D.ochavas+" ochava"+(D.ochavas>1?"s":""):"")
+       +(D.rumbo_por_rosa?' <span style="font-weight:400;font-size:12px;color:var(--muted)">· rumbos por rosa de los vientos</span>':"")
+       +hlp("El recorrido del perímetro de la parcela: cada lado con su longitud, su rumbo (hacia dónde da) y con qué linda. Sirve como base para la carga en ARBA. La ochava es el corte angular de la esquina entre dos calles.")+"</h3>";
+    if(D.nota) h+='<p class="file">'+esc(D.nota)+'</p>';
+    h+="<table><tr><th>Lado</th><th>Longitud</th>"+(D.geo?"<th>Rumbo</th>":"")+"<th>Linda con</th></tr>";
+    D.lados.forEach(L=>{
+      let fila='<tr class="'+(L.ochava?"warn":"")+'"><td class="m">'+L.n+'</td>';
+      fila+='<td class="m">'+L.largo.toFixed(2)+' m</td>';
+      if(D.geo) fila+='<td class="m">'+L.rumbo+" ("+L.acimut+"°)</td>";
+      let lind;
+      if(!L.lindero){ lind='<span style="color:var(--muted)">(completar)</span>'; }
+      else {
+        lind=esc(L.lindero);
+        if(L.tentativo) lind+=' <span title="El vecino no toca el lado con precisión (desajuste antecedente/mensura). Verificá contra el plano." style="color:#8a5a00;background:#fdf0d5;border:1px solid #e8c987;border-radius:3px;padding:0 5px;font-size:10.5px;font-weight:600">tentativo</span>';
+        if(L.falta_en_mensura&&!L.tentativo) lind+=' <span title="Este lindero no está rotulado en la capa Mensura; se identificó con la plancheta de ARBA. Conviene agregarlo en Mensura." style="color:var(--muted);font-size:11px">falta en mensura</span>';
+      }
+      fila+='<td>'+lind+'</td></tr>';
+      h+=fila;
+    });
+    h+="</table>";
+    h+='<p class="file">El rumbo y la longitud salen del dibujo. El lindero se identifica primero por la capa Mensura y, si no está ahí, por la plancheta de ARBA (marcado «falta en mensura»). «Tentativo» = el vecino no toca el lado con precisión por el desajuste antecedente/mensura: verificalo contra el plano. Acá figura sólo <b>con qué linda cada lado</b>; la redacción formal («fondos», «costado», «parte costado Parcela X» — R6) se arma con el controlador deslinde.md leyendo el plano.</p>';
+  } else if(r.deslinde&&r.deslinde.nota){
+    h+='<h3>Deslinde</h3><p class="file">'+esc(r.deslinde.nota)+'</p>';
+  }
+  // DATOS PARA CARGAR EN ARBA: distancias a esquina y anchos de calle
+  if(r.datosArba && (r.datosArba.sc.length||r.datosArba.sm.length||r.datosArba.calles.length)){
+    const DA=r.datosArba;
+    h+="<h3>Datos para cargar en ARBA"+hlp("Las distancias a esquina (S/C, S/M) y los nombres de calle del frente rotulados en el plano, agrupados para copiar directo a la carga del trámite.")+"</h3>";
+    h+='<p class="file">Distancias a esquina y anchos de calle rotulados en el plano, para copiar a la carga.</p>';
+    h+="<table><tr><th>Tipo</th><th>Valores</th></tr>";
+    if(DA.sc.length) h+='<tr><td>Según catastro (S/C)</td><td class="m">'+DA.sc.map(esc).join(" · ")+'</td></tr>';
+    if(DA.sm.length) h+='<tr><td>Según mensura (S/M)</td><td class="m">'+DA.sm.map(esc).join(" · ")+'</td></tr>';
+    if(DA.calles.length) h+='<tr><td>Calles del frente</td><td>'+DA.calles.map(esc).join(" · ")+'</td></tr>';
+    h+="</table>";
+  }
+  h+="<h3>Capas"+hlp("Cada capa del DXF y qué debería contener según el canon de ARBA. «Mensura» lleva la parcela, cotas y rótulos; las capas M-PARCELA, M-MACIZO, etc. son la plancheta y deben respetar su contenido. Una capa fuera del canon con dibujo adentro es un error.")+"</h3><table><tr><th>Capa</th><th>Debe contener</th><th>Contiene</th><th>Estado</th></tr>";
+  r.capas.forEach(c=>{h+=`<tr class="${c.ver}"><td class="m">${esc(c.capa)}</td><td>${esc(c.debe)}</td>
+    <td class="m">${esc(c.cont)}</td><td><span class="tag t-${c.ver}">${c.ver}</span></td></tr>`;});
+  h+="</table>";
+  if(r.accesiones.length){
+    h+="<h3>Accesiones e instalaciones</h3><table><tr><th>Capa</th><th>Planta</th><th>Superficie</th><th></th></tr>";
+    r.accesiones.forEach(a=>{h+=`<tr class="${a.esp?"warn":""}"><td class="m">${esc(a.capa)}</td><td>${a.planta}</td>
+      <td class="m">${a.sup.toFixed(2)} m²</td><td>${a.esp?'<span class="tag t-warn">de sobra</span>':""}</td></tr>`;});
+    h+="</table>";
+  }
+  document.getElementById("out").innerHTML=h;
+  document.getElementById("bar").classList.remove("hide");
+  document.getElementById("drop").classList.add("hide");
+  window.scrollTo(0,0);
+}
+function renderCmp(a,b){
+  const k=r=>new Set(r.hallazgos.map(h=>h.regla+"|"+h.txt));
+  const ka=k(a),kb=k(b);
+  const dif=(x,y)=>[...x].filter(v=>!y.has(v)).map(v=>v.split("|"));
+  const res=dif(ka,kb),nue=dif(kb,ka),per=[...ka].filter(v=>kb.has(v)).map(v=>v.split("|"));
+  const sa=new Set(a.medidas),sb=new Set(b.medidas);
+  const soloA=a.medidas.filter(m=>!sb.has(m)),soloB=b.medidas.filter(m=>!sa.has(m));
+  const li=A=>A.length?A.map(([r,t])=>`<li><b>${esc(r)}</b> — ${esc(t)}</li>`).join(""):"<li>—</li>";
+  const h=`<div class="cmp"><h4>Comparación con la versión anterior</h4>
+    <p class="file">${esc(a.archivo)} (${a.veredicto}) → ${esc(b.archivo)} (${b.veredicto})</p>
+    <h4 style="margin-top:12px;color:var(--ok)">Resueltos (${res.length})</h4><ul>${li(res)}</ul>
+    <h4 style="margin-top:12px;color:var(--danger)">Nuevos (${nue.length})</h4><ul>${li(nue)}</ul>
+    <h4 style="margin-top:12px;color:var(--warn)">Persisten (${per.length})</h4><ul>${li(per)}</ul>
+    <h4 style="margin-top:12px">Medidas acotadas</h4>
+    <ul><li>${a.medidas.length} → ${b.medidas.length}</li>
+    <li>Sólo antes: ${soloA.length?soloA.join(" · "):"—"}</li>
+    <li>Sólo después: ${soloB.length?soloB.join(" · "):"—"}</li></ul></div>`;
+  document.getElementById("out").insertAdjacentHTML("afterbegin",h);
+  window.scrollTo(0,0);
+}
+function bajarJSON(){
+  const b=new Blob([JSON.stringify(ULT,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(b); a.download=(ULT.archivo||"validacion").replace(/\.dxf$/i,"")+"_validacion.json";
+  a.click();
+}
+/* ============================ EVENTOS ============================ */
+const drop=document.getElementById("drop"),inp=document.getElementById("inp"),inp2=document.getElementById("inp2");
+function leer(file,cb){
+  const fr=new FileReader();
+  fr.onload=()=>{ try{ cb(validar(parseDXF(fr.result),file.name)); }
+    catch(e){ document.getElementById("out").innerHTML=
+      `<div class="verdict v-BLOQUEADO"><h2>No se pudo leer el archivo</h2>
+       <p>${esc(e.message)} — verificá que sea un DXF en formato ASCII (no binario).</p></div>`;
+      document.getElementById("drop").classList.remove("hide"); } };
+  fr.readAsText(file,"latin1");
+}
+drop.onclick=()=>inp.click();
+drop.ondragover=e=>{e.preventDefault();drop.classList.add("hot");};
+drop.ondragleave=()=>drop.classList.remove("hot");
+drop.ondrop=e=>{e.preventDefault();drop.classList.remove("hot");
+  if(e.dataTransfer.files[0]) leer(e.dataTransfer.files[0],r=>{PREV=null;render(r);});};
+inp.onchange=e=>{ if(e.target.files[0]) leer(e.target.files[0],r=>{PREV=null;render(r);}); inp.value=""; };
+inp2.onchange=e=>{ if(e.target.files[0]&&ULT){ const act=ULT;
+  leer(e.target.files[0],r=>{ render(act); renderCmp(r,act); }); } inp2.value=""; };
+</script>
+</body>
+</html>
