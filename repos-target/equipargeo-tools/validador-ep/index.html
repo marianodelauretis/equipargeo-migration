@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-AR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Validador de Estados Parcelarios ARBA — EQUIPAR Tools</title>
+<meta name="description" content="Controlá el DXF de tu estado parcelario de ARBA antes de presentarlo: superficie, cotas, deslinde, capas y rumbos. Tu archivo se procesa en tu navegador, no se sube a ningún servidor.">
+<meta name="theme-color" content="#18354a">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="/shared/favicon.svg" type="image/svg+xml">
-<title>Validador de Estados Parcelarios ARBA — EQUIPAR Tools</title>
 <style>
 :root{
+  /* marca EQUIPAR (chrome) */
+  --eg-coral:#f04e4e; --eg-coral-hover:#ff5f5f;
+  --eg-azul:#18354a; --eg-azul-dark:#1c3a50;
+  --eg-gris:#6e7b8d; --eg-shadow-coral:0 10px 22px rgba(240,78,78,.25);
+  /* interior editorial del validador */
   --paper:#fff; --paper-alt:#F7F7F6; --card:#fff;
   --ink:#1C1C1A; --ink-2:#54544F; --ink-3:#8A8A83; --ink-inv:#fff;
   --rule:#000; --hair:#DEDEDA;
@@ -16,20 +23,41 @@
   --warn:#8A6A1F;   --warn-tint:#FBF6E9;
   --ok:#18354a;     --ok-tint:#EAF0F4;
   --pend:#6E6E68;   --pend-tint:#F2F2F0;
-  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
-  --sans:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,sans-serif;
-  --disp:"Hanken Grotesk","IBM Plex Sans",system-ui,sans-serif;
+  /* tipografia: el mismo stack de sistema que usa EQUIPAR Tools */
+  --mono:"SF Mono",Monaco,"Cascadia Code","Roboto Mono",ui-monospace,Consolas,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --disp:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5}
-header{padding:22px 26px 0;border-bottom:3px solid var(--rule)}
-.brand{font-family:var(--disp);font-weight:800;letter-spacing:.02em;font-size:21px;color:var(--accent)}
-.topnav{display:flex;gap:18px;flex-wrap:wrap;margin-top:2px}
-.topnav a{color:var(--ink-2);font-size:12.5px;text-decoration:none;font-weight:500}
-.topnav a:hover{color:var(--accent);text-decoration:underline}
-.brand span{font-weight:400;color:var(--ink-3);letter-spacing:.04em;margin-left:10px;font-size:13px}
-.sub{color:var(--ink-2);margin:5px 0 16px;font-size:13px}
-main{max-width:1080px;margin:0 auto;padding:26px}
+/* ===== chrome EQUIPAR (topbar / breadcrumb / footer) ===== */
+body{background:#f3f6fb;min-height:100vh;display:flex;flex-direction:column}
+.eg-topbar{background:linear-gradient(180deg,var(--eg-azul-dark),var(--eg-azul));color:#fff;
+  padding:14px 20px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.eg-topbar-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;
+  justify-content:space-between;gap:16px;flex-wrap:wrap}
+.eg-brand{color:#fff;font-weight:800;font-size:1.1rem;letter-spacing:.3px;display:flex;
+  align-items:center;gap:8px;text-decoration:none}
+.eg-brand:hover{opacity:.9;text-decoration:none}
+.eg-brand-dot{width:10px;height:10px;border-radius:50%;background:var(--eg-coral);display:inline-block}
+.eg-nav{display:flex;gap:14px;flex-wrap:wrap;font-size:.92rem}
+.eg-nav a{color:rgba(255,255,255,.85);padding:4px 8px;border-radius:6px;text-decoration:none;transition:background .15s}
+.eg-nav a:hover{color:#fff;background:rgba(255,255,255,.08);text-decoration:none}
+.eg-main{flex:1 0 auto;padding:24px 0 40px}
+.eg-page-header{max-width:1080px;margin:0 auto 8px;padding:0 26px}
+.eg-breadcrumb{font-size:.88rem;color:var(--eg-gris);margin-bottom:10px}
+.eg-breadcrumb a{color:var(--eg-gris);text-decoration:none}
+.eg-breadcrumb a:hover{color:var(--eg-azul)}
+.tool-title{font-family:var(--disp);font-weight:800;font-size:22px;color:var(--eg-azul);margin:0 0 3px}
+.tool-title span{font-weight:500;color:var(--ink-3);font-size:13px;letter-spacing:.02em;margin-left:8px}
+.tool-sub{color:var(--ink-2);font-size:13px;margin:0 0 4px;max-width:70ch}
+.eg-footer{background:var(--eg-azul);color:rgba(255,255,255,.7);padding:22px 20px;margin-top:50px;
+  font-size:.85rem;flex-shrink:0}
+.eg-footer-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.eg-footer a{color:rgba(255,255,255,.85);text-decoration:none}
+.eg-footer a:hover{color:#fff}
+/* el contenido del validador vive en una caja centrada, igual ancho que el page-header */
+#drop,.bar,#out{max-width:1080px;margin-left:auto;margin-right:auto;padding-left:26px;padding-right:26px}
 #drop{border:2px dashed var(--hair);border-radius:3px;padding:44px 24px;text-align:center;
   background:var(--paper-alt);cursor:pointer;transition:.15s}
 #drop.hot{border-color:var(--accent);background:var(--ok-tint)}
@@ -82,29 +110,33 @@ tr.warn td:first-child{border-left:3px solid var(--warn)}
 button{font-family:var(--sans);font-size:12.5px;padding:7px 14px;border:1px solid var(--rule);
   background:var(--paper);color:var(--ink);border-radius:2px;cursor:pointer}
 button:hover{background:var(--ink);color:var(--ink-inv)}
-button.pri{background:var(--accent);border-color:var(--accent);color:var(--ink-inv)}
-button.pri:hover{filter:brightness(.9)}
+button.pri{background:var(--eg-coral);border-color:transparent;color:#fff;font-weight:700;
+  box-shadow:var(--eg-shadow-coral)}
+button.pri:hover{background:var(--eg-coral-hover);color:#fff;filter:none}
 .hide{display:none}
 .file{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-top:8px}
 .cmp{border:1px solid var(--hair);border-radius:2px;padding:14px;margin-top:12px;background:var(--paper-alt)}
 .cmp h4{margin:0 0 8px;font-family:var(--disp);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
 .cmp ul{margin:0;padding-left:19px} .cmp li{margin-bottom:3px;font-size:12.5px}
-footer{max-width:1080px;margin:0 auto;padding:16px 26px 40px;color:var(--ink-3);font-size:11.5px;
-  border-top:1px solid var(--hair)}
 </style>
 </head>
 <body>
-<header>
-  <div class="brand">EQUIPAR<span>Tools</span></div>
-  <p class="sub">Validador de Estados Parcelarios · ARBA · Provincia de Buenos Aires · sin instalación · tu archivo no se sube a ningún servidor</p>
-  <nav class="topnav">
-    <a href="https://equipargeo.com/" target="_blank" rel="noopener">Sitio principal</a>
-    <a href="https://app.equipargeo.com/" target="_blank" rel="noopener">Herramientas</a>
-    <a href="https://equipargeo.com/cursos/" target="_blank" rel="noopener">Cursos</a>
-    <a href="https://equipargeo.com/contacto/" target="_blank" rel="noopener">Contacto</a>
-  </nav>
+<header class="eg-topbar">
+  <div class="eg-topbar-inner">
+    <a class="eg-brand" href="https://app.equipargeo.com/"><span class="eg-brand-dot"></span> EQUIPAR Tools</a>
+    <nav class="eg-nav" aria-label="Principal">
+      <a href="https://app.equipargeo.com/">Inicio</a>
+      <a href="https://equipargeo.com/cursos/">Cursos</a>
+      <a href="https://equipargeo.com/contacto/">Contacto</a>
+    </nav>
+  </div>
 </header>
-<main>
+<main class="eg-main">
+  <div class="eg-page-header">
+    <nav class="eg-breadcrumb" aria-label="Migas"><a href="https://app.equipargeo.com/">EQUIPAR Tools</a> · Validador de Estados Parcelarios</nav>
+    <h1 class="tool-title">Validador de Estados Parcelarios <span>ARBA · Provincia de Buenos Aires</span></h1>
+    <p class="tool-sub">Controlá el DXF de tu estado parcelario antes de presentarlo. Tu archivo no se sube a ningún servidor: se procesa en tu navegador.</p>
+  </div>
   <div id="drop">
     <h2>Arrastrá el archivo DXF acá</h2>
     <p>o hacé clic para elegirlo</p>
@@ -121,11 +153,16 @@ footer{max-width:1080px;margin:0 auto;padding:16px 26px 40px;color:var(--ink-3);
   </div>
   <div id="out"></div>
 </main>
-<footer>
-  © EQUIPAR · Herramientas gratuitas para el territorio · Validador de Estados Parcelarios v0.1<br>
-  Reglas basadas en expedientes aprobados por ARBA. Herramienta de apoyo: no reemplaza el control profesional del legajo.<br>
-  Consultas y sugerencias: <a href="https://wa.me/5491155722266?text=Hola%2C%20tengo%20una%20consulta%20sobre%20el%20Validador%20de%20Estados%20Parcelarios%20de%20EQUIPAR" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;text-decoration:none">WhatsApp EQUIPAR</a>
-  · <a href="https://equipargeo.com/contacto/" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600;text-decoration:none">Formulario de contacto</a>
+<footer class="eg-footer">
+  <div class="eg-footer-inner">
+    <div>© EQUIPAR · Herramienta gratuita · Validador de Estados Parcelarios v0.1 — no reemplaza el control profesional del legajo</div>
+    <div>
+      Consultas y sugerencias:
+      <a href="https://wa.me/5491155722266?text=Hola%2C%20tengo%20una%20consulta%20o%20sugerencia%20sobre%20el%20Validador%20de%20Estados%20Parcelarios%20de%20EQUIPAR" target="_blank" rel="noopener">WhatsApp</a>
+      · <a href="https://equipargeo.com/contacto/" target="_blank" rel="noopener">Formulario</a>
+      · <a href="https://app.equipargeo.com/">Ir a las herramientas</a>
+    </div>
+  </div>
 </footer>
 <script>
 /* ============================ PARSER DXF ============================ */
