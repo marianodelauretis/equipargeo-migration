@@ -11,7 +11,7 @@ precios:
   ars:
     general: "$ 2.250.000"
     comunidad: "$ 562.500"
-    asesoria: "$ 226.500"
+    asesoria: "$ 225.000"
   usd:
     general: "USD 1.500"
     comunidad: "USD 375"

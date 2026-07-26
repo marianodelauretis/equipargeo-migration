@@ -14,7 +14,7 @@ precios:
     asesoria: "$ 37.500"
   usd:
     general: "USD 250"
-    comunidad: "USD 62"
+    comunidad: "USD 62,50"
     asesoria: "USD 25"
 formUrl: "https://forms.gle/NRRBpNBvAhgd8qst8"
 waUrl: "https://wa.me/5491155722266?text=Hola%20EQUIPAR,%20consulto%20por%20Estaci%C3%B3n%20Total"

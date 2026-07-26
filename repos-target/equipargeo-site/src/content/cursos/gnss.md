@@ -14,7 +14,7 @@ precios:
     asesoria: "$ 112.500"
   usd:
     general: "USD 750"
-    comunidad: "USD 186"
+    comunidad: "USD 187,50"
     asesoria: "USD 75"
 modulos:
   - numero: 1
