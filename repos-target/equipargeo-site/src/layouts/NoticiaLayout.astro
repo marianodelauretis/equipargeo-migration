@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import Breadcrumb from '@components/Breadcrumb.astro';
+import ConsultaNota from '@components/ConsultaNota.astro';
 import type { CollectionEntry } from 'astro:content';
 
 export interface Props {
@@ -21,8 +22,10 @@ const categoriaLabels: Record<string, string> = {
   'comunidad-eventos': 'Comunidad y eventos',
 };
 
+// timeZone UTC: el frontmatter trae la fecha como medianoche UTC, y sin fijarla
+// el formateo en Argentina (UTC-3) la mostraba un dia antes.
 const fechaFormateada = fecha.toLocaleDateString('es-AR', {
-  day: 'numeric', month: 'long', year: 'numeric',
+  day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
 });
 
 const breadcrumbItems = [
@@ -42,6 +45,27 @@ const schemaArticle = {
   publisher: { '@type': 'Organization', name: 'EQUIPAR', url: 'https://equipargeo.com' },
   inLanguage: 'es-AR',
 };
+
+// FAQPage: se arma leyendo la seccion "Preguntas frecuentes" del cuerpo, si la nota la tiene.
+// Formato esperado: la pregunta en negrita sola en su linea, y la respuesta en la linea siguiente.
+const inicioFaq = noticia.body.search(/^##\s+Preguntas frecuentes/m);
+const cuerpoFaq = inicioFaq >= 0 ? noticia.body.slice(inicioFaq).split(/\r?\n##\s/)[0] : '';
+const faqItems = [...cuerpoFaq.matchAll(/^\*\*(.+?)\*\*[ \t]*\r?\n([^\r\n]+)/gm)].map((m) => ({
+  pregunta: m[1].trim(),
+  respuesta: m[2].trim(),
+}));
+
+const schemaFaq = faqItems.length > 0
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqItems.map((item) => ({
+        '@type': 'Question',
+        name: item.pregunta,
+        acceptedAnswer: { '@type': 'Answer', text: item.respuesta },
+      })),
+    }
+  : null;
 ---
 <BaseLayout title={`${titulo} — EQUIPAR`} description={descripcion} ogImage={imagen}>
   <article class="container-eg py-8 md:py-12 max-w-3xl">
@@ -89,5 +113,8 @@ const schemaArticle = {
     )}
   </article>
 
+  <ConsultaNota tituloNota={titulo} />
+
   <script type="application/ld+json" set:html={JSON.stringify(schemaArticle)} />
+  {schemaFaq && <script type="application/ld+json" set:html={JSON.stringify(schemaFaq)} />}
 </BaseLayout>

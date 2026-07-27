@@ -19,8 +19,10 @@ const categoriaLabels: Record<string, string> = {
   'comunidad-eventos': 'Comunidad',
 };
 
+// timeZone UTC: sin fijarla, la fecha del frontmatter (medianoche UTC) se
+// mostraba un dia antes al formatear en Argentina (UTC-3).
 const fechaFormateada = fecha.toLocaleDateString('es-AR', {
-  day: 'numeric', month: 'short', year: 'numeric',
+  day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC',
 });
 
 const href = `/noticias/${noticia.slug}/`;
